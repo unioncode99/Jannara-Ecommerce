@@ -1,0 +1,6 @@
+@Jannara_Ecommerce_HostAddress = http://localhost:5033
+
+GET {{Jannara_Ecommerce_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
