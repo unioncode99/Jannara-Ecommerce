@@ -1,0 +1,22 @@
+# React / Node
+/frontend/node_modules/
+/frontend/build/
+/frontend/.env
+
+# ASP.NET Core
+/backend/bin/
+/backend/obj/
+/backend/*.user
+/backend/*.suo
+/backend/*.vs
+/backend/*.exe
+/backend/*.dll
+/backend/*.pdb
+
+# VS Code / JetBrains
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
