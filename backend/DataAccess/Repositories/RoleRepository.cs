@@ -128,7 +128,7 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
             }
         }
 
-        public async Task<Result<RoleDTO>> GetById(int id)
+        public async Task<Result<RoleDTO>> GetByIdAsync(int id)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
