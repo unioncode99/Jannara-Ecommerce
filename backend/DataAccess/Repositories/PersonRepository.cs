@@ -110,7 +110,7 @@ Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
                 }
             }
         }
-        public async Task<Result<PersonDTO>> GetById(int id)
+        public async Task<Result<PersonDTO>> GetByIdAsync(int id)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {

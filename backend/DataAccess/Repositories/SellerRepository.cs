@@ -117,7 +117,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
 
-                            while (reader.Read())
+                            while (await reader.ReadAsync())
                             {
                                 sellers.Add(new SellerDTO
                                 (
