@@ -1,5 +1,5 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.Dtos;
+using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
@@ -13,7 +13,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         private readonly string _connectionString;
         public PersonRepository(IOptions<DatabaseSettings> options)
         {
-            _connectionString = options.Value.DefautConnection;
+            _connectionString = options.Value.DefaultConnection;
         }
         public async Task<Result<PersonDTO>> AddNewAsync(PersonDTO newPerson)
         {
@@ -36,7 +36,7 @@ date_of_birth)
 @image_url,
 @gender,
 @date_of_birth
-)
+);
 Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
 ";
                 using (SqlCommand command = new SqlCommand(query, connection))

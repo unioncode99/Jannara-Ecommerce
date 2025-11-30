@@ -1,4 +1,4 @@
-﻿namespace Jannara_Ecommerce.Dtos
+﻿namespace Jannara_Ecommerce.DTOs
 {
     public class RoleDTO
     {
