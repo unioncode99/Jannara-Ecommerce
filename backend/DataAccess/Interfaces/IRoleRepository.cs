@@ -8,7 +8,7 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
         public Task<Result<RoleDTO>> AddNewAsync(RoleDTO newRole);
         public Task<Result<bool>> UpdateAsync(int id, RoleDTO updatedRole);
         public Task<Result<bool>> DeleteAsync(int id);
-        public Task<Result<RoleDTO>> GetById(int id);
+        public Task<Result<RoleDTO>> GetByIdAsync(int id);
         public Task<Result<IEnumerable<RoleDTO>>> GetAllAsync();
     }
 }

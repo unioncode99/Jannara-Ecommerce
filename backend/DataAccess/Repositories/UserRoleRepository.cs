@@ -6,40 +6,37 @@ using Microsoft.Extensions.Options;
 
 namespace Jannara_Ecommerce.DataAccess.Repositories
 {
-    public class AddressRepository : IAddressRepository
+    public class UserRoleRepository : IUserRoleRepository
     {
         private readonly string _connectionString;
-        public AddressRepository(IOptions<DatabaseSettings> options)
+        public UserRoleRepository(IOptions<DatabaseSettings> options)
         {
             _connectionString = options.Value.DefaultConnection;
         }
-        public async Task<Result<AddressDTO>> AddNewAsync(AddressDTO newAddress)
+        public async Task<Result<UserRoleDTO>> AddNewAsync(UserRoleDTO newUserRole)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = @"
-INSERT INTO Addresses
+INSERT INTO UserRoles
 (
-person_id,
-street,
-city,
-state
+user_id,
+role_id,
+is_active
 )
 VALUES
 (
-@person_id,
-@street,
-@city,
-@state
+@user_id,
+@role_id,
+@is_active
 );
-Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
+Select * from UserRoles Where id  = (SELECT SCOPE_IDENTITY());
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (SqlCommand command = new SqlCommand(_connectionString))
                 {
-                    command.Parameters.AddWithValue("@person_id", newAddress.PersonId);
-                    command.Parameters.AddWithValue("@street", newAddress.Street);
-                    command.Parameters.AddWithValue("@city", newAddress.City);
-                    command.Parameters.AddWithValue("@state", newAddress.State ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@user_id", newUserRole.UserId);
+                    command.Parameters.AddWithValue("@role_id", newUserRole.RoleId);
+                    command.Parameters.AddWithValue("@is_active", newUserRole.isActive);
                     try
                     {
                         await connection.OpenAsync();
@@ -47,24 +44,23 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                         {
                             if (await reader.ReadAsync())
                             {
-                                AddressDTO insertedAddress = new AddressDTO
+                                UserRoleDTO insertedUserRole = new UserRoleDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
-                                    reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("street")),
-                                    reader.GetString(reader.GetOrdinal("city")),
-                                    reader.IsDBNull(reader.GetOrdinal("state")) ? null : reader.GetString(reader.GetOrdinal("state")),
+                                    reader.GetInt32(reader.GetOrdinal("role_id")),
+                                    reader.GetInt32(reader.GetOrdinal("user_id")),
+                                    reader.GetBoolean(reader.GetOrdinal("is_active")),
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<AddressDTO>(true, "Address added successfully.", insertedAddress);
+                                return new Result<UserRoleDTO>(true, "User Role added successfully.", insertedUserRole);
                             }
-                            return new Result<AddressDTO>(false, "Failed To Add Address", null, 500);
+                            return new Result<UserRoleDTO>(false, "Failed To Add Address", null, 500);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<AddressDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<UserRoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
             }
@@ -74,10 +70,10 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = @"DELETE FROM Addresses WHERE id = @id";
+                string query = @"DELETE FROM UserRoles WHERE id = @id";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("id", id);
                     try
                     {
                         await connection.OpenAsync();
@@ -85,9 +81,9 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "Address deleted successfully.", true);
+                            return new Result<bool>(true, "User Role deleted successfully.", true);
                         }
-                        return new Result<bool>(false, "Role Not Found", false, 404);
+                        return new Result<bool>(false, "User Role Not Found.", false, 404);
                     }
                     catch (Exception ex)
                     {
@@ -96,16 +92,15 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                 }
             }
         }
-
-        public async Task<Result<IEnumerable<AddressDTO>>> GetAllAsync(int person_id)
+        public async Task<Result<IEnumerable<UserRoleDTO>>> GetAllAsync(int user_id)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = @"Select * from Addresses Where person_id  = @person_id;";
+                string query = @"Select * from UserRoles Where user_id  = @user_id;";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@person_id", person_id);
-                    List<AddressDTO> personAddresses = new List<AddressDTO>();
+                    command.Parameters.AddWithValue("@user_id", user_id);
+                    List<UserRoleDTO> userRoles = new List<UserRoleDTO>();
                     try
                     {
                         await connection.OpenAsync();
@@ -113,37 +108,36 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                         {
                             while (await reader.ReadAsync())
                             {
-                                personAddresses.Add(new AddressDTO
+                                userRoles.Add(new UserRoleDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
-                                    reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("street")),
-                                    reader.GetString(reader.GetOrdinal("city")),
-                                    reader.IsDBNull(reader.GetOrdinal("state")) ? null : reader.GetString(reader.GetOrdinal("state")),
+                                    reader.GetInt32(reader.GetOrdinal("role_id")),
+                                    reader.GetInt32(reader.GetOrdinal("user_id")),
+                                    reader.GetBoolean(reader.GetOrdinal("is_active")),
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 ));
                             }
-                            if (personAddresses.Count > 0)
+                            if (userRoles.Count > 0)
                             {
-                                return new Result<IEnumerable<AddressDTO>>(true, "Addresses retrieved successfully", personAddresses);
+                                return new Result<IEnumerable<UserRoleDTO>>(true, "User Roles retrieved successfully.", userRoles);
                             }
-                            return new Result<IEnumerable<AddressDTO>>(false, "Addresses Not Found", null, 404);
+                            return new Result<IEnumerable<UserRoleDTO>>(false, "User Roles Not Found.", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<IEnumerable<AddressDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<IEnumerable<UserRoleDTO>>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
             }
         }
 
-        public async Task<Result<AddressDTO>> GetByIdAsync(int id)
+        public async Task<Result<UserRoleDTO>> GetByIdAsync(int id)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = @"Select * from Addresses Where id  = @id;";
+                string query = @"Select * from UserRoles Where id  = @id;";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
@@ -154,47 +148,46 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                         {
                             if (await reader.ReadAsync())
                             {
-                                AddressDTO address = new AddressDTO
+                                UserRoleDTO userRole = new UserRoleDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
-                                    reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("street")),
-                                    reader.GetString(reader.GetOrdinal("city")),
-                                    reader.IsDBNull(reader.GetOrdinal("state")) ? null : reader.GetString(reader.GetOrdinal("state")),
+                                    reader.GetInt32(reader.GetOrdinal("role_id")),
+                                    reader.GetInt32(reader.GetOrdinal("user_id")),
+                                    reader.GetBoolean(reader.GetOrdinal("is_active")),
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<AddressDTO>(true, "Address retrieved successfully.", address);
+                                return new Result<UserRoleDTO>(true, "User Role retrieved successfully.", userRole);
                             }
-                            return new Result<AddressDTO>(false, "Address Not Found", null, 404);
+                            return new Result<UserRoleDTO>(false, "User Role Not Found", null, 404);
+
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<AddressDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<UserRoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
             }
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, AddressDTO updatedAddress)
+        public async Task<Result<bool>> UpdateAsync(int id, UserRoleDTO updatedUserRole)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = @"
-UPDATE Addresses
+UPDATE UserRoles
 SET 
-    street = @street,
-    city = @city,
-    state = @state
+    role_id = @role_id,
+    is_active = @is_active
 WHERE id = @id;
 select @@ROWCOUNT
 ";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@street", updatedAddress.Street);
-                    command.Parameters.AddWithValue("@city", updatedAddress.City);
-                    command.Parameters.AddWithValue("@state", updatedAddress.State ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@id", updatedUserRole.Id);
+                    command.Parameters.AddWithValue("@role_id", updatedUserRole.RoleId);
+                    command.Parameters.AddWithValue("@is_active", updatedUserRole.isActive);
                     try
                     {
                         await connection.OpenAsync();
@@ -202,9 +195,9 @@ select @@ROWCOUNT
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "Address updated successfully.", true);
+                            return new Result<bool>(true, "User Role updated successfully.", true);
                         }
-                        return new Result<bool>(false, "Address Not Found.", false, 404);
+                        return new Result<bool>(false, "User Role Not Found.", false, 404);
                     }
                     catch (Exception ex)
                     {
