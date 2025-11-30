@@ -114,7 +114,6 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
             {
                 string query = @"select * from Users
 OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
-
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     int offset = (pageNumber - 1) * pageSize;
@@ -151,7 +150,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
                     }
                     catch (Exception ex)
                     {
-                        return new Result<List<UserPublicDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<IEnumerable<UserPublicDTO>>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
                 }
