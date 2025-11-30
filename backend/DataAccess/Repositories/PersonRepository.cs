@@ -13,7 +13,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         private readonly string _connectionString;
         public PersonRepository(IOptions<DatabaseSettings> options)
         {
-            _connectionString = options.Value.DefautConnection;
+            _connectionString = options.Value.DefaultConnection;
         }
         public async Task<Result<PersonDTO>> AddNewAsync(PersonDTO newPerson)
         {
