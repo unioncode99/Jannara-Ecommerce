@@ -60,7 +60,7 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
                                );
                                 return new Result<UserPublicDTO>(true, "User added successfully.", insertedUser);
                             }
-                            return new Result<UserPublicDTO>(false, "Failed to add User.", null);
+                            return new Result<UserPublicDTO>(false, "Failed to add User.", null, 500);
 
                         }
 
@@ -90,13 +90,8 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                        {
                             return new Result<bool>(true, "User deleted successfully.", true);
-                        }
-                        else
-                        {
-                            return new Result<bool>(false, "Failed to delete user.", false);
-                        }
+                        return new Result<bool>(false, "User not found.", false, 404);
                     }
                     catch (Exception ex)
                     {
@@ -113,7 +108,6 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
             {
                 string query = @"select * from Users
 OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
-
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     int offset = (pageNumber - 1) * pageSize;
@@ -142,15 +136,15 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
                             }
 
                             if (users.Count() > 0)
-                                return new Result<IEnumerable<UserPublicDTO>>(true, "Doctors retrieved successfully", users);
+                                return new Result<IEnumerable<UserPublicDTO>>(true, "Users retrieved successfully", users);
                             else
-                                return new Result<IEnumerable<UserPublicDTO>>(false, "No doctor found!", null, 404);
+                                return new Result<IEnumerable<UserPublicDTO>>(false, "No user found!", null, 404);
 
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<List<UserPublicDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<IEnumerable<UserPublicDTO>>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
                 }
@@ -188,7 +182,7 @@ Select * from Users where email = @email;
                                );
                                 return new Result<UserDTO>(true, "User retrieved successfully.", user);
                             }
-                            return new Result<UserDTO>(false, "Failed to retrieved User.", null);
+                            return new Result<UserDTO>(false, "User not found.", null, 404);
 
                         }
 
@@ -234,7 +228,7 @@ Select * from Users where id = @id;
                                );
                                 return new Result<UserDTO>(true, "User retrieved successfully.", user);
                             }
-                            return new Result<UserDTO>(false, "Failed to retrieved User.", null);
+                            return new Result<UserDTO>(false, "User not found.", null, 404);
 
                         }
 
@@ -277,13 +271,8 @@ select @@ROWCOUNT";
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                        {
                             return new Result<bool>(true, "user updated successfully.", true);
-                        }
-                        else
-                        {
-                            return new Result<bool>(false, "Failed to update user.", false);
-                        }
+                        return new Result<bool>(false, "Failed to update user.", false);
                     }
                     catch (Exception ex)
                     {

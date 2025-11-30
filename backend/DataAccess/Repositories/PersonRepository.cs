@@ -70,7 +70,7 @@ Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
                                );
                                 return new Result<PersonDTO>(true, "Person added successfully.", insertedPerson);
                             }
-                            return new Result<PersonDTO>(false, "Failed to add person.", null);
+                            return new Result<PersonDTO>(false, "Failed to add person.", null, 500);
 
                         }
 
@@ -99,13 +99,8 @@ Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                        {
                             return new Result<bool>(true, "Person deleted successfully.", true);
-                        }
-                        else
-                        {
-                            return new Result<bool>(false, "Failed to delete person.", false);
-                        }
+                        return new Result<bool>(false, "Person not found.", false, 500);
                     }
                     catch (Exception ex)
                     {
@@ -147,7 +142,7 @@ Select * from People Where Id  = @id;
                                );
                                 return new Result<PersonDTO>(true, "Person retrieved successfully.", person);
                             }
-                            return new Result<PersonDTO>(false, "Failed to retrieved person.", null);
+                            return new Result<PersonDTO>(false, "Person not found.", null, 404);
 
                         }
 
@@ -193,13 +188,8 @@ select @@ROWCOUNT";
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                        {
-                            return new Result<bool>(true, "person updated successfully.", true);
-                        }
-                        else
-                        {
-                            return new Result<bool>(false, "Failed to update person.", false);
-                        }
+                            return new Result<bool>(true, "Person updated successfully.", true);
+                        return new Result<bool>(false, "Person not found.", false, 404);
                     }
                     catch (Exception ex)
                     {
