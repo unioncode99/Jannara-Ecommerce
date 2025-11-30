@@ -1,6 +1,6 @@
 ﻿using Jannara_Ecommerce.Enums;
 
-namespace Jannara_Ecommerce.Dtos
+namespace Jannara_Ecommerce.DTOs
 {
     public class PersonDTO
     {

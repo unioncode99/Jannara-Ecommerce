@@ -1,4 +1,4 @@
-﻿using Jannara_Ecommerce.Dtos;
+﻿using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.Utilities;
 
 namespace Jannara_Ecommerce.DataAccess.Interfaces
