@@ -1,5 +1,5 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.Dtos;
+using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
@@ -36,7 +36,7 @@ date_of_birth)
 @image_url,
 @gender,
 @date_of_birth
-)
+);
 Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
 ";
                 using (SqlCommand command = new SqlCommand(query, connection))
