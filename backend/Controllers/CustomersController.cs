@@ -12,10 +12,10 @@ namespace Jannara_Ecommerce.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly ICustomerService _customerService;
+        private readonly ICustomerService _service;
         public CustomersController(ICustomerService customerService)
         {
-            _customerService = customerService;
+            _service = customerService;
         }
         
         [HttpGet("{id}", Name = "GetCustomerByID")]
@@ -25,7 +25,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<CustomerDTO>> GetCustomerByID(int id)
         {
-            Result<CustomerDTO> result = await _customerService.FindAsync(id);
+            Result<CustomerDTO> result = await _service.FindAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);
@@ -39,7 +39,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<CustomerDTO>> AddCustomer(RegisteredCustomerDTO registeredCustomerDTO)
         {
-            Result<CustomerDTO> result = await _customerService.RegisterAsync(registeredCustomerDTO);
+            Result<CustomerDTO> result = await _service.RegisterAsync(registeredCustomerDTO);
             if (result.IsSuccess)
             {
                 return CreatedAtRoute("GetCustomerByID", new { id = result.Data.Id }, result.Data);
@@ -54,7 +54,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteCustomer(int id)
         {
-            Result<bool> result = await _customerService.DeleteAsync(id);
+            Result<bool> result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Message);
