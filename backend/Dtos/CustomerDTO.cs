@@ -1,4 +1,6 @@
-﻿namespace Jannara_Ecommerce.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Jannara_Ecommerce.DTOs
 {
     public class CustomerDTO
     {
@@ -11,6 +13,7 @@
         }
 
         public int Id { get; set; }
+        [Required(ErrorMessage = "UserId is required.")]
         public int UserId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
