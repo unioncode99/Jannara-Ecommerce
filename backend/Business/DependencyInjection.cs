@@ -15,6 +15,7 @@ namespace Jannara_Ecommerce.Business
             services.AddScoped<ISellerService, SellerService>();
             services.AddScoped<IUserRoleService, UserRoleService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IImageService, ImageService>();
             return services;
         }
     }
