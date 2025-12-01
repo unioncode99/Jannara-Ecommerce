@@ -8,22 +8,23 @@ using Microsoft.Extensions.Options;
 
 namespace Jannara_Ecommerce.Business.Services
 {
-    public class CustomerService : ICustomerService
+    public class SellerService : ISellerService
     {
-        private readonly ICustomerRepository _repo;
+        private readonly ISellerRepository _repo;
         private readonly string _connectionString;
         private readonly IPersonService _personService;
         private readonly IUserService _userService;
-        public CustomerService(ICustomerRepository repo, IPersonService PersonService, IUserService UserService, IOptions<DatabaseSettings> options)
+        public SellerService(ISellerRepository repo, IPersonService PersonService, 
+            IUserService UserService, IOptions<DatabaseSettings> options)
         {
-            _repo = repo;
+            _repo  = repo;
             _connectionString = options.Value.DefaultConnection;
             _personService = PersonService;
             _userService = UserService;
         }
-        public async Task<Result<CustomerDTO>> AddNewAsync(CustomerDTO newCustomer, SqlConnection connection, SqlTransaction transaction)
+        public async Task<Result<SellerDTO>> AddNewAsync(SellerDTO newSeller, SqlConnection connection, SqlTransaction transaction)
         {
-            return await _repo.AddNewAsync(newCustomer, connection, transaction);
+            return await _repo.AddNewAsync(newSeller, connection, transaction);
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)
@@ -31,11 +32,11 @@ namespace Jannara_Ecommerce.Business.Services
             return await _repo.DeleteAsync(id);
         }
 
-        public async Task<Result<CustomerDTO>> FindAsync(int id)
+        public async Task<Result<SellerDTO>> FindAsync(int id)
         {
             return await _repo.GetByIdAsync(id);
         }
-        public async Task<Result<CustomerDTO>> RegisterAsync(RegisteredCustomerDTO registeredCustomer)
+        public async Task<Result<SellerDTO>> RegisterAsync(RegisteredSellerDTO registeredSeller)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -44,41 +45,40 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = connection.BeginTransaction();
-                    PersonDTO PersonInfo = registeredCustomer.GetPersonDTO();
+                    PersonDTO PersonInfo = registeredSeller.GetPersonDTO();
                     Result<PersonDTO> PersonResult = await _personService.AddNewAsync(PersonInfo, connection, transaction);
                     if (!PersonResult.IsSuccess)
                     {
                         transaction.Rollback();
-                        return new Result<CustomerDTO>(false, PersonResult.Message, null, PersonResult.ErrorCode);
+                        return new Result<SellerDTO>(false, PersonResult.Message, null, PersonResult.ErrorCode);
                     }
-                    UserDTO UserInfo = registeredCustomer.GetUserDTO(PersonResult.Data.Id);
+                    UserDTO UserInfo = registeredSeller.GetUserDTO(PersonResult.Data.Id);
                     Result<UserPublicDTO> UserResult = await _userService.AddNewAsync(UserInfo, connection, transaction);
                     if (!UserResult.IsSuccess)
                     {
                         transaction.Rollback();
-                        return new Result<CustomerDTO>(false, UserResult.Message, null, UserResult.ErrorCode);
+                        return new Result<SellerDTO>(false, UserResult.Message, null, UserResult.ErrorCode);
                     }
-                    CustomerDTO CustomerInfo = new CustomerDTO(-1, UserInfo.Id, DateTime.Now, DateTime.Now);
-                    Result<CustomerDTO> CustomerResult = await AddNewAsync(CustomerInfo, connection, transaction);
-                    if (!CustomerResult.IsSuccess)
+                    SellerDTO SellerInfo = new SellerDTO(-1, UserInfo.Id, registeredSeller.BusinessName, registeredSeller.WebsiteUrl, DateTime.Now, DateTime.Now);
+                    Result<SellerDTO> SellerResult = await AddNewAsync(SellerInfo, connection, transaction);
+                    if (!SellerResult.IsSuccess)
                     {
                         transaction.Rollback();
-                        return new Result<CustomerDTO>(false, CustomerResult.Message, null, CustomerResult.ErrorCode);
+                        return new Result<SellerDTO>(false, SellerResult.Message, null, SellerResult.ErrorCode);
                     }
                     transaction.Commit();
-                    return CustomerResult;
+                    return SellerResult;
                 }
                 catch (Exception ex)
                 {
                     transaction?.Rollback();
-                    return new Result<CustomerDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                    return new Result<SellerDTO>(false, "An unexpected error occurred on the server.", null, 500);
                 }
             }
         }
-
-        public async Task<Result<bool>> UpdateAsync(int id, CustomerDTO updatedCustomer)
+        public async Task<Result<bool>> UpdateAsync(int id, SellerDTO updatedSeller)
         {
-            return await _repo.UpdateAsync(id, updatedCustomer);
+            return await _repo.UpdateAsync(id, updatedSeller);
         }
     }
 }

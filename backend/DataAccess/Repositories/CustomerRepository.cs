@@ -1,5 +1,4 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.Dtos;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
@@ -14,46 +13,32 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         {
             _connectionString = options.Value.DefaultConnection;
         }
-        public async Task<Result<CustomerDTO>> AddNewAsync(CustomerDTO newCustomer)
+        public async Task<Result<CustomerDTO>> AddNewAsync(CustomerDTO newCustomer, SqlConnection connection, SqlTransaction transaction)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string query = @"
+            string query = @"
 INSERT INTO Customers
            (user_id)
      VALUES
            (@user_id);
 Select * from Cutomers Where Id  = (SELECT SCOPE_IDENTITY());
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+            using (SqlCommand command = new SqlCommand(query, connection, transaction))
+            {
+                command.Parameters.AddWithValue("@user_id", newCustomer.UserId);
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
-                    command.Parameters.AddWithValue("@user_id", newCustomer.UserId);
-
-                    try
+                    if (await reader.ReadAsync())
                     {
-                        await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                CustomerDTO insertedCustomer = new CustomerDTO
-                                (
-                                    reader.GetInt32(reader.GetOrdinal("Id")),
-                                    reader.GetInt32(reader.GetOrdinal("user_id")),
-                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                               );
-                                return new Result<CustomerDTO>(true, "Customer added successfully.", insertedCustomer);
-                            }
-                            return new Result<CustomerDTO>(false, "Failed to add customer.", null, 500);
-
-                        }
+                        CustomerDTO insertedCustomer = new CustomerDTO
+                        (
+                            reader.GetInt32(reader.GetOrdinal("Id")),
+                            reader.GetInt32(reader.GetOrdinal("user_id")),
+                            reader.GetDateTime(reader.GetOrdinal("created_at")),
+                            reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                       );
+                        return new Result<CustomerDTO>(true, "Customer added successfully.", insertedCustomer);
                     }
-                    catch (Exception ex)
-                    {
-                        return new Result<CustomerDTO>(false, "An unexpected error occurred on the server.", null, 500);
-                    }
-
+                    return new Result<CustomerDTO>(false, "Failed to add customer.", null, 500);
                 }
             }
         }
