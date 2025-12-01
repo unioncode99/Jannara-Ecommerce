@@ -141,34 +141,64 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = @"
-Select * from Users where email = @email;
+SELECT 
+    Users.id          AS UserId,
+	Users.person_id,
+	Users.email,
+    Users.username,
+	Users.password,
+    Users.created_at  AS user_created_at,
+    Users.updated_at  AS user_updated_at,
+
+    Roles.id          AS role_id,
+    Roles.name_ar,
+    Roles.name_en,
+    UserRoles.is_active,
+    Roles.created_at  AS role_created_at,
+    Roles.updated_at  AS role_updated_at
+FROM Roles
+INNER JOIN UserRoles ON Roles.id = UserRoles.role_id
+INNER JOIN Users ON UserRoles.user_id = Users.id
+WHERE Users.email = @email;
 ";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@email", email);
-
+                    UserDTO user = null;
 
                     try
                     {
                         await connection.OpenAsync();
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            if (await reader.ReadAsync())
+                            while (await reader.ReadAsync())
                             {
-                                UserDTO user = new UserDTO
-                                (
-                                    reader.GetInt32(reader.GetOrdinal("Id")),
-                                    reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("email")),
-                                    reader.GetString(reader.GetOrdinal("user_name")),
-                                    reader.GetString(reader.GetOrdinal("password")),
-                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                               );
-                                return new Result<UserDTO>(true, "User retrieved successfully.", user);
+                                if (user == null)
+                                {
+                                    user = new UserDTO
+                                            (
+                                                reader.GetInt32(reader.GetOrdinal("UserId")),
+                                                reader.GetInt32(reader.GetOrdinal("person_id")),
+                                                reader.GetString(reader.GetOrdinal("email")),
+                                                reader.GetString(reader.GetOrdinal("username")),
+                                                reader.GetString(reader.GetOrdinal("password")),
+                                                reader.GetDateTime(reader.GetOrdinal("user_created_at")),
+                                                reader.GetDateTime(reader.GetOrdinal("user_updated_at")),
+                                                  new List<UserRoleInfoDTO>()
+                                            );
+                                }
+                                user.Roles.Add(new UserRoleInfoDTO(
+                                    reader.GetInt32(reader.GetOrdinal("role_id")),
+                                    reader.GetString(reader.GetOrdinal("name_ar")),
+                                    reader.GetString(reader.GetOrdinal("name_en ")),
+                                    reader.GetBoolean(reader.GetOrdinal("is_active")),
+                                    reader.GetDateTime(reader.GetOrdinal("role_created_at")),
+                                    reader.GetDateTime(reader.GetOrdinal("role_updated_at")))
+                                    );
                             }
-                            return new Result<UserDTO>(false, "User not found.", null, 404);
-
+                            if (user == null)
+                                return new Result<UserDTO>(false, "User not found", null, 404);
+                            return new Result<UserDTO>(true, "User found successfully", user);
                         }
 
 
@@ -187,34 +217,64 @@ Select * from Users where email = @email;
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = @"
-Select * from Users where id = @id;
+SELECT 
+    Users.id          AS UserId,
+	Users.person_id,
+	Users.email,
+    Users.username,
+	Users.password,
+    Users.created_at  AS user_created_at,
+    Users.updated_at  AS user_updated_at,
+
+    Roles.id          AS role_id,
+    Roles.name_ar,
+    Roles.name_en,
+    UserRoles.is_active,
+    Roles.created_at  AS role_created_at,
+    Roles.updated_at  AS role_updated_at
+FROM Roles
+INNER JOIN UserRoles ON Roles.id = UserRoles.role_id
+INNER JOIN Users ON UserRoles.user_id = Users.id
+WHERE Users.id = @id;
 ";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-
+                    UserDTO user = null;
 
                     try
                     {
                         await connection.OpenAsync();
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            if (await reader.ReadAsync())
+                            while (await reader.ReadAsync())
                             {
-                                UserDTO user = new UserDTO
-                                (
-                                    reader.GetInt32(reader.GetOrdinal("Id")),
-                                    reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("email")),
-                                    reader.GetString(reader.GetOrdinal("user_name")),
-                                    reader.GetString(reader.GetOrdinal("password")),
-                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                               );
-                                return new Result<UserDTO>(true, "User retrieved successfully.", user);
+                                if (user == null)
+                                {
+                                    user = new UserDTO
+                                            (
+                                                reader.GetInt32(reader.GetOrdinal("UserId")),
+                                                reader.GetInt32(reader.GetOrdinal("person_id")),
+                                                reader.GetString(reader.GetOrdinal("email")),
+                                                reader.GetString(reader.GetOrdinal("username")),
+                                                reader.GetString(reader.GetOrdinal("password")),
+                                                reader.GetDateTime(reader.GetOrdinal("user_created_at")),
+                                                reader.GetDateTime(reader.GetOrdinal("user_updated_at")),
+                                                  new List<UserRoleInfoDTO>()
+                                            );
+                                }
+                                user.Roles.Add(new UserRoleInfoDTO(
+                                    reader.GetInt32(reader.GetOrdinal("role_id")),
+                                    reader.GetString(reader.GetOrdinal("name_ar")),
+                                    reader.GetString(reader.GetOrdinal("name_en ")),
+                                    reader.GetBoolean(reader.GetOrdinal("is_active")),
+                                    reader.GetDateTime(reader.GetOrdinal("role_created_at")),
+                                    reader.GetDateTime(reader.GetOrdinal("role_updated_at")))
+                                    );
                             }
-                            return new Result<UserDTO>(false, "User not found.", null, 404);
-
+                            if (user == null)
+                                return new Result<UserDTO>(false, "User not found", null, 404);
+                            return new Result<UserDTO>(true, "User found successfully", user);
                         }
 
 

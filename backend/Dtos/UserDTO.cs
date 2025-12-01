@@ -5,7 +5,7 @@ namespace Jannara_Ecommerce.DTOs
     public class UserDTO
     {
         public UserDTO(int id, int personId, string email, string username,
-            string password, DateTime createdAt, DateTime updatedAt)
+            string password, DateTime createdAt, DateTime updatedAt, List<UserRoleInfoDTO> roles)
         {
             Id = id;
             PersonId = personId;
@@ -14,6 +14,7 @@ namespace Jannara_Ecommerce.DTOs
             Password = password;
             CreatedAt = createdAt;
             UpdatedAt = updatedAt;
+            Roles = roles;
         }
 
         public int Id { get; set; }
@@ -28,5 +29,6 @@ namespace Jannara_Ecommerce.DTOs
         public string Password { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public List<UserRoleInfoDTO> Roles { get; set; }
     }
 }
