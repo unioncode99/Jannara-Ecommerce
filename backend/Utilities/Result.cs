@@ -13,9 +13,9 @@
             ErrorCode = errorCode;
             Data = data;
         }
-        public Result(bool success, ResponseMessage message, T? data = default, int errorCode = 0)
+        public Result(bool isSuccess, ResponseMessage message, T? data = default, int errorCode = 0)
         {
-            IsSuccess = success;
+            IsSuccess = isSuccess;
             Message = message;
             ErrorCode = errorCode;
             Data = data;
