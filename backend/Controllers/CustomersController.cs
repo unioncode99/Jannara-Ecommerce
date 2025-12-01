@@ -1,9 +1,11 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.Business.Services;
 using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 
 namespace Jannara_Ecommerce.Controllers
 {
@@ -13,9 +15,9 @@ namespace Jannara_Ecommerce.Controllers
     public class CustomersController : ControllerBase
     {
         private readonly ICustomerService _service;
-        public CustomersController(ICustomerService customerService)
+        public CustomersController(ICustomerService service)
         {
-            _service = customerService;
+            _service = service;
         }
         
         [HttpGet("{id}", Name = "GetCustomerByID")]
@@ -40,6 +42,7 @@ namespace Jannara_Ecommerce.Controllers
         public async Task<ActionResult<CustomerDTO>> AddCustomer(RegisteredCustomerDTO registeredCustomerDTO)
         {
             Result<CustomerDTO> result = await _service.RegisterAsync(registeredCustomerDTO);
+           
             if (result.IsSuccess)
             {
                 return CreatedAtRoute("GetCustomerByID", new { id = result.Data.Id }, result.Data);

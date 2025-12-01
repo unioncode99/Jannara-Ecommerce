@@ -1,4 +1,6 @@
-﻿namespace Jannara_Ecommerce.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Jannara_Ecommerce.DTOs
 {
     public class UserDTO
     {
@@ -15,9 +17,14 @@
         }
 
         public int Id { get; set; }
+        [Required(ErrorMessage = "PersonId is required.")]
         public int PersonId { get; set; }
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Email format is invalid.")]
         public string Email { get; set; }
+        [Required(ErrorMessage = "Username is required.")]
         public string Username { get; set; }
+        [Required(ErrorMessage = "Password is required.")]
         public string Password { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

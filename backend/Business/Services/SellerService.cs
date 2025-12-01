@@ -50,14 +50,17 @@ namespace Jannara_Ecommerce.Business.Services
                         transaction.Rollback();
                         return new Result<SellerDTO>(false, PersonResult.Message, null, PersonResult.ErrorCode);
                     }
-                    Result<UserPublicDTO> UserResult = await _userService.AddNewAsync(registeredSeller.User, connection, transaction);
+                    UserDTO UserInfo = registeredSeller.User;
+                    UserInfo.PersonId = PersonResult.Data.Id; 
+                    Result<UserPublicDTO> UserResult = await _userService.AddNewAsync(UserInfo, connection, transaction);
                     if (!UserResult.IsSuccess)
                     {
                         transaction.Rollback();
                         return new Result<SellerDTO>(false, UserResult.Message, null, UserResult.ErrorCode);
                     }
-                    SellerDTO SellerInfo = new SellerDTO(-1, UserResult.Data.Id, registeredSeller.BusinessName, registeredSeller.WebsiteUrl, DateTime.Now, DateTime.Now);
-                    Result<SellerDTO> SellerResult = await AddNewAsync(SellerInfo, connection, transaction);
+                    SellerDTO SellerInfo = registeredSeller.Seller;
+                    SellerInfo.UserId = UserResult.Data.Id;
+                    Result<SellerDTO> SellerResult = await AddNewAsync(registeredSeller.Seller, connection, transaction);
                     if (!SellerResult.IsSuccess)
                     {
                         transaction.Rollback();
