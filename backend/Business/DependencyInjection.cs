@@ -8,9 +8,11 @@ namespace Jannara_Ecommerce.Business
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IAddressService, AddressService>();
+            services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<IPersonService, PersonService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserRoleService, UserRoleService>();
+            services.AddScoped<IUserService, UserService>();
             return services;
         }
     }
