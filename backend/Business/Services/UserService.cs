@@ -2,6 +2,7 @@
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.Utilities;
+using Microsoft.Data.SqlClient;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -14,13 +15,13 @@ namespace Jannara_Ecommerce.Business.Services
             _repo = repo;
             _passwordService = passwordService;
         }
-        public async Task<Result<UserPublicDTO>> AddNewAsync(UserDTO newUser)
+        public async Task<Result<UserPublicDTO>> AddNewAsync(UserDTO newUser, SqlConnection connection, SqlTransaction transaction)
         {
             Result<UserDTO> findResult = await FindAsync(newUser.Email);
             if (!findResult.IsSuccess)
                 return new Result<UserPublicDTO>(false, "This email is already registerd", null, 409);
             newUser.Password = _passwordService.HashPassword(newUser);
-            return await _repo.AddNewAsync(newUser);
+            return await _repo.AddNewAsync(newUser, connection, transaction);
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)

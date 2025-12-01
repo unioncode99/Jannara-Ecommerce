@@ -14,11 +14,9 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         {
             _connectionString = options.Value.DefaultConnection;
         }
-        public async Task<Result<UserPublicDTO>> AddNewAsync(UserDTO newUser)
+        public async Task<Result<UserPublicDTO>> AddNewAsync(UserDTO newUser, SqlConnection connection, SqlTransaction transaction)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string query = @"
+            string query = @"
 
 INSERT INTO Users
            (
@@ -34,44 +32,31 @@ password)
 )
 Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+            using (SqlCommand command = new SqlCommand(query, connection, transaction))
+            {
+                command.Parameters.AddWithValue("@person_id", newUser.PersonId);
+                command.Parameters.AddWithValue("@email", newUser.Email);
+                command.Parameters.AddWithValue("@user_name", newUser.Username);
+                command.Parameters.AddWithValue("@password", newUser.Password);
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
-                    command.Parameters.AddWithValue("@person_id", newUser.PersonId);
-                    command.Parameters.AddWithValue("@email", newUser.Email);
-                    command.Parameters.AddWithValue("@user_name", newUser.Username);
-                    command.Parameters.AddWithValue("@password", newUser.Password);
-
-
-                    try
+                    if (await reader.ReadAsync())
                     {
-                        await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                UserPublicDTO insertedUser = new UserPublicDTO
-                                (
-                                    reader.GetInt32(reader.GetOrdinal("Id")),
-                                    reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("email")),
-                                    reader.GetString(reader.GetOrdinal("user_name")),
-                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                               );
-                                return new Result<UserPublicDTO>(true, "User added successfully.", insertedUser);
-                            }
-                            return new Result<UserPublicDTO>(false, "Failed to add User.", null, 500);
-
-                        }
-
-
+                        UserPublicDTO insertedUser = new UserPublicDTO
+                        (
+                            reader.GetInt32(reader.GetOrdinal("Id")),
+                            reader.GetInt32(reader.GetOrdinal("person_id")),
+                            reader.GetString(reader.GetOrdinal("email")),
+                            reader.GetString(reader.GetOrdinal("user_name")),
+                            reader.GetDateTime(reader.GetOrdinal("created_at")),
+                            reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                       );
+                        return new Result<UserPublicDTO>(true, "User added successfully.", insertedUser);
                     }
-                    catch (Exception ex)
-                    {
-                        return new Result<UserPublicDTO>(false, "An unexpected error occurred on the server.", null, 500);
-                    }
+                    return new Result<UserPublicDTO>(false, "Failed to add User.", null, 500);
 
                 }
+
             }
         }
 
