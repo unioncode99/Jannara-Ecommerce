@@ -44,21 +44,19 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = connection.BeginTransaction();
-                    PersonDTO PersonInfo = registeredCustomer.GetPersonDTO();
-                    Result<PersonDTO> PersonResult = await _personService.AddNewAsync(PersonInfo, connection, transaction);
+                    Result<PersonDTO> PersonResult = await _personService.AddNewAsync(registeredCustomer.Person, connection, transaction);
                     if (!PersonResult.IsSuccess)
                     {
                         transaction.Rollback();
                         return new Result<CustomerDTO>(false, PersonResult.Message, null, PersonResult.ErrorCode);
                     }
-                    UserDTO UserInfo = registeredCustomer.GetUserDTO(PersonResult.Data.Id);
-                    Result<UserPublicDTO> UserResult = await _userService.AddNewAsync(UserInfo, connection, transaction);
+                    Result<UserPublicDTO> UserResult = await _userService.AddNewAsync(registeredCustomer.User, connection, transaction);
                     if (!UserResult.IsSuccess)
                     {
                         transaction.Rollback();
                         return new Result<CustomerDTO>(false, UserResult.Message, null, UserResult.ErrorCode);
                     }
-                    CustomerDTO CustomerInfo = new CustomerDTO(-1, UserInfo.Id, DateTime.Now, DateTime.Now);
+                    CustomerDTO CustomerInfo = new CustomerDTO(-1, UserResult.Data.Id, DateTime.Now, DateTime.Now);
                     Result<CustomerDTO> CustomerResult = await AddNewAsync(CustomerInfo, connection, transaction);
                     if (!CustomerResult.IsSuccess)
                     {
