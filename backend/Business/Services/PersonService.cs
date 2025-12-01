@@ -8,9 +8,12 @@ namespace Jannara_Ecommerce.Business.Services
     public class PersonService : IPersonService
     {
         private readonly IPersonRepository _repo;
-        public PersonService(IPersonRepository repo)
+        private readonly IWebHostEnvironment _env;
+
+        public PersonService(IPersonRepository repo, IWebHostEnvironment env)
         {
             _repo = repo;
+            _env = env;
         }
         public async Task<Result<PersonDTO>> AddNewAsync(PersonDTO newAccount)
         {
@@ -31,5 +34,7 @@ namespace Jannara_Ecommerce.Business.Services
         {
            return await _repo.UpdateAsync(id, updatedAccount);
         }
+
+       
     }
 }
