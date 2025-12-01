@@ -9,16 +9,26 @@ namespace Jannara_Ecommerce.Business.Services
     public class PersonService : IPersonService
     {
         private readonly IPersonRepository _repo;
-        private readonly IWebHostEnvironment _env;
+        private readonly IImageService _imageService;
 
-        public PersonService(IPersonRepository repo, IWebHostEnvironment env)
+        public PersonService(IPersonRepository repo, IImageService imageService)
         {
             _repo = repo;
-            _env = env;
+            _imageService = imageService;
         }
-        public async Task<Result<PersonDTO>> AddNewAsync(PersonDTO newAccount, SqlConnection connection, SqlTransaction transaction)
+        public async Task<Result<PersonDTO>> AddNewAsync(PersonDTO newPerson, SqlConnection connection, SqlTransaction transaction)
         {
-            return await _repo.AddNewAsync(newAccount, connection, transaction);
+            if (newPerson.ProfileImage != null)
+            {
+                Result<string> saveImageResult = await _imageService.SaveProfileImageAsync(newPerson.ProfileImage);
+                if (!saveImageResult.IsSuccess)
+                    return new Result<PersonDTO>(false, saveImageResult.Message, null, saveImageResult.ErrorCode);
+                newPerson.ImageUrl = saveImageResult.Data;
+            }
+            else 
+                newPerson.ImageUrl = null;
+                
+            return await _repo.AddNewAsync(newPerson, connection, transaction);
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)
@@ -36,6 +46,6 @@ namespace Jannara_Ecommerce.Business.Services
            return await _repo.UpdateAsync(id, updatedAccount);
         }
 
-       
+        
     }
 }
