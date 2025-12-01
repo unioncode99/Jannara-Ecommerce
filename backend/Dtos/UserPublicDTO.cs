@@ -4,12 +4,14 @@ namespace Jannara_Ecommerce.DTOs
 {
     public class UserPublicDTO
     {
-        public UserPublicDTO(int id, int personId, string email, string username, DateTime createdAt, DateTime updatedAt)
+        public UserPublicDTO(int id, int personId, string email, string username, IEnumerable<UserRoleDTO> roles
+            DateTime createdAt, DateTime updatedAt)
         {
             Id = id;
             PersonId = personId;
             Email = email;
             Username = username;
+            Roles = roles;
             CreatedAt = createdAt;
             UpdatedAt = updatedAt;
         }
@@ -23,5 +25,6 @@ namespace Jannara_Ecommerce.DTOs
         public string Username { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public Enumerable<UserRoleDTO> Roles { get; set; }  
     }
 }

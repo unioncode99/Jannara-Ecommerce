@@ -9,7 +9,7 @@ namespace Jannara_Ecommerce.DTOs
             Id = id;
             RoleId = roleId;
             UserId = userId;
-            this.isActive = isActive;
+            IsActive = isActive;
             CreatedAt = createdAt;
             UpdatedAt = updatedAt;
         }
@@ -20,7 +20,7 @@ namespace Jannara_Ecommerce.DTOs
         [Required(ErrorMessage = "UserId is required.")]
         public int UserId { get; set; }
         [Required(ErrorMessage = "isActive is required.")]
-        public bool isActive { get; set; }
+        public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
