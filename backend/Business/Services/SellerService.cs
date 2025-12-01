@@ -1,7 +1,6 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs;
-using Jannara_Ecommerce.DTOs.Mapper;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
@@ -45,21 +44,19 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = connection.BeginTransaction();
-                    PersonDTO PersonInfo = registeredSeller.GetPersonDTO();
-                    Result<PersonDTO> PersonResult = await _personService.AddNewAsync(PersonInfo, connection, transaction);
+                    Result<PersonDTO> PersonResult = await _personService.AddNewAsync(registeredSeller.Person, connection, transaction);
                     if (!PersonResult.IsSuccess)
                     {
                         transaction.Rollback();
                         return new Result<SellerDTO>(false, PersonResult.Message, null, PersonResult.ErrorCode);
                     }
-                    UserDTO UserInfo = registeredSeller.GetUserDTO(PersonResult.Data.Id);
-                    Result<UserPublicDTO> UserResult = await _userService.AddNewAsync(UserInfo, connection, transaction);
+                    Result<UserPublicDTO> UserResult = await _userService.AddNewAsync(registeredSeller.User, connection, transaction);
                     if (!UserResult.IsSuccess)
                     {
                         transaction.Rollback();
                         return new Result<SellerDTO>(false, UserResult.Message, null, UserResult.ErrorCode);
                     }
-                    SellerDTO SellerInfo = new SellerDTO(-1, UserInfo.Id, registeredSeller.BusinessName, registeredSeller.WebsiteUrl, DateTime.Now, DateTime.Now);
+                    SellerDTO SellerInfo = new SellerDTO(-1, UserResult.Data.Id, registeredSeller.BusinessName, registeredSeller.WebsiteUrl, DateTime.Now, DateTime.Now);
                     Result<SellerDTO> SellerResult = await AddNewAsync(SellerInfo, connection, transaction);
                     if (!SellerResult.IsSuccess)
                     {
