@@ -4,29 +4,15 @@ namespace Jannara_Ecommerce.DTOs
 {
     public class RegisteredCustomerDTO
     {
-        public RegisteredCustomerDTO(string firstName, string lastName, string phone, IFormFile? profileImage, Gender gender, DateOnly dateOfBirth, string email, string username, string password)
+        public RegisteredCustomerDTO(PersonDTO person, UserDTO user, CustomerDTO customer)
         {
-            FirstName = firstName;
-            LastName = lastName;
-            Phone = phone;
-            this.profileImage = profileImage;
-            Gender = gender;
-            DateOfBirth = dateOfBirth;
-            Email = email;
-            Username = username;
-            Password = password;
+            Person = person;
+            User = user;
+            Customer = customer;
         }
 
-        //Person Info
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Phone { get; set; }
-        public IFormFile? profileImage { get; set; }
-        public Gender Gender { get; set; }
-        public DateOnly DateOfBirth { get; set; }
-        //User Info
-        public string Email { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public PersonDTO Person { get; set; }
+        public UserDTO User { get; set; }
+        public CustomerDTO Customer { get; set; }
     }
 }
