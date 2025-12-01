@@ -2,6 +2,7 @@
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.Utilities;
+using Microsoft.Data.SqlClient;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -12,9 +13,9 @@ namespace Jannara_Ecommerce.Business.Services
         {
             _repo = repo;
         }
-        public async Task<Result<PersonDTO>> AddNewAsync(PersonDTO newAccount)
+        public async Task<Result<PersonDTO>> AddNewAsync(PersonDTO newAccount, SqlConnection connection, SqlTransaction transaction)
         {
-            return await _repo.AddNewAsync(newAccount);
+            return await _repo.AddNewAsync(newAccount, connection, transaction);
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)
