@@ -13,11 +13,9 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         {
             _connectionString = options.Value.DefaultConnection;
         }
-        public async Task<Result<SellerDTO>> AddNewAsync(SellerDTO newSeller)
+        public async Task<Result<SellerDTO>> AddNewAsync(SellerDTO newSeller, SqlConnection connection, SqlTransaction transaction)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string query = @"
+            string query = @"
 INSERT INTO Sellers
            (user_id
            ,business_name
@@ -28,39 +26,27 @@ INSERT INTO Sellers
            ,@website_url);
 Select * from Seller Where Id  = (SELECT SCOPE_IDENTITY());
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+            using (SqlCommand command = new SqlCommand(query, connection, transaction))
+            {
+                command.Parameters.AddWithValue("@user_id", newSeller.UserId);
+                command.Parameters.AddWithValue("@business_name", newSeller.BusinessName);
+                command.Parameters.AddWithValue("@website_url", newSeller.WebsiteUrl ?? (object)DBNull.Value);
+                using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
-                    command.Parameters.AddWithValue("@user_id", newSeller.UserId);
-                    command.Parameters.AddWithValue("@business_name", newSeller.BusinessName);
-                    command.Parameters.AddWithValue("@website_url", newSeller.WebsiteUrl ?? (object) DBNull.Value);
-
-                    try
+                    if (await reader.ReadAsync())
                     {
-                        await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
-                        {
-                            if (await reader.ReadAsync())
-                            {
-                                SellerDTO insertedSeller = new SellerDTO
-                                (
-                                    reader.GetInt32(reader.GetOrdinal("Id")),
-                                    reader.GetInt32(reader.GetOrdinal("user_id")),
-                                    reader.GetString(reader.GetOrdinal("business_name")),
-                                    reader.IsDBNull(reader.GetOrdinal("website_url")) ? null : reader.GetString(reader.GetOrdinal("website_url")),
-                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                               );
-                                return new Result<SellerDTO>(true, "Seller added successfully.", insertedSeller);
-                            }
-                            return new Result<SellerDTO>(false, "Failed to add seller.", null, 500);
-
-                        }
+                        SellerDTO insertedSeller = new SellerDTO
+                        (
+                            reader.GetInt32(reader.GetOrdinal("Id")),
+                            reader.GetInt32(reader.GetOrdinal("user_id")),
+                            reader.GetString(reader.GetOrdinal("business_name")),
+                            reader.IsDBNull(reader.GetOrdinal("website_url")) ? null : reader.GetString(reader.GetOrdinal("website_url")),
+                            reader.GetDateTime(reader.GetOrdinal("created_at")),
+                            reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                       );
+                        return new Result<SellerDTO>(true, "Seller added successfully.", insertedSeller);
                     }
-                    catch (Exception ex)
-                    {
-                        return new Result<SellerDTO>(false, "An unexpected error occurred on the server.", null, 500);
-                    }
-
+                    return new Result<SellerDTO>(false, "Failed to add seller.", null, 500);
                 }
             }
         }
