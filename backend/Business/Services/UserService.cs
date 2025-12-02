@@ -36,7 +36,9 @@ namespace Jannara_Ecommerce.Business.Services
         public async Task<Result<UserPublicDTO>> AddNewAsync(int personId, UserCreateDTO newUser, SqlConnection connection, SqlTransaction transaction)
         {
             Result<UserDTO> findResult = await FindAsync(newUser.Email);
-            if (!findResult.IsSuccess)
+            if (!findResult.IsSuccess && findResult.ErrorCode != 404)
+                return new Result<UserPublicDTO>(false, findResult.Message, null, findResult.ErrorCode);
+            if (findResult.Data != null)
                 return new Result<UserPublicDTO>(false, "This email is already registerd", null, 409);
             newUser.Password = _passwordService.HashPassword(newUser, newUser.Password);
             return await _repo.AddNewAsync(personId, newUser, connection, transaction);

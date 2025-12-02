@@ -23,7 +23,7 @@ namespace Jannara_Ecommerce.Business.Services
 
             if (imageFile.Length > 5 * 1024 * 1024)
                 return new Result<bool>(false, "File too large (max 5MB).", false, 400);
-            return new Result<bool>(false, "Passed validation", true);
+            return new Result<bool>(true, "Passed validation", true);
         }
 
         public async Task<Result<string>> SaveProductImageAsync(IFormFile imageFile)
@@ -44,7 +44,7 @@ namespace Jannara_Ecommerce.Business.Services
                 await imageFile.CopyToAsync(stream);
             }
 
-            string relativePath = Path.Combine("products", fileName);
+            string relativePath = Path.Combine("products", fileName).Replace("\\", "/");
             return new Result<string>(true, "Image saved sucessfuly", relativePath);
         }
 
@@ -55,7 +55,7 @@ namespace Jannara_Ecommerce.Business.Services
                 return new Result<string>(false, validationResult.Message, string.Empty, validationResult.ErrorCode);
 
             // Save in project-root/uploads/profiles
-            var uploadPath = Path.Combine(_env.ContentRootPath, "uploads", "profiles");
+            var uploadPath = Path.Combine(_env.WebRootPath, "uploads", "profiles");
             if (!Directory.Exists(uploadPath))
                 Directory.CreateDirectory(uploadPath);
 
@@ -68,7 +68,7 @@ namespace Jannara_Ecommerce.Business.Services
             }
 
 
-            var relativePath = Path.Combine("uploads", "profiles", fileName);
+            var relativePath = Path.Combine("uploads", "profiles", fileName).Replace("\\", "/");
             return new Result<string>(true, "Image saved sucessfuly", relativePath);
         }
     }

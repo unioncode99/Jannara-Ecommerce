@@ -12,6 +12,8 @@
 /backend/*.exe
 /backend/*.dll
 /backend/*.pdb
+backend/wwwroot/uploads/
+
 
 # VS Code / JetBrains
 .vscode/
