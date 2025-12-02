@@ -24,7 +24,7 @@ INSERT INTO Sellers
            (@user_id
            ,@business_name
            ,@website_url);
-Select * from Seller Where Id  = (SELECT SCOPE_IDENTITY());
+Select * from Sellers Where Id  = SCOPE_IDENTITY();
 ";
             using (SqlCommand command = new SqlCommand(query, connection, transaction))
             {
@@ -177,22 +177,20 @@ Select * from Sellers where id = @id;
             }
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, SellerDTO updatedSeller)
+        public async Task<Result<bool>> UpdateAsync(int id, SellerUpdateDTO updatedSeller)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 
 UPDATE Sellers
-   SET user_id = user_id
-      ,business_name = @business_name
+   SET business_name = @business_name
       ,website_url = @website_url
  WHERE Id = @id;
 select @@ROWCOUNT";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    command.Parameters.AddWithValue("@user_id", updatedSeller.UserId);
                     command.Parameters.AddWithValue("@business_name", updatedSeller.BusinessName);
                     command.Parameters.AddWithValue("@website_url", updatedSeller.WebsiteUrl ?? (object) DBNull.Value);
 

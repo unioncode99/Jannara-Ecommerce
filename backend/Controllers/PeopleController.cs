@@ -15,12 +15,12 @@ namespace Jannara_Ecommerce.Controllers
         {
             _service = service;
         }
-        [HttpGet("{id}", Name = "GetPersonByID")]
+        [HttpGet("{id:int}", Name = "GetPersonByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<PersonDTO>> GetPersonByID(int id)
+        public async Task<ActionResult<PersonDTO>> GetPersonById(int id)
         {
             Result<PersonDTO> result = await _service.FindAsync(id);
             if (result.IsSuccess)
@@ -38,7 +38,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> UpdatePerson(int id, [FromBody] PersonDTO updatedPerson)
+        public async Task<ActionResult> UpdatePerson(int id, [FromBody] PersonUpdateDTO updatedPerson)
         {
             Result<bool> result = await _service.UpdateAsync(id, updatedPerson);
 
@@ -47,7 +47,7 @@ namespace Jannara_Ecommerce.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

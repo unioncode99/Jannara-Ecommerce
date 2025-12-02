@@ -8,7 +8,7 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
     public interface IPersonRepository
     {
         public Task<Result<PersonDTO>> AddNewAsync(PersonCreateDTO personCreateDTO, string imageUrl, SqlConnection connection, SqlTransaction transaction);
-        public Task<Result<bool>> UpdateAsync(int id, PersonDTO updatedPerson);
+        public Task<Result<bool>> UpdateAsync(int id, PersonUpdateDTO updatedPerson, string imageUrl);
         public Task<Result<bool>> DeleteAsync(int id);
         public Task<Result<PersonDTO>> GetByIdAsync(int id);
     }

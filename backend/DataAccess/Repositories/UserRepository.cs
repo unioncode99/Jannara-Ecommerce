@@ -90,7 +90,7 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
             }
         }
 
-        public async Task<Result<IEnumerable<UserPublicDTO>>> GetAllAsync(int? currentUserId, int pageNumber = 1, int pageSize = 20)
+        public async Task<Result<IEnumerable<UserPublicDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20, int? currentUserId = null)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -141,8 +141,8 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
                                         reader.GetInt32(reader.GetOrdinal("person_id")),
                                         reader.GetString(reader.GetOrdinal("email")),
                                         reader.GetString(reader.GetOrdinal("username")),
-                                        reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                        reader.GetDateTime(reader.GetOrdinal("updated_at")),
+                                        reader.GetDateTime(reader.GetOrdinal("user_created_at")),
+                                        reader.GetDateTime(reader.GetOrdinal("user_updated_at")),
                                         new List<UserRoleInfoDTO>()
                                     );
                                 }
@@ -308,7 +308,7 @@ WHERE Users.id = @id;
                                 user.Roles.Add(new UserRoleInfoDTO(
                                     reader.GetInt32(reader.GetOrdinal("role_id")),
                                     reader.GetString(reader.GetOrdinal("name_ar")),
-                                    reader.GetString(reader.GetOrdinal("name_en ")),
+                                    reader.GetString(reader.GetOrdinal("name_en")),
                                     reader.GetBoolean(reader.GetOrdinal("is_active")),
                                     reader.GetDateTime(reader.GetOrdinal("role_created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("role_updated_at")))
@@ -330,15 +330,14 @@ WHERE Users.id = @id;
             }
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, UserDTO updatedUser)
+        public async Task<Result<bool>> UpdateAsync(int id, UserUpdateDTO updatedUser)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 
 UPDATE Users
-   SET person_id = @person_id
-      ,email = @email
+   SET email = @email
       ,username = @username
       ,password  = @password
  WHERE Id = @id
@@ -346,7 +345,6 @@ select @@ROWCOUNT";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    command.Parameters.AddWithValue("@person_id", updatedUser.PersonId);
                     command.Parameters.AddWithValue("@email", updatedUser.Email);
                     command.Parameters.AddWithValue("@username", updatedUser.Username);
                     command.Parameters.AddWithValue("@password", updatedUser.Password);

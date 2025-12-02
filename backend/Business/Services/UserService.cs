@@ -100,7 +100,12 @@ namespace Jannara_Ecommerce.Business.Services
             return await _repo.GetByEmailAsync(email);
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, UserDTO updatedUser)
+        public async Task<Result<IEnumerable<UserPublicDTO>>> GetAllAsync(int pageNumber, int pageSize)
+        {
+            return await _repo.GetAllAsync(pageNumber, pageSize);
+        }
+
+        public async Task<Result<bool>> UpdateAsync(int id, UserUpdateDTO updatedUser)
         {
             Result<UserDTO> existingUser = await _repo.GetByEmailAsync(updatedUser.Email);
             if (!existingUser.IsSuccess && existingUser.ErrorCode != 404)

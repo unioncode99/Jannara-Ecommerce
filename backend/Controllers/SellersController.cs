@@ -28,10 +28,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<SellerDTO>> GetSellerByID(int id)
         {
-            if (id <= 0)
-            {
-                return BadRequest("Invalid Data");
-            }
+            
             Result<SellerDTO> result = await _sellerService.FindAsync(id);
             if (result.IsSuccess)
             {
@@ -59,12 +56,9 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<SellerDTO>> UpdateSeller(int id, [FromBody] SellerDTO updatedSellerDTO)
+        public async Task<ActionResult<SellerDTO>> UpdateSeller(int id, [FromBody] SellerUpdateDTO updatedSellerDTO)
         {
-            if (string.IsNullOrWhiteSpace(updatedSellerDTO.BusinessName) || id <= 0)
-            {
-                return BadRequest("Invalid Data");
-            }
+            
             Result<bool> result = await _sellerService.UpdateAsync(id, updatedSellerDTO);
             if (result.IsSuccess)
             {
