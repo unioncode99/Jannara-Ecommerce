@@ -51,7 +51,8 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
                             reader.GetString(reader.GetOrdinal("email")),
                             reader.GetString(reader.GetOrdinal("user_name")),
                             reader.GetDateTime(reader.GetOrdinal("created_at")),
-                            reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                            reader.GetDateTime(reader.GetOrdinal("updated_at")),
+                            new List<UserRoleInfoDTO>()
                        );
                         return new Result<UserPublicDTO>(true, "User added successfully.", insertedUser);
                     }
