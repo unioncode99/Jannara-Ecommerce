@@ -1,5 +1,6 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.Business.Services;
+using Jannara_Ecommerce.Dtos.Customer;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.Enums;
@@ -40,9 +41,9 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<CustomerDTO>> AddCustomer(RegisteredCustomerDTO registeredCustomerDTO)
+        public async Task<ActionResult<CustomerDTO>> AddCustomer(CustomerCreateRequestDTO request)
         {
-            Result<CustomerDTO> result = await _service.RegisterAsync(registeredCustomerDTO);
+            Result<CustomerDTO> result = await _service.CreateAsync(request);
            
             if (result.IsSuccess)
             {

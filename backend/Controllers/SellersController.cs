@@ -44,25 +44,9 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<SellerDTO>> AddSeller(RegisteredSellerDTO registeredSellerDTO)
+        public async Task<ActionResult<SellerDTO>> AddSeller(SellerCreateRequestDTO request)
         {
-            if
-            (
-                string.IsNullOrWhiteSpace(registeredSellerDTO.Person.FirstName) ||
-                string.IsNullOrWhiteSpace(registeredSellerDTO.Person.LastName) ||
-                string.IsNullOrWhiteSpace(registeredSellerDTO.Person.Phone) ||
-                registeredSellerDTO.Person.DateOfBirth == default ||
-                (registeredSellerDTO.Person.Gender != Gender.Male && registeredSellerDTO.Person.Gender != Gender.Female && registeredSellerDTO.Person.Gender != Gender.Other) ||
-                string.IsNullOrWhiteSpace(registeredSellerDTO.User.Email) ||
-                string.IsNullOrWhiteSpace(registeredSellerDTO.User.Username) ||
-                string.IsNullOrWhiteSpace(registeredSellerDTO.User.Password) ||
-                !Regex.IsMatch(registeredSellerDTO.User.Email ?? "", @"^[^@\s]+@[^@\s]+\.[^@\s]+$") ||
-                string.IsNullOrWhiteSpace(registeredSellerDTO.Seller.BusinessName)
-            )
-            {
-                return BadRequest("Invalid Data");
-            }
-            Result<SellerDTO> result = await _sellerService.RegisterAsync(registeredSellerDTO);
+            Result<SellerDTO> result = await _sellerService.CreateAsync(request);
             if (result.IsSuccess)
             {
                 return CreatedAtRoute("GetSellerByID", new { id = result.Data.Id }, result.Data);

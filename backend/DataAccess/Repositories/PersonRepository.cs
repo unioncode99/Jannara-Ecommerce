@@ -121,7 +121,6 @@ Select * from People Where Id  = @id;
                                     reader.GetString(reader.GetOrdinal("last_name")),
                                     reader.GetString(reader.GetOrdinal("phone")),
                                     reader.IsDBNull(reader.GetOrdinal("image_url")) ? null : reader.GetString(reader.GetOrdinal("image_url")),
-                                    null,
                                     (Gender)reader.GetInt32(reader.GetOrdinal("gender")),
                                     DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("date_of_birth"))),
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
