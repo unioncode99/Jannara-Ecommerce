@@ -37,9 +37,9 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserPublicDTO>> AddUser(CreateNewUserDTO newUser)
+        public async Task<ActionResult<UserPublicDTO>> AddUser(UserCreateRequestDTO request)
         {
-            Result<UserPublicDTO> result = await _service.CreateAsync(newUser); 
+            Result<UserPublicDTO> result = await _service.CreateAsync(request); 
             if (result.IsSuccess)
             {
                 return CreatedAtRoute("GetUserByID", new { id = result.Data.Id }, result.Data);
