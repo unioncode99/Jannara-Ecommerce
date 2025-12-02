@@ -11,8 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace Jannara_Ecommerce.Controllers
 {
-    //[Route("api/[controller]")]
-    [Route("api/customers")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CustomersController : ControllerBase
     {
@@ -22,19 +21,19 @@ namespace Jannara_Ecommerce.Controllers
             _service = service;
         }
         
-        [HttpGet("{id}", Name = "GetCustomerByID")]
+        [HttpGet("{id:int}", Name = "GetCustomerByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<CustomerDTO>> GetCustomerByID(int id)
+        public async Task<ActionResult<CustomerDTO>> GetCustomerById(int id)
         {
             Result<CustomerDTO> result = await _service.FindAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);
             }
-            return result.ErrorCode == 400 ? BadRequest(result.Message) : NotFound(result.Message);
+            return StatusCode(result.ErrorCode, result.Message);
         }
         
         [HttpPost]
@@ -52,7 +51,7 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

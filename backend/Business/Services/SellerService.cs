@@ -92,7 +92,7 @@ namespace Jannara_Ecommerce.Business.Services
                 }
             }
         }
-        public async Task<Result<bool>> UpdateAsync(int id, SellerDTO updatedSeller)
+        public async Task<Result<bool>> UpdateAsync(int id, SellerUpdateDTO updatedSeller)
         {
             return await _repo.UpdateAsync(id, updatedSeller);
         }

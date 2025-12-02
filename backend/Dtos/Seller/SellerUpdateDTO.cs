@@ -2,7 +2,7 @@
 
 namespace Jannara_Ecommerce.DTOs.Seller
 {
-    public class SellerCreateDTO
+    public class SellerUpdateDTO
     {
         [Required(ErrorMessage = "Id is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "Id must be greater than zero")]

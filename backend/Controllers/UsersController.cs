@@ -18,12 +18,12 @@ namespace Jannara_Ecommerce.Controllers
             _service = service;
         }
 
-        [HttpGet("{id}", Name = "GetUserByID")]
+        [HttpGet("{id:int}", Name = "GetUserByID")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDTO>> GetUserByID(int id)
+        public async Task<ActionResult<UserDTO>> GetUserById(int id)
         {
             Result<UserDTO> result = await _service.FindAsync(id);
             if (result.IsSuccess)
@@ -33,6 +33,24 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IEnumerable<UserPublicDTO>>> GetAll([FromQuery] int pageNumber , [FromQuery] int pageSize)
+        {
+            if (pageNumber == 0 || pageSize == 0)
+            {
+                return BadRequest(new ResponseMessage("pageSize and pageNumber must be greater than zero."));
+            }
+            Result<IEnumerable<UserPublicDTO>> result = await _service.GetAllAsync(pageNumber, pageSize);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -47,14 +65,14 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> UpdateUser(int id, [FromBody] UserDTO updatedUser)
+        public async Task<ActionResult> UpdateUser(int id, [FromBody] UserUpdateDTO updatedUser)
         {
             Result<bool> result = await _service.UpdateAsync(id, updatedUser);
 
@@ -63,7 +81,7 @@ namespace Jannara_Ecommerce.Controllers
             return Ok();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

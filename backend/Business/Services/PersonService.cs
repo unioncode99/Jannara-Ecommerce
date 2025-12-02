@@ -43,9 +43,20 @@ namespace Jannara_Ecommerce.Business.Services
             return await _repo.GetByIdAsync(id);
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, PersonDTO updatedAccount)
+        public async Task<Result<bool>> UpdateAsync(int id, PersonUpdateDTO updatedPerson)
         {
-           return await _repo.UpdateAsync(id, updatedAccount);
+            string imageUrl = string.Empty;
+            if (updatedPerson.ProfileImage != null)
+            {
+                Result<string> saveImageResult = await _imageService.SaveProfileImageAsync(updatedPerson.ProfileImage);
+                if (!saveImageResult.IsSuccess)
+                    return new Result<bool>(false, saveImageResult.Message, false, saveImageResult.ErrorCode);
+                imageUrl = saveImageResult.Data;
+            }
+            else
+                imageUrl = null;
+
+            return await _repo.UpdateAsync(id, updatedPerson, imageUrl);
         }
 
         

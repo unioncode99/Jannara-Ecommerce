@@ -142,7 +142,7 @@ Select * from People Where Id  = @id;
                 }
             }
         }
-        public async Task<Result<bool>> UpdateAsync(int id, PersonDTO updatedPerson)
+        public async Task<Result<bool>> UpdateAsync(int id, PersonUpdateDTO  updatedPerson, string imageUrl)
         {
             using(SqlConnection connection = new SqlConnection(_connectionString))
             {
@@ -163,10 +163,9 @@ select @@ROWCOUNT";
                     command.Parameters.AddWithValue("@id", id);
                     command.Parameters.AddWithValue("@last_name", updatedPerson.LastName);
                     command.Parameters.AddWithValue("@phone", updatedPerson.Phone);
-                    command.Parameters.AddWithValue("@image_url", updatedPerson.ImageUrl ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@image_url", imageUrl ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@gender", (int)updatedPerson.Gender);
                     command.Parameters.AddWithValue("@date_of_birth", updatedPerson.DateOfBirth);
-
 
                     try
                     {
@@ -185,6 +184,5 @@ select @@ROWCOUNT";
                 }
             }
         }
-
     }
 }
