@@ -185,7 +185,7 @@ select @@ROWCOUNT
                 {
                     command.Parameters.AddWithValue("@id", updatedUserRole.Id);
                     command.Parameters.AddWithValue("@role_id", updatedUserRole.RoleId);
-                    command.Parameters.AddWithValue("@is_active", updatedUserRole.isActive);
+                    command.Parameters.AddWithValue("@is_active", updatedUserRole.IsActive);
                     try
                     {
                         await connection.OpenAsync();

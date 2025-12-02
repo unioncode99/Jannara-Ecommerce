@@ -7,7 +7,7 @@ namespace Jannara_Ecommerce.DTOs.User
         public UserPublicDTO(int id, int personId, string email, string username,
             DateTime createdAt, DateTime updatedAt, List<UserRoleInfoDTO> roles)
         {
-            Id = id
+            Id = id;
             PersonId = personId;
             Email = email;
             Username = username;
