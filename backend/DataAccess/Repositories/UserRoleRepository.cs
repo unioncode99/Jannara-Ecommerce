@@ -13,11 +13,11 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         {
             _connectionString = options.Value.DefaultConnection;
         }
-        public async Task<Result<UserRoleDTO>> AddNewAsync(UserRoleDTO newUserRole)
+        
+
+        public async Task<Result<UserRoleDTO>> AddNewAsync(int roleId, int userId, bool isActive, SqlConnection connection, SqlTransaction transaction)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string query = @"
+            string query = @"
 INSERT INTO UserRoles
 (
 user_id,
@@ -30,38 +30,36 @@ VALUES
 @role_id,
 @is_active
 );
-Select * from UserRoles Where id  = (SELECT SCOPE_IDENTITY());
+Select * from UserRoles Where id  =  SCOPE_IDENTITY();
 ";
-                using (SqlCommand command = new SqlCommand(_connectionString))
+            using (SqlCommand command = new SqlCommand(query,connection,transaction))
+            {
+                command.Parameters.AddWithValue("@user_id", userId);
+                command.Parameters.AddWithValue("@role_id", roleId);
+                command.Parameters.AddWithValue("@is_active", isActive);
+                try
                 {
-                    command.Parameters.AddWithValue("@user_id", newUserRole.UserId);
-                    command.Parameters.AddWithValue("@role_id", newUserRole.RoleId);
-                    command.Parameters.AddWithValue("@is_active", newUserRole.isActive);
-                    try
+                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
                     {
-                        await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        if (await reader.ReadAsync())
                         {
-                            if (await reader.ReadAsync())
-                            {
-                                UserRoleDTO insertedUserRole = new UserRoleDTO
-                                (
-                                    reader.GetInt32(reader.GetOrdinal("id")),
-                                    reader.GetInt32(reader.GetOrdinal("role_id")),
-                                    reader.GetInt32(reader.GetOrdinal("user_id")),
-                                    reader.GetBoolean(reader.GetOrdinal("is_active")),
-                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                                );
-                                return new Result<UserRoleDTO>(true, "User Role added successfully.", insertedUserRole);
-                            }
-                            return new Result<UserRoleDTO>(false, "Failed To Add Address", null, 500);
+                            UserRoleDTO insertedUserRole = new UserRoleDTO
+                            (
+                                reader.GetInt32(reader.GetOrdinal("id")),
+                                reader.GetInt32(reader.GetOrdinal("role_id")),
+                                reader.GetInt32(reader.GetOrdinal("user_id")),
+                                reader.GetBoolean(reader.GetOrdinal("is_active")),
+                                reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                            );
+                            return new Result<UserRoleDTO>(true, "User Role added successfully.", insertedUserRole);
                         }
+                        return new Result<UserRoleDTO>(false, "Failed To Add Address", null, 500);
                     }
-                    catch (Exception ex)
-                    {
-                        return new Result<UserRoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    return new Result<UserRoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
                 }
             }
         }

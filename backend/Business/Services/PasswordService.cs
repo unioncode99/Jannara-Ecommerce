@@ -7,15 +7,17 @@ namespace Jannara_Ecommerce.Business.Services
     public class PasswordService : IPasswordService
     {
         private readonly PasswordHasher<object> _hasher = new PasswordHasher<object>();
-        public string HashPassword(UserDTO user)
+  
+        public string HashPassword<T>(T user, string password) where T : class 
         {
-            if (user.Password == "") return "";
-            return _hasher.HashPassword(user, user.Password);
+            if (password == "") return "";
+            return _hasher.HashPassword(user, password);
         }
 
-        public bool VerifyPassword(UserDTO user, string enteredPassword)
+
+        public bool VerifyPassword <T>(T user, string password, string enteredPassword) where T : class
         {
-            PasswordVerificationResult result = _hasher.VerifyHashedPassword(user, user.Password, enteredPassword);
+            PasswordVerificationResult result = _hasher.VerifyHashedPassword(user, password, enteredPassword);
             return result == PasswordVerificationResult.Success;
         }
     }

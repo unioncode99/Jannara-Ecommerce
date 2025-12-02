@@ -1,5 +1,6 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.Dtos.Person;
+using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
@@ -15,7 +16,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         {
             _connectionString = options.Value.DefaultConnection;
         }
-        public async Task<Result<PersonDTO>> AddNewAsync(PersonDTO newPerson, SqlConnection connection, SqlTransaction transaction)
+        public async Task<Result<PersonDTO>> AddNewAsync(PersonCreateDTO  personCreateDTO, string imageUrl, SqlConnection connection, SqlTransaction transaction)
         {
             string query = @"
 
@@ -35,16 +36,16 @@ date_of_birth)
 @gender,
 @date_of_birth
 );
-Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
+Select * from People Where Id  = SCOPE_IDENTITY();
 ";
             using (SqlCommand command = new SqlCommand(query, connection, transaction))
             {
-                command.Parameters.AddWithValue("@first_name", newPerson.FirstName);
-                command.Parameters.AddWithValue("@last_name", newPerson.LastName);
-                command.Parameters.AddWithValue("@phone", newPerson.Phone);
-                command.Parameters.AddWithValue("@image_url", newPerson.ImageUrl ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@gender", (int)newPerson.Gender);
-                command.Parameters.AddWithValue("@date_of_birth", newPerson.DateOfBirth);
+                command.Parameters.AddWithValue("@first_name", personCreateDTO.FirstName);
+                command.Parameters.AddWithValue("@last_name", personCreateDTO.LastName);
+                command.Parameters.AddWithValue("@phone", personCreateDTO.Phone);
+                command.Parameters.AddWithValue("@image_url", imageUrl ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@gender", (int)personCreateDTO.Gender);
+                command.Parameters.AddWithValue("@date_of_birth", personCreateDTO.DateOfBirth);
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
@@ -56,7 +57,6 @@ Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
                             reader.GetString(reader.GetOrdinal("last_name")),
                             reader.GetString(reader.GetOrdinal("phone")),
                             reader.IsDBNull(reader.GetOrdinal("image_url")) ? null : reader.GetString(reader.GetOrdinal("image_url")),
-                            null,
                             (Gender)reader.GetInt32(reader.GetOrdinal("gender")),
                             DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("date_of_birth"))),
                             reader.GetDateTime(reader.GetOrdinal("created_at")),

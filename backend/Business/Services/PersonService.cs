@@ -1,6 +1,7 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.Dtos.Person;
+using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 
@@ -16,19 +17,20 @@ namespace Jannara_Ecommerce.Business.Services
             _repo = repo;
             _imageService = imageService;
         }
-        public async Task<Result<PersonDTO>> AddNewAsync(PersonDTO newPerson, SqlConnection connection, SqlTransaction transaction)
+        public async Task<Result<PersonDTO>> AddNewAsync(PersonCreateDTO personCreateDTO, SqlConnection connection, SqlTransaction transaction)
         {
-            if (newPerson.ProfileImage != null)
+            string imageUrl = string.Empty;
+            if (personCreateDTO.ProfileImage != null)
             {
-                Result<string> saveImageResult = await _imageService.SaveProfileImageAsync(newPerson.ProfileImage);
+                Result<string> saveImageResult = await _imageService.SaveProfileImageAsync(personCreateDTO.ProfileImage);
                 if (!saveImageResult.IsSuccess)
                     return new Result<PersonDTO>(false, saveImageResult.Message, null, saveImageResult.ErrorCode);
-                newPerson.ImageUrl = saveImageResult.Data;
+                imageUrl = saveImageResult.Data;
             }
-            else 
-                newPerson.ImageUrl = null;
+            else
+                imageUrl = null;
                 
-            return await _repo.AddNewAsync(newPerson, connection, transaction);
+            return await _repo.AddNewAsync(personCreateDTO, imageUrl, connection, transaction);
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)
