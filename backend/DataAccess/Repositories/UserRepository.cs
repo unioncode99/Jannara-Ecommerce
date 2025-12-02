@@ -94,8 +94,26 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = @"select * from Users
-OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
+                string query = @"
+SELECT
+    U.id              AS user_id,
+    U.person_id,
+    U.email,
+    U.username,
+    U.created_at      AS user_created_at,
+    U.updated_at      AS user_updated_at,
+
+    R.id              AS role_id,
+    R.name_ar,
+    R.name_en,
+    UR.is_active,
+    R.created_at      AS role_created_at,
+    R.updated_at      AS role_updated_at
+FROM Users U
+LEFT JOIN UserRoles UR ON U.id = UR.user_id
+LEFT JOIN Roles R ON UR.role_id = R.id
+ORDER BY U.id
+OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     int offset = (pageNumber - 1) * pageSize;
@@ -103,28 +121,49 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
                     command.Parameters.AddWithValue("@pageSize", pageSize);
 
 
-                    List<UserPublicDTO> users = new List<UserPublicDTO>();
+                    Dictionary<int, UserPublicDTO> users = new Dictionary<int, UserPublicDTO>();
                     try
                     {
                         await connection.OpenAsync();
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
+                            
 
                             while (await reader.ReadAsync())
                             {
-                                users.Add(new UserPublicDTO
-                                (
-                                    reader.GetInt32(reader.GetOrdinal("Id")),
-                                    reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("email")),
-                                    reader.GetString(reader.GetOrdinal("user_name")),
-                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                               ));
+                                int userId = reader.GetInt32(reader.GetOrdinal("user_id"));
+
+                                if (!users.TryGetValue(userId, out var user))
+                                {
+                                    users[userId] = new UserPublicDTO
+                                    (
+                                        userId,
+                                        reader.GetInt32(reader.GetOrdinal("person_id")),
+                                        reader.GetString(reader.GetOrdinal("email")),
+                                        reader.GetString(reader.GetOrdinal("user_name")),
+                                        reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                        reader.GetDateTime(reader.GetOrdinal("updated_at")),
+                                        new List<UserRoleInfoDTO>()
+                                    );
+                                }
+
+                                if (!reader.IsDBNull(reader.GetOrdinal("role_id")))
+                                {
+                                    users[userId].Roles.Add(
+                                        new UserRoleInfoDTO(
+                                            reader.GetInt32(reader.GetOrdinal("role_id")),
+                                            reader.GetString(reader.GetOrdinal("name_ar")),
+                                            reader.GetString(reader.GetOrdinal("name_en")),
+                                            reader.GetBoolean(reader.GetOrdinal("is_active")),
+                                            reader.GetDateTime(reader.GetOrdinal("role_created_at")),
+                                            reader.GetDateTime(reader.GetOrdinal("role_updated_at"))
+                                        )
+                                    );
+                                }
                             }
 
                             if (users.Count() > 0)
-                                return new Result<IEnumerable<UserPublicDTO>>(true, "Users retrieved successfully", users);
+                                return new Result<IEnumerable<UserPublicDTO>>(true, "Users retrieved successfully", users.Values);
                             else
                                 return new Result<IEnumerable<UserPublicDTO>>(false, "No user found!", null, 404);
 
