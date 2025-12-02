@@ -20,7 +20,7 @@ INSERT INTO Customers
            (user_id)
      VALUES
            (@user_id);
-Select * from Cutomers Where Id  = (SELECT SCOPE_IDENTITY());
+Select * from Customers Where Id  =  SCOPE_IDENTITY();
 ";
             using (SqlCommand command = new SqlCommand(query, connection, transaction))
             {

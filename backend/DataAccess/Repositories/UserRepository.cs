@@ -24,12 +24,12 @@ INSERT INTO Users
            (
 person_id,
 email,
-user_name,
+username,
 password)
  VALUES(
 @person_id,
 @email,
-@user_name,
+@username,
 @password
 )
 Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
@@ -38,7 +38,7 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
             {
                 command.Parameters.AddWithValue("@person_id", personId);
                 command.Parameters.AddWithValue("@email", newUser.Email);
-                command.Parameters.AddWithValue("@user_name", newUser.Username);
+                command.Parameters.AddWithValue("@username", newUser.Username);
                 command.Parameters.AddWithValue("@password", newUser.Password);
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
@@ -49,7 +49,7 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
                             reader.GetInt32(reader.GetOrdinal("Id")),
                             reader.GetInt32(reader.GetOrdinal("person_id")),
                             reader.GetString(reader.GetOrdinal("email")),
-                            reader.GetString(reader.GetOrdinal("user_name")),
+                            reader.GetString(reader.GetOrdinal("username")),
                             reader.GetDateTime(reader.GetOrdinal("created_at")),
                             reader.GetDateTime(reader.GetOrdinal("updated_at")),
                             new List<UserRoleInfoDTO>()
@@ -140,7 +140,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
                                         userId,
                                         reader.GetInt32(reader.GetOrdinal("person_id")),
                                         reader.GetString(reader.GetOrdinal("email")),
-                                        reader.GetString(reader.GetOrdinal("user_name")),
+                                        reader.GetString(reader.GetOrdinal("username")),
                                         reader.GetDateTime(reader.GetOrdinal("created_at")),
                                         reader.GetDateTime(reader.GetOrdinal("updated_at")),
                                         new List<UserRoleInfoDTO>()
@@ -232,7 +232,7 @@ WHERE Users.email = @email;
                                 user.Roles.Add(new UserRoleInfoDTO(
                                     reader.GetInt32(reader.GetOrdinal("role_id")),
                                     reader.GetString(reader.GetOrdinal("name_ar")),
-                                    reader.GetString(reader.GetOrdinal("name_en ")),
+                                    reader.GetString(reader.GetOrdinal("name_en")),
                                     reader.GetBoolean(reader.GetOrdinal("is_active")),
                                     reader.GetDateTime(reader.GetOrdinal("role_created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("role_updated_at")))
