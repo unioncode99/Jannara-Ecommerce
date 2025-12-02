@@ -2,6 +2,7 @@
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.Utilities;
+using Microsoft.Data.SqlClient;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -13,9 +14,9 @@ namespace Jannara_Ecommerce.Business.Services
             _userRoleRepository = userRoleRepository;
         }
 
-        public async Task<Result<UserRoleDTO>> AddNewAsync(UserRoleDTO newUserRole)
+        public async Task<Result<UserRoleDTO>> AddNewAsync(int roleId, int userId, bool isActive, SqlConnection connection, SqlTransaction transaction)
         {
-            return await _userRoleRepository.AddNewAsync(newUserRole);
+            return await _userRoleRepository.AddNewAsync(roleId, userId, isActive, connection, transaction);
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)

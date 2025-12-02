@@ -1,13 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Jannara_Ecommerce.DTOs
+namespace Jannara_Ecommerce.DTOs.Seller
 {
-    public class CustomerDTO
+    public class SellerDTO
     {
-        public CustomerDTO(int id, int userId, DateTime createdAt, DateTime updatedAt)
+        public SellerDTO(int id, int userId, string businessName, string? websiteUrl, DateTime createdAt, DateTime updatedAt)
         {
             Id = id;
             UserId = userId;
+            BusinessName = businessName;
+            WebsiteUrl = websiteUrl;
             CreatedAt = createdAt;
             UpdatedAt = updatedAt;
         }
@@ -15,6 +17,9 @@ namespace Jannara_Ecommerce.DTOs
         public int Id { get; set; }
         [Required(ErrorMessage = "UserId is required.")]
         public int UserId { get; set; }
+        [Required(ErrorMessage = "BusinessName is required.")]
+        public string BusinessName { get; set; }
+        public string? WebsiteUrl { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

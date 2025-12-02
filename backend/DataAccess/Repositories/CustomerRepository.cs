@@ -1,5 +1,5 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
@@ -13,7 +13,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         {
             _connectionString = options.Value.DefaultConnection;
         }
-        public async Task<Result<CustomerDTO>> AddNewAsync(CustomerDTO newCustomer, SqlConnection connection, SqlTransaction transaction)
+        public async Task<Result<CustomerDTO>> AddNewAsync(int userId, SqlConnection connection, SqlTransaction transaction)
         {
             string query = @"
 INSERT INTO Customers
@@ -24,7 +24,7 @@ Select * from Cutomers Where Id  = (SELECT SCOPE_IDENTITY());
 ";
             using (SqlCommand command = new SqlCommand(query, connection, transaction))
             {
-                command.Parameters.AddWithValue("@user_id", newCustomer.UserId);
+                command.Parameters.AddWithValue("@user_id", userId);
                 using (SqlDataReader reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())

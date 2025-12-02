@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Jannara_Ecommerce.DTOs
+namespace Jannara_Ecommerce.DTOs.User
 {
     public class UserDTO
     {

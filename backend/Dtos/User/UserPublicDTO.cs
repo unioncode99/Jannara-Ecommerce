@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Jannara_Ecommerce.DTOs
+namespace Jannara_Ecommerce.DTOs.User
 {
     public class UserPublicDTO
     {
-        public UserPublicDTO(int id, int personId, string email, string username, IEnumerable<UserRoleDTO> roles
-            DateTime createdAt, DateTime updatedAt)
+        public UserPublicDTO(int id, int personId, string email, string username,
+            DateTime createdAt, DateTime updatedAt, IEnumerable<UserRoleDTO> roles)
         {
             Id = id;
             PersonId = personId;
@@ -16,15 +16,11 @@ namespace Jannara_Ecommerce.DTOs
             UpdatedAt = updatedAt;
         }
         public int Id { get; set; }
-        [Required(ErrorMessage = "PersonId is required.")]
         public int PersonId { get; set; }
-        [Required(ErrorMessage = "Email is required.")]
-        [EmailAddress(ErrorMessage = "Email format is invalid.")]
         public string Email { get; set; }
-        [Required(ErrorMessage = "Username is required.")]
         public string Username { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public Enumerable<UserRoleDTO> Roles { get; set; }  
+        public IEnumerable<UserRoleDTO> Roles { get; set; }  
     }
 }

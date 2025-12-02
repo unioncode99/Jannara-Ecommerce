@@ -1,4 +1,6 @@
-﻿namespace Jannara_Ecommerce.DTOs.Mappers
+﻿using Jannara_Ecommerce.DTOs.User;
+
+namespace Jannara_Ecommerce.DTOs.Mappers
 {
     public static class UserDTOMapper
     {

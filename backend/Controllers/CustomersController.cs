@@ -1,6 +1,7 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.Business.Services;
 using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Http;

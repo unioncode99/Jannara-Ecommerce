@@ -1,5 +1,5 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
-using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
