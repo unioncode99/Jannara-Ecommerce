@@ -7,6 +7,7 @@ using Jannara_Ecommerce.DTOs.Mappers;
 using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.DTOs.User;
+using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
@@ -65,7 +66,7 @@ namespace Jannara_Ecommerce.Business.Services
                         return new Result<UserPublicDTO>(false, userResult.Message, null, userResult.ErrorCode);
                     }
 
-                    Result<UserRoleDTO> userRoleResult = await _userRoleService.AddNewAsync(-1, -1, true, connection, transaction);
+                    Result<UserRoleDTO> userRoleResult = await _userRoleService.AddNewAsync((int) Roles.Admin, userResult.Data.Id, true, connection, transaction);
                     if (!userRoleResult.IsSuccess)
                     {
                         transaction.Rollback();
