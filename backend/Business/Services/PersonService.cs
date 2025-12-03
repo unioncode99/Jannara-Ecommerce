@@ -11,7 +11,7 @@ namespace Jannara_Ecommerce.Business.Services
     {
         private readonly IPersonRepository _repo;
         private readonly IImageService _imageService;
-
+        private readonly string _folderName = "profiles";
         public PersonService(IPersonRepository repo, IImageService imageService)
         {
             _repo = repo;
@@ -22,7 +22,7 @@ namespace Jannara_Ecommerce.Business.Services
             string imageUrl = string.Empty;
             if (personCreateDTO.ProfileImage != null)
             {
-                Result<string> saveImageResult = await _imageService.SaveProfileImageAsync(personCreateDTO.ProfileImage);
+                Result<string> saveImageResult = await _imageService.SaveImageAsync(personCreateDTO.ProfileImage,_folderName);
                 if (!saveImageResult.IsSuccess)
                     return new Result<PersonDTO>(false, saveImageResult.Message, null, saveImageResult.ErrorCode);
                 imageUrl = saveImageResult.Data;
@@ -35,6 +35,12 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
+            Result<PersonDTO> findResult = await FindAsync(id);
+            if (!findResult.IsSuccess) 
+                return new Result<bool>(false, findResult.Message, false, findResult.ErrorCode);
+            Result<bool> deleteImageResult =  _imageService.DeleteImage(findResult.Data.ImageUrl);
+            if (!deleteImageResult.IsSuccess)
+                return new Result<bool>(false, deleteImageResult.Message, false, deleteImageResult.ErrorCode);
             return await _repo.DeleteAsync(id);
         }
 
@@ -45,16 +51,27 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> UpdateAsync(int id, PersonUpdateDTO updatedPerson)
         {
-            string imageUrl = string.Empty;
+            Result<PersonDTO> findResult = await _repo.GetByIdAsync(id);
+            if (!findResult.IsSuccess)
+                return new Result<bool>(false, findResult.Message, false, findResult.ErrorCode);
+
+            string imageUrl = null;
             if (updatedPerson.ProfileImage != null)
             {
-                Result<string> saveImageResult = await _imageService.SaveProfileImageAsync(updatedPerson.ProfileImage);
+                Result<string> saveImageResult = await _imageService.SaveImageAsync(updatedPerson.ProfileImage, _folderName);
                 if (!saveImageResult.IsSuccess)
                     return new Result<bool>(false, saveImageResult.Message, false, saveImageResult.ErrorCode);
                 imageUrl = saveImageResult.Data;
             }
-            else
+            else if (updatedPerson.DeleteProfileImage)
+            {
+                Result<bool> deleteImageResult = _imageService.DeleteImage(findResult.Data.ImageUrl);
+                if (!deleteImageResult.IsSuccess)
+                    return new Result<bool>(false, deleteImageResult.Message, false, deleteImageResult.ErrorCode);
                 imageUrl = null;
+            }
+            else
+                imageUrl = findResult.Data.ImageUrl;
 
             return await _repo.UpdateAsync(id, updatedPerson, imageUrl);
         }
