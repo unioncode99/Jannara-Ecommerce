@@ -20,5 +20,7 @@ namespace Jannara_Ecommerce.DTOs.Person
         public Gender Gender { get; set; }
         [Required(ErrorMessage = "DateOfBirth is required.")]
         public DateOnly DateOfBirth { get; set; }
+        [Required(ErrorMessage = "DeleteProfileImage is required.")]
+        public bool DeleteProfileImage { get; set; }
     }
 }

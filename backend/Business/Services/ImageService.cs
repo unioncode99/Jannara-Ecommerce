@@ -26,36 +26,16 @@ namespace Jannara_Ecommerce.Business.Services
             return new Result<bool>(true, "Passed validation", true);
         }
 
-        public async Task<Result<string>> SaveProductImageAsync(IFormFile imageFile)
-        {
-            Result<bool> validationResult =   _validateFile(imageFile);
-            if (!validationResult.IsSuccess)
-                return new Result<string>(false, validationResult.Message, string.Empty, validationResult.ErrorCode);
+       
 
-            var uploadPath = Path.Combine(_env.WebRootPath, "products"); 
-            if (!Directory.Exists(uploadPath))
-                Directory.CreateDirectory(uploadPath);
-
-            var fileName = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
-            var filePath = Path.Combine(uploadPath, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await imageFile.CopyToAsync(stream);
-            }
-
-            string relativePath = Path.Combine("products", fileName).Replace("\\", "/");
-            return new Result<string>(true, "Image saved sucessfuly", relativePath);
-        }
-
-        public async Task<Result<string>> SaveProfileImageAsync(IFormFile imageFile)
+        public async Task<Result<string>> SaveImageAsync(IFormFile imageFile, string folderName)
         {
             Result<bool> validationResult = _validateFile(imageFile);
             if (!validationResult.IsSuccess)
                 return new Result<string>(false, validationResult.Message, string.Empty, validationResult.ErrorCode);
 
             // Save in project-root/uploads/profiles
-            var uploadPath = Path.Combine(_env.WebRootPath, "uploads", "profiles");
+            var uploadPath = Path.Combine(_env.WebRootPath, "uploads", folderName);
             if (!Directory.Exists(uploadPath))
                 Directory.CreateDirectory(uploadPath);
 
@@ -70,6 +50,34 @@ namespace Jannara_Ecommerce.Business.Services
 
             var relativePath = Path.Combine("uploads", "profiles", fileName).Replace("\\", "/");
             return new Result<string>(true, "Image saved sucessfuly", relativePath);
+        }
+
+        public Result<bool> DeleteImage(string relativePath)
+        {
+            if (string.IsNullOrEmpty(relativePath))
+                return new Result<bool>(false, "invalide image url", false, 500);
+
+            try
+            {
+                var absolutePath = Path.Combine(_env.WebRootPath, relativePath.Replace("/", "\\"));
+
+                if (File.Exists(absolutePath))
+                {
+                    File.Delete(absolutePath);
+                    return new Result<bool>(true, "Image deleted successfult", true);
+                }
+                return new Result<bool>(false, "invalide image url", false, 500);
+            }
+            catch
+            {
+                return new Result<bool>(false, "Uexpected error in the server", false, 500);
+            }
+        }
+
+        public async Task<Result<string>> ReplaceImageAsync(string oldPath, IFormFile newFile, string folderName)
+        {
+            DeleteImage(oldPath);
+            return await SaveImageAsync(newFile, folderName);
         }
     }
 }
