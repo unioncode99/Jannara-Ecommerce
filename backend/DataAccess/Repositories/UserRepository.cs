@@ -330,6 +330,62 @@ WHERE Users.id = @id;
             }
         }
 
+        public async Task<Result<bool>> IsExistByEmail(string email)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT id FROM Users WHERE email = @email";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@email", email);
+                    bool isFound;
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            isFound = reader.HasRows;
+                        }
+                        return new Result<bool>(true, "User existence check completed.", isFound);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                    }
+
+                }
+            }
+        }
+
+        public async Task<Result<bool>> IsExistByUsername(string username)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT id FROM Users WHERE username = @username";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@username", username);
+                    bool isFound;
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            isFound = reader.HasRows;
+                        }
+                        return new Result<bool>(true, "User existence check completed.", isFound);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                    }
+
+                }
+            }
+        }
+
         public async Task<Result<bool>> UpdateAsync(int id, UserUpdateDTO updatedUser)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))

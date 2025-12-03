@@ -38,7 +38,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> UpdatePerson(int id, [FromBody] PersonUpdateDTO updatedPerson)
+        public async Task<ActionResult> UpdatePerson(int id,[FromForm] PersonUpdateDTO updatedPerson)
         {
             Result<bool> result = await _service.UpdateAsync(id, updatedPerson);
 
