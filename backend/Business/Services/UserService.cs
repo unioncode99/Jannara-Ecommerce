@@ -35,11 +35,18 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<UserPublicDTO>> AddNewAsync(int personId, UserCreateDTO newUser, SqlConnection connection, SqlTransaction transaction)
         {
-            Result<UserDTO> findResult = await FindAsync(newUser.Email);
-            if (!findResult.IsSuccess && findResult.ErrorCode != 404)
-                return new Result<UserPublicDTO>(false, findResult.Message, null, findResult.ErrorCode);
-            if (findResult.Data != null)
+            Result<bool> existByEmailResult = await _repo.IsExistByEmail(newUser.Email);
+            if (!existByEmailResult.IsSuccess)
+                return new Result<UserPublicDTO>(false, existByEmailResult.Message, null, existByEmailResult.ErrorCode);
+            if (existByEmailResult.Data)
                 return new Result<UserPublicDTO>(false, "This email is already registerd", null, 409);
+
+            Result<bool> existByUsernameResult = await _repo.IsExistByUsername(newUser.Username);
+            if (!existByUsernameResult.IsSuccess)
+                return new Result<UserPublicDTO>(false, existByUsernameResult.Message, null, existByUsernameResult.ErrorCode);
+            if (existByUsernameResult.Data)
+                return new Result<UserPublicDTO>(false, "This username is used by another user", null, 409);
+
             newUser.Password = _passwordService.HashPassword(newUser, newUser.Password);
             return await _repo.AddNewAsync(personId, newUser, connection, transaction);
         }
@@ -107,14 +114,36 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> UpdateAsync(int id, UserUpdateDTO updatedUser)
         {
-            Result<UserDTO> existingUser = await _repo.GetByEmailAsync(updatedUser.Email);
-            if (!existingUser.IsSuccess && existingUser.ErrorCode != 404)
-                return new Result<bool>(false, existingUser.Message, false, existingUser.ErrorCode);
+            Result<UserDTO> currentUserResult = await _repo.GetByIdAsync(id);
+            if (!currentUserResult.IsSuccess)
+                return new Result<bool>(false, currentUserResult.Message, false, currentUserResult.ErrorCode);
 
-            if (existingUser.IsSuccess && existingUser.Data.Id != id)
-                return new Result<bool>(false, "This email is already register!", false, 409);
+            if (!string.Equals(currentUserResult.Data.Email, updatedUser.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                Result<bool> existByEmailResult = await _repo.IsExistByEmail(updatedUser.Email);
+                if (!existByEmailResult.IsSuccess)
+                    return new Result<bool>(false, existByEmailResult.Message, false, existByEmailResult.ErrorCode);
+                if (existByEmailResult.Data)
+                    return new Result<bool>(false, "This email is already registered", false, 409);
+            }
+            
+            if (!string.Equals(currentUserResult.Data.Username, updatedUser.Username, StringComparison.OrdinalIgnoreCase))
+            {
+                Result<bool> existByUsernameResult = await _repo.IsExistByUsername(updatedUser.Username);
+                if (!existByUsernameResult.IsSuccess)
+                    return new Result<bool>(false, existByUsernameResult.Message, false, existByUsernameResult.ErrorCode);
+                if (existByUsernameResult.Data)
+                    return new Result<bool>(false, "This username is used by another user", false, 409);
+            }
+            if (!string.IsNullOrWhiteSpace(updatedUser.Password))
+            {
+                updatedUser.Password = _passwordService.HashPassword(updatedUser, updatedUser.Password);
+            }
+            else
+            {
+                updatedUser.Password = currentUserResult.Data.Password; 
+            }
 
-            updatedUser.Password = _passwordService.HashPassword(updatedUser, updatedUser.Password);
             return await _repo.UpdateAsync(id, updatedUser);
         }
     }

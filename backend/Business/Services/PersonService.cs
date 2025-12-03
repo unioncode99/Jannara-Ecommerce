@@ -63,7 +63,7 @@ namespace Jannara_Ecommerce.Business.Services
                     return new Result<bool>(false, saveImageResult.Message, false, saveImageResult.ErrorCode);
                 imageUrl = saveImageResult.Data;
             }
-            else if (updatedPerson.DeleteProfileImage)
+            else if (updatedPerson.DeleteProfileImage && findResult.Data.ImageUrl is not null)
             {
                 Result<bool> deleteImageResult = _imageService.DeleteImage(findResult.Data.ImageUrl);
                 if (!deleteImageResult.IsSuccess)
