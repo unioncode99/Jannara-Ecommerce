@@ -1,8 +1,12 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
+using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.Customer;
+using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace Jannara_Ecommerce.DataAccess.Repositories
 {
@@ -70,12 +74,17 @@ Select * from Customers Where Id  =  SCOPE_IDENTITY();
             }
         }
 
-        public async Task<Result<IEnumerable<CustomerDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20)
+        public async Task<Result<PagedResponseDTO<CustomerDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                string query = @"select * from Customers
-OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
+                string query = @"
+select count(*) as total from Customers 
+
+select * from Customers
+order by id
+OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
+";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     int offset = (pageNumber - 1) * pageSize;
@@ -83,13 +92,20 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
                     command.Parameters.AddWithValue("@pageSize", pageSize);
 
 
-                    List<CustomerDTO> customers = new List<CustomerDTO>();
                     try
                     {
                         await connection.OpenAsync();
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
 
+                            int total = 0;
+                            if (await reader.ReadAsync())
+                            {
+                                total = reader.GetInt32(reader.GetOrdinal("total"));
+                            }
+                            await reader.NextResultAsync();
+
+                            List<CustomerDTO> customers = new List<CustomerDTO>();
                             while (await reader.ReadAsync())
                             {
                                 customers.Add(new CustomerDTO
@@ -100,17 +116,17 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;";
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                ));
                             }
+                            if (customers.Count() < 1)
+                                return new Result<PagedResponseDTO<CustomerDTO>> (false, "No cutomer found", null, 404);
+                            PagedResponseDTO<CustomerDTO> response = new PagedResponseDTO<CustomerDTO>(total, pageNumber, pageSize, customers);
+                            return new Result<PagedResponseDTO<CustomerDTO>>(true, "Cutomers retrieved successfully", response);
 
-                            if (customers.Count() > 0)
-                                return new Result<IEnumerable<CustomerDTO>>(true, "Customers retrieved successfully", customers);
-                            else
-                                return new Result<IEnumerable<CustomerDTO>>(false, "No customer found!", null, 404);
-
+                            
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<IEnumerable<CustomerDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<PagedResponseDTO<CustomerDTO>>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
                 }

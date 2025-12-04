@@ -1,4 +1,5 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
+using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Mappers;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Utilities;
@@ -38,13 +39,13 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<UserPublicDTO>>> GetAll([FromQuery] int pageNumber , [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResponseDTO<UserPublicDTO>>> GetAll([FromQuery] int pageNumber , [FromQuery] int pageSize)
         {
             if (pageNumber == 0 || pageSize == 0)
             {
                 return BadRequest(new ResponseMessage("pageSize and pageNumber must be greater than zero."));
             }
-            Result<IEnumerable<UserPublicDTO>> result = await _service.GetAllAsync(pageNumber, pageSize);
+            Result<PagedResponseDTO<UserPublicDTO>> result = await _service.GetAllAsync(pageNumber, pageSize);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);

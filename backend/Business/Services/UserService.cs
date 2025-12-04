@@ -1,8 +1,10 @@
-﻿using Jannara_Ecommerce.Business.Interfaces;
+﻿using Azure.Core;
+using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.Dtos.Person;
 using Jannara_Ecommerce.Dtos.User;
 using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Mappers;
 using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Seller;
@@ -107,7 +109,7 @@ namespace Jannara_Ecommerce.Business.Services
             return await _repo.GetByEmailAsync(email);
         }
 
-        public async Task<Result<IEnumerable<UserPublicDTO>>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<Result<PagedResponseDTO<UserPublicDTO>>> GetAllAsync(int pageNumber, int pageSize)
         {
             return await _repo.GetAllAsync(pageNumber, pageSize);
         }

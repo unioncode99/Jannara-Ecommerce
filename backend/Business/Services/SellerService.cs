@@ -4,6 +4,7 @@ using Jannara_Ecommerce.Dtos.Person;
 using Jannara_Ecommerce.Dtos.User;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.Customer;
+using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Mappers;
 using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Seller;
@@ -95,6 +96,12 @@ namespace Jannara_Ecommerce.Business.Services
         public async Task<Result<bool>> UpdateAsync(int id, SellerUpdateDTO updatedSeller)
         {
             return await _repo.UpdateAsync(id, updatedSeller);
+        }
+
+
+        public Task<Result<PagedResponseDTO<SellerDTO>>> GetAllAsync(int pageNumber, int pageSize)
+        {
+            return _repo.GetAllAsync(pageNumber, pageSize);
         }
     }
 }
