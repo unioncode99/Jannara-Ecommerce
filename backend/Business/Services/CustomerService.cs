@@ -7,6 +7,7 @@ using Jannara_Ecommerce.Dtos.Person;
 using Jannara_Ecommerce.Dtos.User;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.Customer;
+using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Enums;
@@ -100,6 +101,11 @@ namespace Jannara_Ecommerce.Business.Services
         public async Task<Result<bool>> UpdateAsync(int id, CustomerDTO updatedCustomer)
         {
             return await _repo.UpdateAsync(id, updatedCustomer);
+        }
+
+        public Task<Result<PagedResponseDTO<CustomerDTO>>> GetAllAsync(int pageNumber, int pageSize)
+        {
+            return _repo.GetAllAsync(pageNumber, pageSize);
         }
     }
 }

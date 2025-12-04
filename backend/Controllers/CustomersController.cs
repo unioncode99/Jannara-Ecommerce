@@ -3,6 +3,8 @@ using Jannara_Ecommerce.Business.Services;
 using Jannara_Ecommerce.Dtos.Customer;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.Customer;
+using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Http;
@@ -62,6 +64,24 @@ namespace Jannara_Ecommerce.Controllers
             if (result.IsSuccess)
             {
                 return Ok(result.Message);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<PagedResponseDTO<CustomerDTO>>> GetAll([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            if (pageNumber == 0 || pageSize == 0)
+            {
+                return BadRequest(new ResponseMessage("pageSize and pageNumber must be greater than zero."));
+            }
+            Result<PagedResponseDTO<CustomerDTO>> result = await _service.GetAllAsync(pageNumber, pageSize);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
             }
             return StatusCode(result.ErrorCode, result.Message);
         }

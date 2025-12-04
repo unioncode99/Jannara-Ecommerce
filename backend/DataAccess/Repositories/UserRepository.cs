@@ -1,11 +1,14 @@
-﻿using Jannara_Ecommerce.DataAccess.Interfaces;
+﻿using Azure.Core;
+using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.Dtos.User;
 using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace Jannara_Ecommerce.DataAccess.Repositories
 {
@@ -90,30 +93,38 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
             }
         }
 
-        public async Task<Result<IEnumerable<UserPublicDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20, int? currentUserId = null)
+        public async Task<Result<PagedResponseDTO<UserPublicDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20, int? currentUserId = null)
         {
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 string query = @"
+SELECT COUNT(*) AS total FROM Users;
+
 SELECT
-    U.id              AS user_id,
+    U.id  ,
     U.person_id,
     U.email,
     U.username,
-    U.created_at      AS user_created_at,
-    U.updated_at      AS user_updated_at,
-
-    R.id              AS role_id,
-    R.name_ar,
-    R.name_en,
-    UR.is_active,
-    R.created_at      AS role_created_at,
-    R.updated_at      AS role_updated_at
+    U.created_at ,
+    U.updated_at ,
+    (
+        SELECT 
+            R.id as Id,
+            R.name_ar as NameAr,
+            R.name_en as NameEn,
+            UR.is_active as IsActive,
+            R.created_at as CreatedAt,
+            R.updated_at as UpdateAt
+        FROM UserRoles UR
+        JOIN Roles R ON UR.role_id = R.id
+        WHERE UR.user_id = U.id
+        FOR JSON PATH
+    ) AS roles_json
 FROM Users U
-LEFT JOIN UserRoles UR ON U.id = UR.user_id
-LEFT JOIN Roles R ON UR.role_id = R.id
 ORDER BY U.id
-OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
+OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
+
+";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     int offset = (pageNumber - 1) * pageSize;
@@ -121,57 +132,48 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
                     command.Parameters.AddWithValue("@pageSize", pageSize);
 
 
-                    Dictionary<int, UserPublicDTO> users = new Dictionary<int, UserPublicDTO>();
                     try
                     {
                         await connection.OpenAsync();
                         using (SqlDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            
 
+                            int total = 0;
+                            if (await reader.ReadAsync())
+                            {
+                                total = reader.GetInt32(reader.GetOrdinal("total"));
+                            }
+                            await reader.NextResultAsync();
+
+                            List<UserPublicDTO> users = new List<UserPublicDTO>();
                             while (await reader.ReadAsync())
                             {
-                                int userId = reader.GetInt32(reader.GetOrdinal("user_id"));
+                                var rolesJson = reader.IsDBNull(reader.GetOrdinal("roles_json"))
+                                       ? "[]"
+                                       : reader.GetString(reader.GetOrdinal("roles_json"));
 
-                                if (!users.TryGetValue(userId, out var user))
-                                {
-                                    users[userId] = new UserPublicDTO
-                                    (
-                                        userId,
-                                        reader.GetInt32(reader.GetOrdinal("person_id")),
-                                        reader.GetString(reader.GetOrdinal("email")),
-                                        reader.GetString(reader.GetOrdinal("username")),
-                                        reader.GetDateTime(reader.GetOrdinal("user_created_at")),
-                                        reader.GetDateTime(reader.GetOrdinal("user_updated_at")),
-                                        new List<UserRoleInfoDTO>()
-                                    );
-                                }
-
-                                if (!reader.IsDBNull(reader.GetOrdinal("role_id")))
-                                {
-                                    users[userId].Roles.Add(
-                                        new UserRoleInfoDTO(
-                                            reader.GetInt32(reader.GetOrdinal("role_id")),
-                                            reader.GetString(reader.GetOrdinal("name_ar")),
-                                            reader.GetString(reader.GetOrdinal("name_en")),
-                                            reader.GetBoolean(reader.GetOrdinal("is_active")),
-                                            reader.GetDateTime(reader.GetOrdinal("role_created_at")),
-                                            reader.GetDateTime(reader.GetOrdinal("role_updated_at"))
-                                        )
-                                    );
-                                }
+                                List<UserRoleInfoDTO> rolesList = JsonSerializer.Deserialize<List<UserRoleInfoDTO>>(rolesJson);
+                                users.Add(new UserPublicDTO(
+                                    reader.GetInt32(reader.GetOrdinal("id")),
+                                    reader.GetInt32(reader.GetOrdinal("person_id")),
+                                    reader.GetString(reader.GetOrdinal("email")),
+                                    reader.GetString(reader.GetOrdinal("username")),
+                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                    reader.GetDateTime(reader.GetOrdinal("updated_at")),
+                                    rolesList ?? new List<UserRoleInfoDTO>()
+                                ));
                             }
+                            if (users.Count() < 1)
+                                return new Result<PagedResponseDTO<UserPublicDTO>>(false, "No user found!", null, 404);
 
-                            if (users.Count() > 0)
-                                return new Result<IEnumerable<UserPublicDTO>>(true, "Users retrieved successfully", users.Values);
-                            else
-                                return new Result<IEnumerable<UserPublicDTO>>(false, "No user found!", null, 404);
+                            PagedResponseDTO<UserPublicDTO> response = new PagedResponseDTO<UserPublicDTO>(total, pageNumber, pageSize, users);
 
+                            return new Result<PagedResponseDTO<UserPublicDTO>>(true, "Users retureved successfully", response);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<IEnumerable<UserPublicDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<PagedResponseDTO<UserPublicDTO>>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
                 }
