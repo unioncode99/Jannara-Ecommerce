@@ -109,12 +109,12 @@ SELECT
     U.updated_at ,
     (
         SELECT 
-            R.id as Id,
+            UR.id as Id,
             R.name_ar as NameAr,
             R.name_en as NameEn,
             UR.is_active as IsActive,
-            R.created_at as CreatedAt,
-            R.updated_at as UpdateAt
+            UR.created_at as CreatedAt,
+            UR.updated_at as UpdateAt
         FROM UserRoles UR
         JOIN Roles R ON UR.role_id = R.id
         WHERE UR.user_id = U.id
