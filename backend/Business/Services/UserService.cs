@@ -13,6 +13,7 @@ using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using System.Data.Common;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -59,36 +60,44 @@ namespace Jannara_Ecommerce.Business.Services
             UserCreateDTO newUser = userCreateRequestDTO.GetUserCreateDTO();
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                SqlTransaction transaction = null;
+                DbTransaction transaction = null;
                 try
                 {
                     await connection.OpenAsync();
-                    transaction = connection.BeginTransaction();
-                    Result<PersonDTO> personResult = await _personService.AddNewAsync(newPerson, connection, transaction);
+                    transaction = await connection.BeginTransactionAsync();
+
+                    Result<PersonDTO> personResult = await _personService.AddNewAsync(newPerson, connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                         return new Result<UserPublicDTO>(false, personResult.Message, null, personResult.ErrorCode);
                     }
-                    Result<UserPublicDTO> userResult = await AddNewAsync(personResult.Data.Id, newUser, connection, transaction);
+                    Result<UserPublicDTO> userResult = await AddNewAsync(personResult.Data.Id, newUser, connection,(SqlTransaction) transaction);
                     if (!userResult.IsSuccess)
                     {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                         return new Result<UserPublicDTO>(false, userResult.Message, null, userResult.ErrorCode);
                     }
 
                     Result<UserRoleDTO> userRoleResult = await _userRoleService.AddNewAsync((int) Roles.Admin, userResult.Data.Id, true, connection, transaction);
                     if (!userRoleResult.IsSuccess)
                     {
-                        transaction.Rollback();
-                        return new Result<UserPublicDTO>(false, userResult.Message, null, userResult.ErrorCode);
+                        await transaction.RollbackAsync();
+                        return new Result<UserPublicDTO>(false, userRoleResult.Message, null, userRoleResult.ErrorCode);
                     }
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                     return userResult;
                 }
                 catch (Exception ex)
                 {
-                    transaction?.Rollback();
+                    if (transaction != null)
+                        try
+                        {
+                            await transaction.RollbackAsync();
+                        }catch 
+                        {
+
+                        }
                     return new Result<UserPublicDTO>(false, "An unexpected error occurred on the server.", null, 500);
                 }
             }
