@@ -14,6 +14,7 @@ using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using System.Data.Common;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -55,44 +56,54 @@ namespace Jannara_Ecommerce.Business.Services
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                SqlTransaction transaction = null;
+                DbTransaction transaction = null;
                 try
                 {
                     await connection.OpenAsync();
-                    transaction = connection.BeginTransaction();
-                    Result<PersonDTO> personResult = await _personService.AddNewAsync(personCreateDTO, connection, transaction);
+                    transaction = await connection.BeginTransactionAsync();
+                    Result<PersonDTO> personResult = await _personService.AddNewAsync(personCreateDTO, connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                         return new Result<CustomerDTO>(false, personResult.Message, null, personResult.ErrorCode);
                     }
                     
-                    Result<UserPublicDTO> userResult = await _userService.AddNewAsync(personResult.Data.Id, userCreateDTO, connection, transaction);
+                    Result<UserPublicDTO> userResult = await _userService.AddNewAsync(personResult.Data.Id, userCreateDTO, connection, (SqlTransaction)transaction);
                     if (!userResult.IsSuccess)
                     {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                         return new Result<CustomerDTO>(false, userResult.Message, null, userResult.ErrorCode);
                     }
 
-                    Result<UserRoleDTO> userRoleResult = await _userRoleService.AddNewAsync((int)Roles.Customer, userResult.Data.Id, true, connection, transaction);
+                    Result<UserRoleDTO> userRoleResult = await _userRoleService.AddNewAsync((int)Roles.Customer, userResult.Data.Id, true, connection, (SqlTransaction)transaction);
                     if (!userRoleResult.IsSuccess)
                     {
-                        transaction.Rollback();
-                        return new Result<CustomerDTO>(false, userResult.Message, null, userResult.ErrorCode);
+                        await transaction.RollbackAsync();
+                        return new Result<CustomerDTO>(false, userRoleResult.Message, null, userRoleResult.ErrorCode);
                     }
 
-                    Result<CustomerDTO> customerResult = await AddNewAsync(userResult.Data.Id,  connection, transaction);
+                    Result<CustomerDTO> customerResult = await AddNewAsync(userResult.Data.Id,  connection, (SqlTransaction)transaction);
                     if (!customerResult.IsSuccess)
                     {
-                        transaction.Rollback();
+                       await transaction.RollbackAsync();
                         return new Result<CustomerDTO>(false, customerResult.Message, null, customerResult.ErrorCode);
                     }
-                    transaction.Commit();
+                    await transaction.CommitAsync();
                     return customerResult;
                 }
                 catch (Exception ex)
                 {
-                    transaction?.Rollback();
+                    if (transaction != null)
+                    {
+                        try
+                        {
+                            await transaction.RollbackAsync();
+                        }
+                        catch
+                        {
+
+                        }
+                    }
                     return new Result<CustomerDTO>(false, "An unexpected error occurred on the server.", null, 500);
                 }
             }
