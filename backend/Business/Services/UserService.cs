@@ -14,7 +14,6 @@ using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using System.Data.Common;
-
 namespace Jannara_Ecommerce.Business.Services
 {
     public class UserService : IUserService
@@ -79,7 +78,7 @@ namespace Jannara_Ecommerce.Business.Services
                         return new Result<UserPublicDTO>(false, userResult.Message, null, userResult.ErrorCode);
                     }
 
-                    Result<UserRoleDTO> userRoleResult = await _userRoleService.AddNewAsync((int) Roles.Admin, userResult.Data.Id, true, connection, transaction);
+                    Result<UserRoleDTO> userRoleResult = await _userRoleService.AddNewAsync((int) Roles.Admin, userResult.Data.Id, true, connection, (SqlTransaction)transaction);
                     if (!userRoleResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
