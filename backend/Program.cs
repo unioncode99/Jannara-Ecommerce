@@ -9,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("ConnectionStrings"));
+builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("ImageSettings"));
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationRepositories();
 builder.Services.AddHttpContextAccessor();
