@@ -39,7 +39,7 @@ namespace Jannara_Ecommerce.Business.Services
             if (!checkEmailTask.Result.IsSuccess)
                 return new Result<UserPublicDTO>(false, checkEmailTask.Result.Message, null, checkEmailTask.Result.ErrorCode);
             if (checkEmailTask.Result.Data)
-                return new Result<UserPublicDTO>(false, "This email is already registerd", null, 409);
+                return new Result<UserPublicDTO>(false, "This email is already registered", null, 409);
             if (!checkUsernameTask.Result.IsSuccess)
                 return new Result<UserPublicDTO>(false, checkUsernameTask.Result.Message, null, checkUsernameTask.Result.ErrorCode);
             if (checkUsernameTask.Result.Data)
