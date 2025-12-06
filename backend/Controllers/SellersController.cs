@@ -31,7 +31,7 @@ namespace Jannara_Ecommerce.Controllers
         public async Task<ActionResult<SellerDTO>> GetSellerByID(int id)
         {
             
-            Result<SellerDTO> result = await _service.FindAsync(id);
+            var result = await _service.FindAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);
@@ -45,7 +45,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<SellerDTO>> AddSeller(SellerCreateRequestDTO request)
         {
-            Result<SellerDTO> result = await _service.CreateAsync(request);
+            var result = await _service.CreateAsync(request);
             if (result.IsSuccess)
             {
                 return CreatedAtRoute("GetSellerByID", new { id = result.Data.Id }, result.Data);
@@ -61,7 +61,7 @@ namespace Jannara_Ecommerce.Controllers
         public async Task<ActionResult<SellerDTO>> UpdateSeller(int id, [FromBody] SellerUpdateDTO updatedSellerDTO)
         {
             
-            Result<bool> result = await _service.UpdateAsync(id, updatedSellerDTO);
+            var  result = await _service.UpdateAsync(id, updatedSellerDTO);
             if (result.IsSuccess)
             {
                 return Ok(updatedSellerDTO);
@@ -80,7 +80,7 @@ namespace Jannara_Ecommerce.Controllers
             {
                 return BadRequest("Invalid Data");
             }
-            Result<bool> result = await _service.DeleteAsync(id);
+            var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Message);
@@ -98,7 +98,7 @@ namespace Jannara_Ecommerce.Controllers
             {
                 return BadRequest(new ResponseMessage("pageSize and pageNumber must be greater than zero."));
             }
-            Result<PagedResponseDTO<SellerDTO>> result = await _service.GetAllAsync(pageNumber, pageSize);
+            var result = await _service.GetAllAsync(pageNumber, pageSize);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);

@@ -26,10 +26,10 @@ INSERT INTO Customers
            (@user_id);
 Select * from Customers Where Id  =  SCOPE_IDENTITY();
 ";
-            using (SqlCommand command = new SqlCommand(query, connection, transaction))
+            using (var command = new SqlCommand(query, connection, transaction))
             {
                 command.Parameters.AddWithValue("@user_id", userId);
-                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
@@ -49,10 +49,10 @@ Select * from Customers Where Id  =  SCOPE_IDENTITY();
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM Cutomers WHERE Id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
@@ -76,7 +76,7 @@ Select * from Customers Where Id  =  SCOPE_IDENTITY();
 
         public async Task<Result<PagedResponseDTO<CustomerDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 select count(*) as total from Customers 
@@ -85,7 +85,7 @@ select * from Customers
 order by id
 OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     int offset = (pageNumber - 1) * pageSize;
                     command.Parameters.AddWithValue("@offset", offset);
@@ -95,7 +95,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
 
                             int total = 0;
@@ -105,7 +105,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
                             }
                             await reader.NextResultAsync();
 
-                            List<CustomerDTO> customers = new List<CustomerDTO>();
+                            var customers = new List<CustomerDTO>();
                             while (await reader.ReadAsync())
                             {
                                 customers.Add(new CustomerDTO
@@ -135,12 +135,12 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
 
         public async Task<Result<CustomerDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 Select * from Customers where id = @id;
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
@@ -148,11 +148,11 @@ Select * from Customers where id = @id;
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
-                                CustomerDTO customer = new CustomerDTO
+                                var customer = new CustomerDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("Id")),
                                     reader.GetInt32(reader.GetOrdinal("user_id")),
@@ -178,14 +178,14 @@ Select * from Customers where id = @id;
 
         public async Task<Result<bool>> UpdateAsync(int id, CustomerDTO updatedCustomer)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE Customers
    SET user_id = @user_id
  WHERE Id = @id
 select @@ROWCOUNT";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     command.Parameters.AddWithValue("@user_id", updatedCustomer.UserId);

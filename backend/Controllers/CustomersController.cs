@@ -30,7 +30,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<CustomerDTO>> GetCustomerById(int id)
         {
-            Result<CustomerDTO> result = await _service.FindAsync(id);
+            var result = await _service.FindAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);
@@ -44,7 +44,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<CustomerDTO>> AddCustomer(CustomerCreateRequestDTO request)
         {
-            Result<CustomerDTO> result = await _service.CreateAsync(request);
+            var result = await _service.CreateAsync(request);
            
             if (result.IsSuccess)
             {
@@ -60,7 +60,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteCustomer(int id)
         {
-            Result<bool> result = await _service.DeleteAsync(id);
+            var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Message);
@@ -78,7 +78,7 @@ namespace Jannara_Ecommerce.Controllers
             {
                 return BadRequest(new ResponseMessage("pageSize and pageNumber must be greater than zero."));
             }
-            Result<PagedResponseDTO<CustomerDTO>> result = await _service.GetAllAsync(pageNumber, pageSize);
+            var result = await _service.GetAllAsync(pageNumber, pageSize);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);

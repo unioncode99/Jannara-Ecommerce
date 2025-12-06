@@ -22,7 +22,7 @@ namespace Jannara_Ecommerce.Business.Services
             string imageUrl = string.Empty;
             if (personCreateDTO.ProfileImage != null)
             {
-                Result<string> saveImageResult = await _imageService.SaveImageAsync(personCreateDTO.ProfileImage,_folderName);
+                var saveImageResult = await _imageService.SaveImageAsync(personCreateDTO.ProfileImage,_folderName);
                 if (!saveImageResult.IsSuccess)
                     return new Result<PersonDTO>(false, saveImageResult.Message, null, saveImageResult.ErrorCode);
                 imageUrl = saveImageResult.Data;
@@ -35,10 +35,10 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            Result<PersonDTO> findResult = await FindAsync(id);
+            var findResult = await FindAsync(id);
             if (!findResult.IsSuccess) 
                 return new Result<bool>(false, findResult.Message, false, findResult.ErrorCode);
-            Result<bool> deleteImageResult =  _imageService.DeleteImage(findResult.Data.ImageUrl);
+            var deleteImageResult =  _imageService.DeleteImage(findResult.Data.ImageUrl);
             if (!deleteImageResult.IsSuccess)
                 return new Result<bool>(false, deleteImageResult.Message, false, deleteImageResult.ErrorCode);
             return await _repo.DeleteAsync(id);
@@ -51,21 +51,21 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> UpdateAsync(int id, PersonUpdateDTO updatedPerson)
         {
-            Result<PersonDTO> findResult = await _repo.GetByIdAsync(id);
+            var findResult = await _repo.GetByIdAsync(id);
             if (!findResult.IsSuccess)
                 return new Result<bool>(false, findResult.Message, false, findResult.ErrorCode);
 
             string imageUrl = null;
             if (updatedPerson.ProfileImage != null)
             {
-                Result<string> saveImageResult = await _imageService.SaveImageAsync(updatedPerson.ProfileImage, _folderName);
+                var saveImageResult = await _imageService.SaveImageAsync(updatedPerson.ProfileImage, _folderName);
                 if (!saveImageResult.IsSuccess)
                     return new Result<bool>(false, saveImageResult.Message, false, saveImageResult.ErrorCode);
                 imageUrl = saveImageResult.Data;
             }
             else if (updatedPerson.DeleteProfileImage && findResult.Data.ImageUrl is not null)
             {
-                Result<bool> deleteImageResult = _imageService.DeleteImage(findResult.Data.ImageUrl);
+                var deleteImageResult = _imageService.DeleteImage(findResult.Data.ImageUrl);
                 if (!deleteImageResult.IsSuccess)
                     return new Result<bool>(false, deleteImageResult.Message, false, deleteImageResult.ErrorCode);
                 imageUrl = null;
