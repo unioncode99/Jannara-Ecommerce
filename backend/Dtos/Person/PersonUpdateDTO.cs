@@ -6,7 +6,7 @@ namespace Jannara_Ecommerce.DTOs.Person
     public class PersonUpdateDTO
     {
         [Required(ErrorMessage = "Id is required.")]
-        [Range(1, int.MaxValue, ErrorMessage =("Id must be greater than zero"))]
+        [Range(1, int.MaxValue, ErrorMessage ="Id must be greater than zero")]
         public int Id { get; set; }
         [Required(ErrorMessage = "FirstName is required.")]
         public string FirstName { get; set; }

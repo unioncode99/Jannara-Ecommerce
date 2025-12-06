@@ -1,6 +1,8 @@
-﻿namespace Jannara_Ecommerce.Enums.Mappers
+﻿using Jannara_Ecommerce.Enums;
+
+namespace Jannara_Ecommerce.Mappers
 {
-    public static class RoleMapper
+    public static class RoleExtensions
     {
         public static string GetNameAr(this Roles role)
         {

@@ -1,7 +1,7 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DTOs.General;
-using Jannara_Ecommerce.DTOs.Mappers;
 using Jannara_Ecommerce.DTOs.User;
+using Jannara_Ecommerce.Mappers;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
