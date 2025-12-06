@@ -90,14 +90,14 @@ VALUES
                 }
             }
         }
-        public async Task<Result<IEnumerable<UserRoleDTO>>> GetAllAsync(int user_id)
+        public async Task<Result<IEnumerable<UserRoleDTO>>> GetAllAsync(int userId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from UserRoles Where user_id  = @user_id;";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@user_id", user_id);
+                    command.Parameters.AddWithValue("@user_id", userId);
                     var userRoles = new List<UserRoleDTO>();
                     try
                     {
