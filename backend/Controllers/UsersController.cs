@@ -26,7 +26,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDTO>> GetUserById(int id)
         {
-            Result<UserDTO> result = await _service.FindAsync(id);
+            var result = await _service.FindAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Data.ToUserPublicDTO());
@@ -45,7 +45,7 @@ namespace Jannara_Ecommerce.Controllers
             {
                 return BadRequest(new ResponseMessage("pageSize and pageNumber must be greater than zero."));
             }
-            Result<PagedResponseDTO<UserPublicDTO>> result = await _service.GetAllAsync(pageNumber, pageSize);
+            var result = await _service.GetAllAsync(pageNumber, pageSize);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);
@@ -58,7 +58,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserPublicDTO>> AddUser(UserCreateRequestDTO request)
         {
-            Result<UserPublicDTO> result = await _service.CreateAsync(request); 
+            var result = await _service.CreateAsync(request); 
             if (result.IsSuccess)
             {
                 return CreatedAtRoute("GetUserByID", new { id = result.Data.Id }, result.Data);
@@ -75,7 +75,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdateUser(int id, [FromBody] UserUpdateDTO updatedUser)
         {
-            Result<bool> result = await _service.UpdateAsync(id, updatedUser);
+            var result = await _service.UpdateAsync(id, updatedUser);
 
             if (!result.IsSuccess)
                 return StatusCode(result.ErrorCode, result.Message);
@@ -89,7 +89,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteUser(int id)
         {
-            Result<bool> result = await _service.DeleteAsync(id);
+            var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Message);

@@ -16,7 +16,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         }
         public async Task<Result<RoleDTO>> AddNewAsync(RoleDTO newRole)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 INSERT INTO Roles
@@ -31,18 +31,18 @@ VALUES
 );
 Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 ";
-                using (SqlCommand command = new SqlCommand(query, connection)) 
+                using (var command = new SqlCommand(query, connection)) 
                 {
                     command.Parameters.AddWithValue("@name_en", newRole.NameEn);
                     command.Parameters.AddWithValue("@name_ar", newRole.NameAr);
                     try 
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync()) 
+                        using (var reader = await command.ExecuteReaderAsync()) 
                         {
                             if (await reader.ReadAsync())
                             {
-                                RoleDTO insertedRole = new RoleDTO
+                                var insertedRole = new RoleDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
                                     reader.GetString(reader.GetOrdinal("name_en")),
@@ -64,10 +64,10 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM Roles WHERE id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     try
@@ -91,16 +91,16 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<IEnumerable<RoleDTO>>> GetAllAsync()
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from Roles";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
-                    List<RoleDTO> roles = new List<RoleDTO>();
+                    var roles = new List<RoleDTO>();
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             while (await reader.ReadAsync())
                             {
@@ -130,20 +130,20 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<RoleDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from Roles Where id  = @id;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
-                                RoleDTO role = new RoleDTO
+                                var role = new RoleDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
                                     reader.GetString(reader.GetOrdinal("name_en")),
@@ -166,7 +166,7 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<bool>> UpdateAsync(int id, RoleDTO updatedRole)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE Roles
@@ -176,7 +176,7 @@ SET
 WHERE Id = @id;
 select @@ROWCOUNT
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     command.Parameters.AddWithValue("@name_en", updatedRole.NameEn);

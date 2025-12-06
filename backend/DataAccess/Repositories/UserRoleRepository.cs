@@ -32,18 +32,18 @@ VALUES
 );
 Select * from UserRoles Where id  =  SCOPE_IDENTITY();
 ";
-            using (SqlCommand command = new SqlCommand(query,connection,transaction))
+            using (var command = new SqlCommand(query,connection,transaction))
             {
                 command.Parameters.AddWithValue("@user_id", userId);
                 command.Parameters.AddWithValue("@role_id", roleId);
                 command.Parameters.AddWithValue("@is_active", isActive);
                 try
                 {
-                    using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
                         if (await reader.ReadAsync())
                         {
-                            UserRoleDTO insertedUserRole = new UserRoleDTO
+                            var insertedUserRole = new UserRoleDTO
                             (
                                 reader.GetInt32(reader.GetOrdinal("id")),
                                 reader.GetInt32(reader.GetOrdinal("role_id")),
@@ -66,10 +66,10 @@ Select * from UserRoles Where id  =  SCOPE_IDENTITY();
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM UserRoles WHERE id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("id", id);
                     try
@@ -92,17 +92,17 @@ Select * from UserRoles Where id  =  SCOPE_IDENTITY();
         }
         public async Task<Result<IEnumerable<UserRoleDTO>>> GetAllAsync(int user_id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from UserRoles Where user_id  = @user_id;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@user_id", user_id);
-                    List<UserRoleDTO> userRoles = new List<UserRoleDTO>();
+                    var userRoles = new List<UserRoleDTO>();
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             while (await reader.ReadAsync())
                             {
@@ -133,20 +133,20 @@ Select * from UserRoles Where id  =  SCOPE_IDENTITY();
 
         public async Task<Result<UserRoleDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from UserRoles Where id  = @id;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
-                                UserRoleDTO userRole = new UserRoleDTO
+                                var userRole = new UserRoleDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
                                     reader.GetInt32(reader.GetOrdinal("role_id")),
@@ -171,7 +171,7 @@ Select * from UserRoles Where id  =  SCOPE_IDENTITY();
 
         public async Task<Result<bool>> UpdateAsync(int id, UserRoleDTO updatedUserRole)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE UserRoles
@@ -181,7 +181,7 @@ SET
 WHERE id = @id;
 select @@ROWCOUNT
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", updatedUserRole.Id);
                     command.Parameters.AddWithValue("@role_id", updatedUserRole.RoleId);

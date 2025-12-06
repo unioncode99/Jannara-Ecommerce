@@ -28,16 +28,16 @@ INSERT INTO Sellers
            ,@website_url);
 Select * from Sellers Where Id  = SCOPE_IDENTITY();
 ";
-            using (SqlCommand command = new SqlCommand(query, connection, transaction))
+            using (var command = new SqlCommand(query, connection, transaction))
             {
                 command.Parameters.AddWithValue("@user_id", userId);
                 command.Parameters.AddWithValue("@business_name", newSeller.BusinessName);
                 command.Parameters.AddWithValue("@website_url", newSeller.WebsiteUrl ?? (object)DBNull.Value);
-                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
-                        SellerDTO insertedSeller = new SellerDTO
+                        var insertedSeller = new SellerDTO
                         (
                             reader.GetInt32(reader.GetOrdinal("Id")),
                             reader.GetInt32(reader.GetOrdinal("user_id")),
@@ -55,10 +55,10 @@ Select * from Sellers Where Id  = SCOPE_IDENTITY();
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM Sellers WHERE Id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
@@ -87,7 +87,7 @@ Select * from Sellers Where Id  = SCOPE_IDENTITY();
 
         public async Task<Result<PagedResponseDTO<SellerDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 select count(*) as total from Customers ;
@@ -95,7 +95,7 @@ select * from Sellers
 order by id 
 OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     int offset = (pageNumber - 1) * pageSize;
                     command.Parameters.AddWithValue("@offset", offset);
@@ -105,7 +105,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
 
                             int total = 0;
@@ -115,7 +115,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
                             }
                             await reader.NextResultAsync();
 
-                            List<SellerDTO> sellers = new List<SellerDTO>();
+                            var sellers = new List<SellerDTO>();
                             while (await reader.ReadAsync())
                             {
                                 sellers.Add(new SellerDTO
@@ -130,7 +130,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
                             }
                             if (sellers.Count() < 1)
                                 return new Result<PagedResponseDTO<SellerDTO>>(false, "No seller found", null, 404);
-                            PagedResponseDTO<SellerDTO> response = new PagedResponseDTO<SellerDTO>(total, pageNumber, pageSize, sellers);
+                            var response = new PagedResponseDTO<SellerDTO>(total, pageNumber, pageSize, sellers);
                             return new Result<PagedResponseDTO<SellerDTO>>(true, "Sellers retrieved successfully", response);
 
 
@@ -147,12 +147,12 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
 
         public async Task<Result<SellerDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 Select * from Sellers where id = @id;
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
@@ -160,11 +160,11 @@ Select * from Sellers where id = @id;
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
-                                SellerDTO customer = new SellerDTO
+                                var customer = new SellerDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("Id")),
                                     reader.GetInt32(reader.GetOrdinal("user_id")),
@@ -192,7 +192,7 @@ Select * from Sellers where id = @id;
 
         public async Task<Result<bool>> UpdateAsync(int id, SellerUpdateDTO updatedSeller)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 
@@ -201,7 +201,7 @@ UPDATE Sellers
       ,website_url = @website_url
  WHERE Id = @id;
 select @@ROWCOUNT";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     command.Parameters.AddWithValue("@business_name", updatedSeller.BusinessName);

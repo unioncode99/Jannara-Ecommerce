@@ -38,7 +38,7 @@ date_of_birth)
 );
 Select * from People Where Id  = SCOPE_IDENTITY();
 ";
-            using (SqlCommand command = new SqlCommand(query, connection, transaction))
+            using (var command = new SqlCommand(query, connection, transaction))
             {
                 command.Parameters.AddWithValue("@first_name", personCreateDTO.FirstName);
                 command.Parameters.AddWithValue("@last_name", personCreateDTO.LastName);
@@ -46,11 +46,11 @@ Select * from People Where Id  = SCOPE_IDENTITY();
                 command.Parameters.AddWithValue("@image_url", imageUrl ?? (object)DBNull.Value);
                 command.Parameters.AddWithValue("@gender", (int)personCreateDTO.Gender);
                 command.Parameters.AddWithValue("@date_of_birth", personCreateDTO.DateOfBirth);
-                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
-                        PersonDTO insertedPerson = new PersonDTO
+                        var insertedPerson = new PersonDTO
                         (
                             reader.GetInt32(reader.GetOrdinal("Id")),
                             reader.GetString(reader.GetOrdinal("first_name")),
@@ -72,10 +72,10 @@ Select * from People Where Id  = SCOPE_IDENTITY();
         }
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM People WHERE Id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
@@ -98,19 +98,19 @@ Select * from People Where Id  = SCOPE_IDENTITY();
         }
         public async Task<Result<PersonDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 Select * from People Where Id  = @id;
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
@@ -144,7 +144,7 @@ Select * from People Where Id  = @id;
         }
         public async Task<Result<bool>> UpdateAsync(int id, PersonUpdateDTO  updatedPerson, string imageUrl)
         {
-            using(SqlConnection connection = new SqlConnection(_connectionString))
+            using(var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE People
@@ -157,7 +157,7 @@ SET
     date_of_birth = @date_of_birth
 WHERE Id = @id;
 select @@ROWCOUNT";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@first_name", updatedPerson.FirstName);
                     command.Parameters.AddWithValue("@id", id);

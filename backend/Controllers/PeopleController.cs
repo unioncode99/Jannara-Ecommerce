@@ -22,7 +22,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PersonDTO>> GetPersonById(int id)
         {
-            Result<PersonDTO> result = await _service.FindAsync(id);
+            var result = await _service.FindAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);
@@ -40,7 +40,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> UpdatePerson(int id,[FromForm] PersonUpdateDTO updatedPerson)
         {
-            Result<bool> result = await _service.UpdateAsync(id, updatedPerson);
+            var result = await _service.UpdateAsync(id, updatedPerson);
 
             if (!result.IsSuccess)
                 return StatusCode(result.ErrorCode, result.Message);
@@ -54,7 +54,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeletePerson(int id)
         {
-            Result<bool> result = await _service.DeleteAsync(id);
+            var  result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
             {
                 return Ok(result.Message);

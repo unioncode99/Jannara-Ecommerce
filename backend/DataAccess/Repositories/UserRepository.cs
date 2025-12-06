@@ -37,17 +37,17 @@ password)
 )
 Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
 ";
-            using (SqlCommand command = new SqlCommand(query, connection, transaction))
+            using (var command = new SqlCommand(query, connection, transaction))
             {
                 command.Parameters.AddWithValue("@person_id", personId);
                 command.Parameters.AddWithValue("@email", newUser.Email);
                 command.Parameters.AddWithValue("@username", newUser.Username);
                 command.Parameters.AddWithValue("@password", newUser.Password);
-                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
-                        UserPublicDTO insertedUser = new UserPublicDTO
+                        var insertedUser = new UserPublicDTO
                         (
                             reader.GetInt32(reader.GetOrdinal("Id")),
                             reader.GetInt32(reader.GetOrdinal("person_id")),
@@ -68,10 +68,10 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM Users WHERE Id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
@@ -95,7 +95,7 @@ Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<PagedResponseDTO<UserPublicDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20, int? currentUserId = null)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 SELECT COUNT(*) AS total FROM Users;
@@ -125,7 +125,7 @@ ORDER BY U.id
 OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
 
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     int offset = (pageNumber - 1) * pageSize;
                     command.Parameters.AddWithValue("@offset", offset);
@@ -135,7 +135,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
 
                             int total = 0;
@@ -145,14 +145,14 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
                             }
                             await reader.NextResultAsync();
 
-                            List<UserPublicDTO> users = new List<UserPublicDTO>();
+                            var users = new List<UserPublicDTO>();
                             while (await reader.ReadAsync())
                             {
                                 var rolesJson = reader.IsDBNull(reader.GetOrdinal("roles_json"))
                                        ? "[]"
                                        : reader.GetString(reader.GetOrdinal("roles_json"));
 
-                                List<UserRoleInfoDTO> rolesList = JsonSerializer.Deserialize<List<UserRoleInfoDTO>>(rolesJson);
+                                var rolesList = JsonSerializer.Deserialize<List<UserRoleInfoDTO>>(rolesJson);
                                 users.Add(new UserPublicDTO(
                                     reader.GetInt32(reader.GetOrdinal("id")),
                                     reader.GetInt32(reader.GetOrdinal("person_id")),
@@ -166,7 +166,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
                             if (users.Count() < 1)
                                 return new Result<PagedResponseDTO<UserPublicDTO>>(false, "No user found!", null, 404);
 
-                            PagedResponseDTO<UserPublicDTO> response = new PagedResponseDTO<UserPublicDTO>(total, pageNumber, pageSize, users);
+                            var response = new PagedResponseDTO<UserPublicDTO>(total, pageNumber, pageSize, users);
 
                             return new Result<PagedResponseDTO<UserPublicDTO>>(true, "Users retureved successfully", response);
                         }
@@ -182,7 +182,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
 
         public async Task<Result<UserDTO>> GetByEmailAsync(string email)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 SELECT 
@@ -205,7 +205,7 @@ INNER JOIN UserRoles ON Roles.id = UserRoles.role_id
 INNER JOIN Users ON UserRoles.user_id = Users.id
 WHERE Users.email = @email;
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@email", email);
                     UserDTO user = null;
@@ -213,7 +213,7 @@ WHERE Users.email = @email;
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             while (await reader.ReadAsync())
                             {
@@ -258,7 +258,7 @@ WHERE Users.email = @email;
 
         public async Task<Result<UserDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 SELECT 
@@ -281,7 +281,7 @@ INNER JOIN UserRoles ON Roles.id = UserRoles.role_id
 INNER JOIN Users ON UserRoles.user_id = Users.id
 WHERE Users.id = @id;
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     UserDTO user = null;
@@ -289,7 +289,7 @@ WHERE Users.id = @id;
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             while (await reader.ReadAsync())
                             {
@@ -334,17 +334,17 @@ WHERE Users.id = @id;
 
         public async Task<Result<bool>> IsExistByEmail(string email)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"SELECT id FROM Users WHERE email = @email";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@email", email);
                     bool isFound;
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             isFound = reader.HasRows;
                         }
@@ -362,17 +362,17 @@ WHERE Users.id = @id;
 
         public async Task<Result<bool>> IsExistByUsername(string username)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"SELECT id FROM Users WHERE username = @username";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@username", username);
                     bool isFound;
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             isFound = reader.HasRows;
                         }
@@ -390,7 +390,7 @@ WHERE Users.id = @id;
 
         public async Task<Result<bool>> UpdateAsync(int id, UserUpdateDTO updatedUser)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 
@@ -400,7 +400,7 @@ UPDATE Users
       ,password  = @password
  WHERE Id = @id
 select @@ROWCOUNT";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     command.Parameters.AddWithValue("@email", updatedUser.Email);

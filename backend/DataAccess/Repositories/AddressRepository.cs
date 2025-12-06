@@ -15,7 +15,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         }
         public async Task<Result<AddressDTO>> AddNewAsync(AddressDTO newAddress)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 INSERT INTO Addresses
@@ -34,7 +34,7 @@ VALUES
 );
 Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@person_id", newAddress.PersonId);
                     command.Parameters.AddWithValue("@street", newAddress.Street);
@@ -43,7 +43,7 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
@@ -72,10 +72,10 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM Addresses WHERE id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     try
@@ -99,17 +99,17 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<IEnumerable<AddressDTO>>> GetAllAsync(int person_id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from Addresses Where person_id  = @person_id;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@person_id", person_id);
-                    List<AddressDTO> personAddresses = new List<AddressDTO>();
+                    var personAddresses = new List<AddressDTO>();
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             while (await reader.ReadAsync())
                             {
@@ -141,16 +141,16 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<AddressDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from Addresses Where id  = @id;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
@@ -179,7 +179,7 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<bool>> UpdateAsync(int id, AddressDTO updatedAddress)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE Addresses
@@ -190,7 +190,7 @@ SET
 WHERE id = @id;
 select @@ROWCOUNT
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@street", updatedAddress.Street);
                     command.Parameters.AddWithValue("@city", updatedAddress.City);

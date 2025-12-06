@@ -51,38 +51,38 @@ namespace Jannara_Ecommerce.Business.Services
         public async Task<Result<CustomerDTO>> CreateAsync(CustomerCreateRequestDTO customerCreateRequestDTO)
         {
 
-            PersonCreateDTO personCreateDTO = customerCreateRequestDTO.GetPersonCreateDTO();
-            UserCreateDTO userCreateDTO = customerCreateRequestDTO.GetUserCreateDTO(); 
+            var personCreateDTO = customerCreateRequestDTO.GetPersonCreateDTO();
+            var userCreateDTO = customerCreateRequestDTO.GetUserCreateDTO(); 
 
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 DbTransaction transaction = null;
                 try
                 {
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
-                    Result<PersonDTO> personResult = await _personService.AddNewAsync(personCreateDTO, connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(personCreateDTO, connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
                         return new Result<CustomerDTO>(false, personResult.Message, null, personResult.ErrorCode);
                     }
                     
-                    Result<UserPublicDTO> userResult = await _userService.AddNewAsync(personResult.Data.Id, userCreateDTO, connection, (SqlTransaction)transaction);
+                    var userResult = await _userService.AddNewAsync(personResult.Data.Id, userCreateDTO, connection, (SqlTransaction)transaction);
                     if (!userResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
                         return new Result<CustomerDTO>(false, userResult.Message, null, userResult.ErrorCode);
                     }
 
-                    Result<UserRoleDTO> userRoleResult = await _userRoleService.AddNewAsync((int)Roles.Customer, userResult.Data.Id, true, connection, (SqlTransaction)transaction);
+                    var userRoleResult = await _userRoleService.AddNewAsync((int)Roles.Customer, userResult.Data.Id, true, connection, (SqlTransaction)transaction);
                     if (!userRoleResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
                         return new Result<CustomerDTO>(false, userRoleResult.Message, null, userRoleResult.ErrorCode);
                     }
 
-                    Result<CustomerDTO> customerResult = await AddNewAsync(userResult.Data.Id,  connection, (SqlTransaction)transaction);
+                    var customerResult = await AddNewAsync(userResult.Data.Id,  connection, (SqlTransaction)transaction);
                     if (!customerResult.IsSuccess)
                     {
                        await transaction.RollbackAsync();

@@ -56,9 +56,9 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<UserPublicDTO>> CreateAsync(UserCreateRequestDTO  userCreateRequestDTO)
         {
-            PersonCreateDTO newPerson = userCreateRequestDTO.GetPersonCreateDTO();
-            UserCreateDTO newUser = userCreateRequestDTO.GetUserCreateDTO();
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            var newPerson = userCreateRequestDTO.GetPersonCreateDTO();
+            var newUser = userCreateRequestDTO.GetUserCreateDTO();
+            using (var connection = new SqlConnection(_connectionString))
             {
                 DbTransaction transaction = null;
                 try
@@ -66,20 +66,20 @@ namespace Jannara_Ecommerce.Business.Services
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
 
-                    Result<PersonDTO> personResult = await _personService.AddNewAsync(newPerson, connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(newPerson, connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
                         return new Result<UserPublicDTO>(false, personResult.Message, null, personResult.ErrorCode);
                     }
-                    Result<UserPublicDTO> userResult = await AddNewAsync(personResult.Data.Id, newUser, connection,(SqlTransaction) transaction);
+                    var userResult = await AddNewAsync(personResult.Data.Id, newUser, connection,(SqlTransaction) transaction);
                     if (!userResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
                         return new Result<UserPublicDTO>(false, userResult.Message, null, userResult.ErrorCode);
                     }
 
-                    Result<UserRoleDTO> userRoleResult = await _userRoleService.AddNewAsync((int) Roles.Admin, userResult.Data.Id, true, connection, (SqlTransaction)transaction);
+                    var userRoleResult = await _userRoleService.AddNewAsync((int) Roles.Admin, userResult.Data.Id, true, connection, (SqlTransaction)transaction);
                     if (!userRoleResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
@@ -125,13 +125,13 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> UpdateAsync(int id, UserUpdateDTO updatedUser)
         {
-            Result<UserDTO> currentUserResult = await _repo.GetByIdAsync(id);
+            var  currentUserResult = await _repo.GetByIdAsync(id);
             if (!currentUserResult.IsSuccess)
                 return new Result<bool>(false, currentUserResult.Message, false, currentUserResult.ErrorCode);
 
             if (!string.Equals(currentUserResult.Data.Email, updatedUser.Email, StringComparison.OrdinalIgnoreCase))
             {
-                Result<bool> existByEmailResult = await _repo.IsExistByEmail(updatedUser.Email);
+                var existByEmailResult = await _repo.IsExistByEmail(updatedUser.Email);
                 if (!existByEmailResult.IsSuccess)
                     return new Result<bool>(false, existByEmailResult.Message, false, existByEmailResult.ErrorCode);
                 if (existByEmailResult.Data)
@@ -140,7 +140,7 @@ namespace Jannara_Ecommerce.Business.Services
             
             if (!string.Equals(currentUserResult.Data.Username, updatedUser.Username, StringComparison.OrdinalIgnoreCase))
             {
-                Result<bool> existByUsernameResult = await _repo.IsExistByUsername(updatedUser.Username);
+                var existByUsernameResult = await _repo.IsExistByUsername(updatedUser.Username);
                 if (!existByUsernameResult.IsSuccess)
                     return new Result<bool>(false, existByUsernameResult.Message, false, existByUsernameResult.ErrorCode);
                 if (existByUsernameResult.Data)
