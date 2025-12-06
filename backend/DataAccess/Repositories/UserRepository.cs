@@ -29,13 +29,13 @@ person_id,
 email,
 username,
 password)
+OUTPUT inserted.*
  VALUES(
 @person_id,
 @email,
 @username,
 @password
 )
-Select * from Users Where Id  = (SELECT SCOPE_IDENTITY());
 ";
             using (var command = new SqlCommand(query, connection, transaction))
             {

@@ -25,6 +25,7 @@ street,
 city,
 state
 )
+OUTPUT inserted.*
 VALUES
 (
 @person_id,
@@ -32,7 +33,6 @@ VALUES
 @city,
 @state
 );
-Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
 ";
                 using (var command = new SqlCommand(query, connection))
                 {
