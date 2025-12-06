@@ -3,9 +3,9 @@ using Jannara_Ecommerce.DTOs.User;
 
 namespace Jannara_Ecommerce.DTOs.Authentication
 {
-    public class LoginResponseDTO<T> where T : class
+    public class LoginResponseDTO
     {
-        public LoginResponseDTO(PersonDTO person, UserPublicDTO user, Dictionary<string, T> roleData)
+        public LoginResponseDTO(PersonDTO person, UserPublicDTO user, Dictionary<string, object> roleData)
         {
             Person = person;
             User = user;
@@ -14,6 +14,6 @@ namespace Jannara_Ecommerce.DTOs.Authentication
 
         public PersonDTO Person { get; set; }
         public UserPublicDTO User { get; set; }
-        public Dictionary<string, T> RoleData { get; set; }
+        public Dictionary<string, object> RoleData { get; set; }
     }
 }
