@@ -1,5 +1,4 @@
-﻿using Jannara_Ecommerce.Dtos.Customer;
-using Jannara_Ecommerce.DTOs.Person;
+﻿using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.DTOs.User;
 

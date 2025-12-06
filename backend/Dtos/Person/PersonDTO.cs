@@ -1,5 +1,4 @@
 ﻿using Jannara_Ecommerce.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace Jannara_Ecommerce.DTOs.Person
 {

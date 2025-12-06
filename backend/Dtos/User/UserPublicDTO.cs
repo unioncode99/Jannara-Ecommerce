@@ -1,7 +1,4 @@
-﻿using Jannara_Ecommerce.DTOs;
-using System.ComponentModel.DataAnnotations;
-
-namespace Jannara_Ecommerce.DTOs.User
+﻿namespace Jannara_Ecommerce.DTOs.User
 {
     public class UserPublicDTO
     {

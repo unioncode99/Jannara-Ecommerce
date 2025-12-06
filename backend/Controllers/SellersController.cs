@@ -1,14 +1,8 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
-using Jannara_Ecommerce.Business.Services;
-using Jannara_Ecommerce.DTOs;
-using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Seller;
-using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.RegularExpressions;
 
 namespace Jannara_Ecommerce.Controllers
 {

@@ -3,8 +3,6 @@ using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Mappers;
 using Jannara_Ecommerce.Utilities;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jannara_Ecommerce.Controllers

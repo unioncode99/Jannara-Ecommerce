@@ -1,11 +1,9 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.Dtos.Person;
 using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
-using System.Security.Principal;
 
 namespace Jannara_Ecommerce.DataAccess.Repositories
 {

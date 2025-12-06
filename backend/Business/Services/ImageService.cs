@@ -1,6 +1,5 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.Utilities;
-using Microsoft.AspNetCore.Http;
 
 namespace Jannara_Ecommerce.Business.Services
 {

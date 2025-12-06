@@ -1,6 +1,4 @@
-﻿using Jannara_Ecommerce.DTOs;
-
-namespace Jannara_Ecommerce.Business.Interfaces
+﻿namespace Jannara_Ecommerce.Business.Interfaces
 {
     public interface IPasswordService 
     {

@@ -3,6 +3,7 @@ using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 
+
 namespace Jannara_Ecommerce.DataAccess.Interfaces
 {
     public interface ICustomerRepository
