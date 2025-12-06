@@ -6,11 +6,9 @@ namespace Jannara_Ecommerce.Business.Services
     public class ImageService : IImageService
     {
         private readonly IWebHostEnvironment _env;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public ImageService(IWebHostEnvironment env, IHttpContextAccessor httpContextAccessor)
+        public ImageService(IWebHostEnvironment env)
         {
             _env = env;
-            _httpContextAccessor = httpContextAccessor;
         }
         Result<bool> _validateFile(IFormFile imageFile)
         {
@@ -24,33 +22,6 @@ namespace Jannara_Ecommerce.Business.Services
                 return new Result<bool>(false, "File too large (max 5MB).", false, 400);
             return new Result<bool>(true, "Passed validation", true);
         }
-
-       
-
-        public async Task<Result<string>> SaveImageAsync(IFormFile imageFile, string folderName)
-        {
-            Result<bool> validationResult = _validateFile(imageFile);
-            if (!validationResult.IsSuccess)
-                return new Result<string>(false, validationResult.Message, string.Empty, validationResult.ErrorCode);
-
-            // Save in project-root/uploads/profiles
-            var uploadPath = Path.Combine(_env.WebRootPath, "uploads", folderName);
-            if (!Directory.Exists(uploadPath))
-                Directory.CreateDirectory(uploadPath);
-
-            var fileName = Guid.NewGuid() + Path.GetExtension(imageFile.FileName);
-            var filePath = Path.Combine(uploadPath, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await imageFile.CopyToAsync(stream);
-            }
-
-
-            var relativePath = Path.Combine("uploads", "profiles", fileName).Replace("\\", "/");
-            return new Result<string>(true, "Image saved sucessfuly", relativePath);
-        }
-
         public Result<bool> DeleteImage(string relativePath)
         {
             if (string.IsNullOrEmpty(relativePath))
@@ -72,11 +43,35 @@ namespace Jannara_Ecommerce.Business.Services
                 return new Result<bool>(false, "Uexpected error in the server", false, 500);
             }
         }
-
-        public async Task<Result<string>> ReplaceImageAsync(string oldPath, IFormFile newFile, string folderName)
+        public async Task ReplaceImageAsync(string oldPath, string newPath, IFormFile newImage)
         {
             DeleteImage(oldPath);
-            return await SaveImageAsync(newFile, folderName);
+             await SaveImageAsync(newImage, newPath);
         }
+
+        public async Task SaveImageAsync(IFormFile newImage,  string imagePath)
+        {
+            using (var stream = new FileStream(imagePath, FileMode.Create))
+            {
+                await newImage.CopyToAsync(stream);
+            }
+        }
+
+        public Result<string> GetImageUrl(IFormFile newImage, string folderName)
+        {
+            Result<bool> validationResult = _validateFile(newImage);
+            if (!validationResult.IsSuccess)
+                return new Result<string>(false, validationResult.Message, string.Empty, validationResult.ErrorCode);
+
+            var uploadPath = Path.Combine(_env.WebRootPath, "Uploads", folderName);
+            if (!Directory.Exists(uploadPath))
+                Directory.CreateDirectory(uploadPath);
+            var fileName = Guid.NewGuid() + Path.GetExtension(newImage.FileName);
+            string imageUrl =  Path.Combine(uploadPath, fileName);
+            var relativePath = Path.Combine("Uploads",  imageUrl).Replace("\\", "/");
+            return new Result<string>(true, "Image url generated successfully", imageUrl);
+        }
+
+       
     }
 }

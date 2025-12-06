@@ -4,8 +4,9 @@ namespace Jannara_Ecommerce.Business.Interfaces
 {
     public interface IImageService
     {
-        public  Task<Result<string>> SaveImageAsync(IFormFile imageFile, string folderName);
+        public  Task SaveImageAsync(IFormFile newImage, string folderName);
         public Result<bool> DeleteImage(string relativePath);
-        public Task<Result<string>> ReplaceImageAsync(string oldPath, IFormFile newFile, string folderName);
+        public  Task ReplaceImageAsync(string oldPath, string newPath, IFormFile newImage);
+        public Result<string> GetImageUrl(IFormFile newImage, string folderName);
     }
 }

@@ -3,6 +3,7 @@ using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Options;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -10,25 +11,15 @@ namespace Jannara_Ecommerce.Business.Services
     {
         private readonly IPersonRepository _repo;
         private readonly IImageService _imageService;
-        private readonly string _folderName = "profiles";
-        public PersonService(IPersonRepository repo, IImageService imageService)
+        private readonly IOptions<ImageSettings> _imageOptions;
+        public PersonService(IPersonRepository repo, IImageService imageService, IOptions<ImageSettings> imageSettings)
         {
             _repo = repo;
             _imageService = imageService;
+            _imageOptions = imageSettings;
         }
-        public async Task<Result<PersonDTO>> AddNewAsync(PersonCreateDTO personCreateDTO, SqlConnection connection, SqlTransaction transaction)
-        {
-            string imageUrl = string.Empty;
-            if (personCreateDTO.ProfileImage != null)
-            {
-                var saveImageResult = await _imageService.SaveImageAsync(personCreateDTO.ProfileImage,_folderName);
-                if (!saveImageResult.IsSuccess)
-                    return new Result<PersonDTO>(false, saveImageResult.Message, null, saveImageResult.ErrorCode);
-                imageUrl = saveImageResult.Data;
-            }
-            else
-                imageUrl = null;
-                
+        public async Task<Result<PersonDTO>> AddNewAsync(PersonCreateDTO personCreateDTO, string imageUrl, SqlConnection connection, SqlTransaction transaction)
+        {  
             return await _repo.AddNewAsync(personCreateDTO, imageUrl, connection, transaction);
         }
 
@@ -57,10 +48,10 @@ namespace Jannara_Ecommerce.Business.Services
             string imageUrl = null;
             if (updatedPerson.ProfileImage != null)
             {
-                var saveImageResult = await _imageService.SaveImageAsync(updatedPerson.ProfileImage, _folderName);
-                if (!saveImageResult.IsSuccess)
-                    return new Result<bool>(false, saveImageResult.Message, false, saveImageResult.ErrorCode);
-                imageUrl = saveImageResult.Data;
+                var ImageUrlResult = _imageService.GetImageUrl(updatedPerson.ProfileImage, _imageOptions.Value.ProfileFolder);
+                if (!ImageUrlResult.IsSuccess)
+                    return new Result<bool>(false, ImageUrlResult.Message, false, ImageUrlResult.ErrorCode);
+                imageUrl = ImageUrlResult.Data;
             }
             else if (updatedPerson.DeleteProfileImage && findResult.Data.ImageUrl is not null)
             {
@@ -71,7 +62,8 @@ namespace Jannara_Ecommerce.Business.Services
             }
             else
                 imageUrl = findResult.Data.ImageUrl;
-
+            if (imageUrl != null) 
+                await _imageService.ReplaceImageAsync(findResult.Data.ImageUrl,imageUrl, updatedPerson.ProfileImage);
             return await _repo.UpdateAsync(id, updatedPerson, imageUrl);
         }
 

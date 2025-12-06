@@ -18,14 +18,20 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IPersonService _personService;
         private readonly IUserService _userService;
         private readonly IUserRoleService _userRoleService;
+        private readonly IImageService _imageService;
+        private readonly IOptions<ImageSettings> _imageSettings;
         public CustomerService(ICustomerRepository repo, IPersonService PersonService,
-            IUserService UserService, IOptions<DatabaseSettings> options, IUserRoleService userRoleService)
+            IUserService UserService, IOptions<DatabaseSettings> dateBaseSettings,
+            IUserRoleService userRoleService, IImageService imageService,
+            IOptions<ImageSettings> imageSettings)
         {
             _repo = repo;
-            _connectionString = options.Value.DefaultConnection;
+            _connectionString = dateBaseSettings.Value.DefaultConnection;
             _personService = PersonService;
             _userService = UserService;
             _userRoleService = userRoleService;
+            _imageService = imageService;
+            _imageSettings = imageSettings;
         }
         public async Task<Result<CustomerDTO>> AddNewAsync(int userId, SqlConnection connection, SqlTransaction transaction)
         {
@@ -45,7 +51,18 @@ namespace Jannara_Ecommerce.Business.Services
         {
 
             var personCreateDTO = customerCreateRequestDTO.GetPersonCreateDTO();
-            var userCreateDTO = customerCreateRequestDTO.GetUserCreateDTO(); 
+            var userCreateDTO = customerCreateRequestDTO.GetUserCreateDTO();
+
+            string imageUrl = null;
+            if (personCreateDTO.ProfileImage != null)
+            {
+                var imageUrlResult = _imageService.GetImageUrl(personCreateDTO.ProfileImage, _imageSettings.Value.ProfileFolder);
+                if (!imageUrlResult.IsSuccess) 
+                    return new Result<CustomerDTO>(false, imageUrlResult.Message, null, imageUrlResult.ErrorCode);
+                imageUrl = imageUrlResult.Data;
+            }
+               
+                
 
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -54,7 +71,7 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
-                    var personResult = await _personService.AddNewAsync(personCreateDTO, connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(personCreateDTO, imageUrl, connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
@@ -82,6 +99,7 @@ namespace Jannara_Ecommerce.Business.Services
                         return new Result<CustomerDTO>(false, customerResult.Message, null, customerResult.ErrorCode);
                     }
                     await transaction.CommitAsync();
+                    await _imageService.SaveImageAsync(personCreateDTO.ProfileImage, imageUrl);
                     return customerResult;
                 }
                 catch (Exception ex)
