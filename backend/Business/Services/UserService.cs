@@ -37,16 +37,17 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<UserPublicDTO>> AddNewAsync(int personId, UserCreateDTO newUser, SqlConnection connection, SqlTransaction transaction)
         {
-            Result<bool> existByEmailResult = await _repo.IsExistByEmail(newUser.Email);
-            if (!existByEmailResult.IsSuccess)
-                return new Result<UserPublicDTO>(false, existByEmailResult.Message, null, existByEmailResult.ErrorCode);
-            if (existByEmailResult.Data)
-                return new Result<UserPublicDTO>(false, "This email is already registerd", null, 409);
+            var checkEmailTask =  _repo.IsExistByEmail(newUser.Email);
+            var checkUsernameTask = _repo.IsExistByUsername(newUser.Username);
+            await Task.WhenAll(checkEmailTask,  checkUsernameTask);
 
-            Result<bool> existByUsernameResult = await _repo.IsExistByUsername(newUser.Username);
-            if (!existByUsernameResult.IsSuccess)
-                return new Result<UserPublicDTO>(false, existByUsernameResult.Message, null, existByUsernameResult.ErrorCode);
-            if (existByUsernameResult.Data)
+            if (!checkEmailTask.Result.IsSuccess)
+                return new Result<UserPublicDTO>(false, checkEmailTask.Result.Message, null, checkEmailTask.Result.ErrorCode);
+            if (checkEmailTask.Result.Data)
+                return new Result<UserPublicDTO>(false, "This email is already registerd", null, 409);
+            if (!checkUsernameTask.Result.IsSuccess)
+                return new Result<UserPublicDTO>(false, checkUsernameTask.Result.Message, null, checkUsernameTask.Result.ErrorCode);
+            if (checkUsernameTask.Result.Data)
                 return new Result<UserPublicDTO>(false, "This username is used by another user", null, 409);
 
             newUser.Password = _passwordService.HashPassword(newUser, newUser.Password);
