@@ -1,11 +1,7 @@
-﻿using Azure.Core;
-using Jannara_Ecommerce.Business.Interfaces;
+﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.Dtos.Person;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.General;
-using Jannara_Ecommerce.DTOs.Person;
-using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Mappers;

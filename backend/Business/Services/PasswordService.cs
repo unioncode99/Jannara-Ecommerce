@@ -1,5 +1,4 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
-using Jannara_Ecommerce.DTOs;
 using Microsoft.AspNetCore.Identity;
 
 namespace Jannara_Ecommerce.Business.Services
