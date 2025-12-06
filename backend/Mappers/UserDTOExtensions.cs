@@ -1,8 +1,8 @@
 ﻿using Jannara_Ecommerce.DTOs.User;
 
-namespace Jannara_Ecommerce.DTOs.Mappers
+namespace Jannara_Ecommerce.Mappers
 {
-    public static class UserDTOMapper
+    public static class UserDTOExtensions
     {
         public static UserPublicDTO ToUserPublicDTO(this UserDTO userDTO)
         {

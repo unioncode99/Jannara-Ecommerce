@@ -1,6 +1,6 @@
 ﻿using Jannara_Ecommerce.Enums;
 
-namespace Jannara_Ecommerce.Dtos.Customer
+namespace Jannara_Ecommerce.DTOs.Customer
 {
     public class CustomerCreateRequestDTO
     {

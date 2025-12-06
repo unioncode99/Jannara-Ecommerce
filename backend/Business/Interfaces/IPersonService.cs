@@ -1,5 +1,4 @@
-﻿using Jannara_Ecommerce.Dtos.Person;
-using Jannara_Ecommerce.DTOs.Person;
+﻿using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 

@@ -1,9 +1,8 @@
-﻿using Jannara_Ecommerce.Dtos.Customer;
-using Jannara_Ecommerce.Dtos.Person;
-using Jannara_Ecommerce.Dtos.User;
-using Jannara_Ecommerce.DTOs.User;
+﻿using Jannara_Ecommerce.Business.DTOs.Person;
+using Jannara_Ecommerce.Business.DTOs.User;
+using Jannara_Ecommerce.Dtos.Customer;
 
-namespace Jannara_Ecommerce.DTOs.Mappers
+namespace Jannara_Ecommerce.Business.Mappers
 {
     public static class UserCreateRequestDTOMapper
     {

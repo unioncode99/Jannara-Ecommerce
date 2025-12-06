@@ -1,4 +1,4 @@
-﻿namespace Jannara_Ecommerce.Enums
+﻿namespace Jannara_Ecommerce.Business.Enums
 {
     public enum Gender : byte
     {

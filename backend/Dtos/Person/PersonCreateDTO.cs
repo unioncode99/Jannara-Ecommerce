@@ -1,7 +1,7 @@
 ﻿using Jannara_Ecommerce.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace Jannara_Ecommerce.Dtos.Person
+namespace Jannara_Ecommerce.DTOs.Person
 {
     public class PersonCreateDTO
     {

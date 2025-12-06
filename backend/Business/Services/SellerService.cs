@@ -1,4 +1,6 @@
-﻿using Jannara_Ecommerce.Business.Interfaces;
+﻿using Jannara_Ecommerce.Business.DTOs.Mappers;
+using Jannara_Ecommerce.Business.Interfaces;
+using Jannara_Ecommerce.Business.Mappers;
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.Dtos.Person;
 using Jannara_Ecommerce.Dtos.User;
@@ -10,6 +12,8 @@ using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Enums;
+using Jannara_Ecommerce.Mappers;
+using Jannara_Ecommerce.Properties.Mappers;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;

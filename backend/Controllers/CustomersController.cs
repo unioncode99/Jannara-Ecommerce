@@ -1,6 +1,5 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.Business.Services;
-using Jannara_Ecommerce.Dtos.Customer;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.DTOs.General;
