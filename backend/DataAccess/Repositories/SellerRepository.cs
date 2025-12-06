@@ -22,11 +22,11 @@ INSERT INTO Sellers
            (user_id
            ,business_name
            ,website_url)
+OUTPUT inserted.*
      VALUES
            (@user_id
            ,@business_name
            ,@website_url);
-Select * from Sellers Where Id  = SCOPE_IDENTITY();
 ";
             using (var command = new SqlCommand(query, connection, transaction))
             {

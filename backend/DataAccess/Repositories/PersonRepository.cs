@@ -28,6 +28,7 @@ phone,
 image_url,
 gender,
 date_of_birth)
+OUTPUT inserted.*
  VALUES(
 @first_name,
 @last_name,
@@ -36,7 +37,6 @@ date_of_birth)
 @gender,
 @date_of_birth
 );
-Select * from People Where Id  = SCOPE_IDENTITY();
 ";
             using (var command = new SqlCommand(query, connection, transaction))
             {

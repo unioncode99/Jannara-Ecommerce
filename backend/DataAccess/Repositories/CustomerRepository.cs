@@ -22,9 +22,9 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
             string query = @"
 INSERT INTO Customers
            (user_id)
+OUTPUT inserted.*
      VALUES
            (@user_id);
-Select * from Customers Where Id  =  SCOPE_IDENTITY();
 ";
             using (var command = new SqlCommand(query, connection, transaction))
             {

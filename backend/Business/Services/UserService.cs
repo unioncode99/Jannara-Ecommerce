@@ -10,6 +10,7 @@ using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Enums;
+using Jannara_Ecommerce.Enums.Mappers;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
@@ -85,6 +86,7 @@ namespace Jannara_Ecommerce.Business.Services
                         await transaction.RollbackAsync();
                         return new Result<UserPublicDTO>(false, userRoleResult.Message, null, userRoleResult.ErrorCode);
                     }
+                    userResult.Data.Roles.Add(new UserRoleInfoDTO(userRoleResult.Data.Id,Roles.Admin.ToString(), Roles.Admin.GetNameAr() , userRoleResult.Data.IsActive, userRoleResult.Data.CreatedAt, userRoleResult.Data.UpdatedAt));
                     await transaction.CommitAsync();
                     return userResult;
                 }

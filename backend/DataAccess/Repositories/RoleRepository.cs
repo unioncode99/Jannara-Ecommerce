@@ -24,12 +24,12 @@ INSERT INTO Roles
 name_en,
 name_ar
 )
+OUTPUT inserted.*
 VALUES
 (
 @name_en,
 @name_ar
 );
-Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 ";
                 using (var command = new SqlCommand(query, connection)) 
                 {

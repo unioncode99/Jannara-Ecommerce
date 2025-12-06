@@ -24,13 +24,13 @@ user_id,
 role_id,
 is_active
 )
+OUTPUT inserted.*
 VALUES
 (
 @user_id,
 @role_id,
 @is_active
 );
-Select * from UserRoles Where id  =  SCOPE_IDENTITY();
 ";
             using (var command = new SqlCommand(query,connection,transaction))
             {
