@@ -1,13 +1,14 @@
 import { Globe, Moon, Sun } from "lucide-react";
 import { useLanguage } from "../hooks/useLanguage";
 import { useTheme } from "../hooks/useTheme";
+import "./AppSettings.css";
 
 function AppSettings() {
   const { language, toggleLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div className="app-settings">
+    <div dir="ltr" className="app-settings">
       <button className="lang" onClick={toggleLanguage}>
         <Globe />
         <span>{language == "en" ? "AR" : "EN"}</span>

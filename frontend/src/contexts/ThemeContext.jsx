@@ -1,11 +1,13 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 
-// Create a context
 export const ThemeContext = createContext();
 
-// Provider component
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState("light"); // Default theme is light
+  const [theme, setTheme] = useState("light");
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
