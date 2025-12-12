@@ -98,7 +98,7 @@ const Register = () => {
       temp.password = msgs.weak_password;
     }
 
-    if (!formData.businessName.trim()) {
+    if (!formData.businessName.trim() && formData.role === "seller") {
       temp.businessName = msgs.required;
     }
 
