@@ -15,16 +15,10 @@ export const LanguageProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const html = document.documentElement;
-    if (language === "ar") {
-      html.setAttribute("dir", "rtl");
-      html.style.setProperty("--heading-font", "'Cairo', sans-serif");
-      html.style.setProperty("--body-font", "'Tajawal', sans-serif");
-    } else {
-      html.setAttribute("dir", "ltr");
-      html.style.setProperty("--heading-font", "'Roboto', sans-serif");
-      html.style.setProperty("--body-font", "'Nunito', sans-serif");
-    }
+    document.documentElement.setAttribute(
+      "dir",
+      language === "ar" ? "rtl" : "ltr"
+    );
   }, [language]);
 
   return (

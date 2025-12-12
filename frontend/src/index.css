@@ -8,7 +8,8 @@
 }
 
 :root {
-  /* Colors */
+  /* ---------------- Colors ---------------- */
+  /* Primary palette */
   --primary-100: #ffe9c4;
   --primary-200: #ffd58a;
   --primary-300: #ffbf4d;
@@ -18,7 +19,8 @@
   --primary-700: #b37305;
   --primary-800: #865604;
   --primary-900: #593903;
-  /* grey */
+
+  /* Grey palette */
   --grey-50: #f8fafc;
   --grey-100: #f1f5f9;
   --grey-200: #e2e8f0;
@@ -29,56 +31,58 @@
   --grey-700: #334155;
   --grey-800: #1e293b;
   --grey-900: #0f172a;
-  /* rest of the colors */
+
+  /* Other colors */
   --white: #fff;
   --black: #222;
   --red-light: #f8d7da;
   --red-dark: #842029;
   --green-light: #d1e7dd;
   --green-dark: #0f5132;
-  /* Fonts */
-  /* English fonts */
-  --font-heading-en: "Roboto", sans-serif;
-  --font-body-en: "Nunito", sans-serif;
-  /* Arabic fonts */
-  --font-heading-ar: "Cairo", sans-serif;
-  --font-body-ar: "Tajawal", sans-serif;
-  /* Fallback fonts */
-  --heading-font: var(--font-heading-en);
-  --body-font: var(--font-body-en);
+  --color-secondary: hsla(182, 63%, 54%);
+  --color-gold: #c59d5f;
+
+  /* Other */
+  --text-color: var(--grey-900);
+  --alert-color: #d9534f;
+
+  /* ---------------- Typography ---------------- */
+
+  --heading-font: var(--heading-font-en);
+  --body-font: var(--body-font-en);
   --small-text: 0.875rem;
   --extra-small-text: 0.7em;
-  /* Layout */
+
+  /* ---------------- Layout ---------------- */
   --border-radius: 0.25rem;
   --letter-spacing: 1px;
   --transition: 0.3s ease-in-out all;
   --max-width: 1200px;
   --fixed-width: 600px;
-  /* Shadows */
+
+  /* ---------------- Shadows ---------------- */
   --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow-2: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
   --shadow-3: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
   --shadow-4: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
-  /* Backgrounds */
+
+  /* ---------------- Backgrounds ---------------- */
   --background-color: var(--grey-50);
   --card-background: var(--white);
-  --input-background: var(--white);
+  --input-background: var(--background-color);
   --form-background: var(--white);
-  /* Borders */
+
+  /* ---------------- Borders ---------------- */
   --border-color: #e2e8f0;
   --border-color-hover: #cbd5e1;
   --border-color-focus: var(--primary-500);
-  /* inputs */
-  --input-background: var(--background-color);
+
+  /* ---------------- Inputs ---------------- */
   --input-text-color: var(--text-color);
-  --input-placeholder-color: var(--grey-400); /* Grey placeholder */
+  --input-placeholder-color: var(--grey-400);
 }
 
 html[data-theme="dark"] {
-  /* Background & Text */
-  --background-color: #0f172a;
-  --text-color: #f1f5f9;
-
   /* Grey palette */
   --grey-50: #151c2b;
   --grey-100: #1e2637;
@@ -103,59 +107,41 @@ html[data-theme="dark"] {
   --primary-900: #593903;
 
   /* Other colors */
+  --white: #fff;
+  --black: #222;
+  --red-light: #f8d7da;
+  --red-dark: #842029;
+  --green-light: #d1e7dd;
+  --green-dark: #0f5132;
   --color-secondary: hsla(182, 63%, 54%);
   --color-gold: #c59d5f;
-  --white: #f1f5f9;
-  --black: #222;
-  --red-light: #842029;
-  --red-dark: #f8d7da;
-  --green-light: #0f5132;
-  --green-dark: #d1e7dd;
 
-  /* Backgrounds */
+  --text-color: #f1f5f9;
+  --alert-color: #d9534f;
+
+  /* ---------------- Backgrounds ---------------- */
+  --background-color: #0f172a;
   --card-background: #1e2637;
-  --input-background: #2b3448;
+  --input-background: var(--background-color);
   --form-background: #1e2637;
 
-  /* Borders */
+  /* ---------------- Borders ---------------- */
   --border-color: #394158;
   --border-color-hover: #4c5469;
   --border-color-focus: #ffbf4d;
 
-  /* Fonts */
-  /* English fonts */
-  --font-heading-en: "Roboto", sans-serif;
-  --font-body-en: "Nunito", sans-serif;
-  /* Arabic fonts */
-  --font-heading-ar: "Cairo", sans-serif;
-  --font-body-ar: "Tajawal", sans-serif;
-  /* Fallback fonts */
-  --heading-font: var(--font-heading-en);
-  --body-font: var(--font-body-en);
-  --small-text: 0.875rem;
-  --extra-small-text: 0.7em;
-
-  /* Layout & sizing */
-  --border-radius: 0.25rem;
-  --letter-spacing: 1px;
-  --transition: 0.3s ease-in-out all;
-  --max-width: 1200px;
-  --fixed-width: 600px;
-
-  /* Shadows */
-  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-2: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-3: 0 10px 15px rgba(0, 0, 0, 0.3), 0 4px 6px rgba(0, 0, 0, 0.2);
-  --shadow-4: 0 20px 25px rgba(0, 0, 0, 0.3), 0 10px 10px rgba(0, 0, 0, 0.15);
-  /* Inputs */
-  --input-background: #2b3448;
-  --input-text-color: #f1f5f9; /* Light text for dark theme */
-  --input-placeholder-color: #7b8799; /* Grey placeholder for dark */
+  /* ---------------- Inputs ---------------- */
+  --input-text-color: #f1f5f9;
+  --input-placeholder-color: var(--grey-500);
 }
 
 html[dir="rtl"] {
-  --heading-font: var(--font-heading-ar);
-  --body-font: var(--font-body-ar);
+  ---heading-font: "Cairo", sans-serif;
+  --body-font: "Tajawal", sans-serif;
+}
+html[dir="ltr"] {
+  --heading-font: "Roboto", sans-serif;
+  --body-font: "Nunito", sans-serif;
 }
 
 body {
@@ -226,7 +212,7 @@ small,
 }
 
 .form-alert {
-  color: var(--red-dark);
+  color: var(--alert-color);
   letter-spacing: var(--letter-spacing);
   text-transform: capitalize;
   font-size: var(--small-text);
