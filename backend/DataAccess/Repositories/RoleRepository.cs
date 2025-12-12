@@ -9,9 +9,11 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
     public class RoleRepository : IRoleRepository
     {
         private readonly string _connectionString;
-        public RoleRepository(IOptions<DatabaseSettings> options)
+        private readonly ILogger<IRoleRepository> _logger;
+        public RoleRepository(IOptions<DatabaseSettings> options, ILogger<IRoleRepository> logger)
         {
             _connectionString = options.Value.DefaultConnection;
+            _logger = logger;
         }
         public async Task<Result<RoleDTO>> AddNewAsync(RoleDTO newRole)
         {
@@ -53,8 +55,10 @@ VALUES
                             }
                             return new Result<RoleDTO>(false, "Failed To Add Role", null, 500);
                         }
-                    } catch (Exception ex) 
+                    } 
+                    catch (Exception ex) 
                     {
+                        _logger.LogError(ex, "Failed to add a new role with NameEn {NameEn} and NameAr {NameAr}", newRole.NameEn, newRole.NameAr);
                         return new Result<RoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
@@ -82,6 +86,7 @@ VALUES
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to delete role with RoleId {RoleId}", id);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
                 }
@@ -121,6 +126,7 @@ VALUES
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve all roles from database");
                         return new Result<IEnumerable<RoleDTO>>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
@@ -157,6 +163,7 @@ VALUES
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve role with RoleId {RoleId}", id);
                         return new Result<RoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
@@ -193,6 +200,7 @@ select @@ROWCOUNT
                     }
                     catch (SqlException ex)
                     {
+                        _logger.LogError(ex, "Failed to update role with RoleId {RoleId}", id);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
                 }

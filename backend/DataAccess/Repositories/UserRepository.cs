@@ -12,9 +12,11 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly string _connectionString;
-        public UserRepository(IOptions<DatabaseSettings> options)
+        private ILogger<IUserRepository> _logger;
+        public UserRepository(IOptions<DatabaseSettings> options, ILogger<IUserRepository> logger)
         {
             _connectionString = options.Value.DefaultConnection;
+            _logger = logger;
         }
         public async Task<Result<UserPublicDTO>> AddNewAsync(int personId, UserCreateDTO newUser, SqlConnection connection, SqlTransaction transaction)
         {
@@ -83,6 +85,7 @@ OUTPUT inserted.*
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to delete user with UserId {UserId}", id);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
 
@@ -170,6 +173,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve users for page {PageNumber} with page size {PageSize}", pageNumber, pageSize);
                         return new Result<PagedResponseDTO<UserPublicDTO>>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
@@ -246,6 +250,7 @@ WHERE Users.email = @email;
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve user by email {Email}", email);
                         return new Result<UserDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
@@ -322,6 +327,7 @@ WHERE Users.id = @id;
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve user with UserId {UserId}", id);
                         return new Result<UserDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
@@ -350,6 +356,7 @@ WHERE Users.id = @id;
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to check existence of user with Email {Email}", email);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
 
@@ -378,6 +385,7 @@ WHERE Users.id = @id;
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to check existence of user with Username {Username}", username);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
 
@@ -416,6 +424,7 @@ select @@ROWCOUNT";
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to update user with UserId {UserId} and Email {Email}", id, updatedUser.Email);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
 
