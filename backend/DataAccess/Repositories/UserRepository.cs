@@ -186,71 +186,64 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
-SELECT 
-    Users.id          AS UserId,
-	Users.person_id,
-	Users.email,
-    Users.username,
-	Users.password,
-    Users.created_at  AS user_created_at,
-    Users.updated_at  AS user_updated_at,
-
-    Roles.id          AS role_id,
-    Roles.name_ar,
-    Roles.name_en,
-    UserRoles.is_active,
-    Roles.created_at  AS role_created_at,
-    Roles.updated_at  AS role_updated_at
-FROM Roles
-INNER JOIN UserRoles ON Roles.id = UserRoles.role_id
-INNER JOIN Users ON UserRoles.user_id = Users.id
-WHERE Users.email = @email;
+SELECT
+    U.id  ,
+    U.person_id,
+    U.email,
+    U.username,
+    U.password,
+    U.created_at ,
+    U.updated_at ,
+    (
+        SELECT 
+            UR.id as Id,
+            R.name_ar as NameAr,
+            R.name_en as NameEn,
+            UR.is_active as IsActive,
+            UR.created_at as CreatedAt,
+            UR.updated_at as UpdateAt
+        FROM UserRoles UR
+        JOIN Roles R ON UR.role_id = R.id
+        WHERE UR.user_id = U.id
+        FOR JSON PATH
+    ) AS roles_json
+FROM Users U
+where email = @email
 ";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@email", email);
-                    UserDTO user = null;
 
                     try
                     {
                         await connection.OpenAsync();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
-                            while (await reader.ReadAsync())
+                            if (await reader.ReadAsync())
                             {
-                                if (user == null)
-                                {
-                                    user = new UserDTO
-                                            (
-                                                reader.GetInt32(reader.GetOrdinal("UserId")),
-                                                reader.GetInt32(reader.GetOrdinal("person_id")),
-                                                reader.GetString(reader.GetOrdinal("email")),
-                                                reader.GetString(reader.GetOrdinal("username")),
-                                                reader.GetString(reader.GetOrdinal("password")),
-                                                reader.GetDateTime(reader.GetOrdinal("user_created_at")),
-                                                reader.GetDateTime(reader.GetOrdinal("user_updated_at")),
-                                                  new List<UserRoleInfoDTO>()
-                                            );
-                                }
-                                user.Roles.Add(new UserRoleInfoDTO(
-                                    reader.GetInt32(reader.GetOrdinal("role_id")),
-                                    reader.GetString(reader.GetOrdinal("name_ar")),
-                                    reader.GetString(reader.GetOrdinal("name_en")),
-                                    reader.GetBoolean(reader.GetOrdinal("is_active")),
-                                    reader.GetDateTime(reader.GetOrdinal("role_created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("role_updated_at")))
-                                    );
+                                var rolesJson = reader.IsDBNull(reader.GetOrdinal("roles_json"))
+                                       ? "[]"
+                                       : reader.GetString(reader.GetOrdinal("roles_json"));
+
+                                var rolesList = JsonSerializer.Deserialize<List<UserRoleInfoDTO>>(rolesJson);
+                                var user = new UserDTO(
+                                    reader.GetInt32(reader.GetOrdinal("id")),
+                                    reader.GetInt32(reader.GetOrdinal("person_id")),
+                                    reader.GetString(reader.GetOrdinal("email")),
+                                    reader.GetString(reader.GetOrdinal("username")),
+                                    reader.GetString(reader.GetOrdinal("password")),
+                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                    reader.GetDateTime(reader.GetOrdinal("updated_at")),
+                                    rolesList ?? new List<UserRoleInfoDTO>()
+                                );
+                                return new Result<UserDTO>(true, "User retrieved successfully", user);
                             }
-                            if (user == null)
-                                return new Result<UserDTO>(false, "User not found", null, 404);
-                            return new Result<UserDTO>(true, "User found successfully", user);
+                            return new Result<UserDTO>(false, "User not found", null, 404);
                         }
-
-
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to retrieve user by email {Email}", email);
+                        _logger.LogError(ex, "Failed to retrieve user with Email {Email}", email);
                         return new Result<UserDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
@@ -263,67 +256,60 @@ WHERE Users.email = @email;
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
-SELECT 
-    Users.id          AS UserId,
-	Users.person_id,
-	Users.email,
-    Users.username,
-	Users.password,
-    Users.created_at  AS user_created_at,
-    Users.updated_at  AS user_updated_at,
-
-    Roles.id          AS role_id,
-    Roles.name_ar,
-    Roles.name_en,
-    UserRoles.is_active,
-    Roles.created_at  AS role_created_at,
-    Roles.updated_at  AS role_updated_at
-FROM Roles
-INNER JOIN UserRoles ON Roles.id = UserRoles.role_id
-INNER JOIN Users ON UserRoles.user_id = Users.id
-WHERE Users.id = @id;
+SELECT
+    U.id  ,
+    U.person_id,
+    U.email,
+    U.username,
+    U.password,
+    U.created_at ,
+    U.updated_at ,
+    (
+        SELECT 
+            UR.id as Id,
+            R.name_ar as NameAr,
+            R.name_en as NameEn,
+            UR.is_active as IsActive,
+            UR.created_at as CreatedAt,
+            UR.updated_at as UpdateAt
+        FROM UserRoles UR
+        JOIN Roles R ON UR.role_id = R.id
+        WHERE UR.user_id = U.id
+        FOR JSON PATH
+    ) AS roles_json
+FROM Users U
+where id = @id
 ";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    UserDTO user = null;
 
                     try
                     {
                         await connection.OpenAsync();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
-                            while (await reader.ReadAsync())
+                            if (await reader.ReadAsync())
                             {
-                                if (user == null)
-                                {
-                                    user = new UserDTO
-                                            (
-                                                reader.GetInt32(reader.GetOrdinal("UserId")),
-                                                reader.GetInt32(reader.GetOrdinal("person_id")),
-                                                reader.GetString(reader.GetOrdinal("email")),
-                                                reader.GetString(reader.GetOrdinal("username")),
-                                                reader.GetString(reader.GetOrdinal("password")),
-                                                reader.GetDateTime(reader.GetOrdinal("user_created_at")),
-                                                reader.GetDateTime(reader.GetOrdinal("user_updated_at")),
-                                                  new List<UserRoleInfoDTO>()
-                                            );
-                                }
-                                user.Roles.Add(new UserRoleInfoDTO(
-                                    reader.GetInt32(reader.GetOrdinal("role_id")),
-                                    reader.GetString(reader.GetOrdinal("name_ar")),
-                                    reader.GetString(reader.GetOrdinal("name_en")),
-                                    reader.GetBoolean(reader.GetOrdinal("is_active")),
-                                    reader.GetDateTime(reader.GetOrdinal("role_created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("role_updated_at")))
-                                    );
-                            }
-                            if (user == null)
-                                return new Result<UserDTO>(false, "User not found", null, 404);
-                            return new Result<UserDTO>(true, "User found successfully", user);
+                                var rolesJson = reader.IsDBNull(reader.GetOrdinal("roles_json"))
+                                       ? "[]"
+                                       : reader.GetString(reader.GetOrdinal("roles_json"));
+
+                                var rolesList = JsonSerializer.Deserialize<List<UserRoleInfoDTO>>(rolesJson);
+                                var user =  new UserDTO(
+                                    reader.GetInt32(reader.GetOrdinal("id")),
+                                    reader.GetInt32(reader.GetOrdinal("person_id")),
+                                    reader.GetString(reader.GetOrdinal("email")),
+                                    reader.GetString(reader.GetOrdinal("username")),
+                                    reader.GetString(reader.GetOrdinal("password")),
+                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                    reader.GetDateTime(reader.GetOrdinal("updated_at")),
+                                    rolesList ?? new List<UserRoleInfoDTO>()
+                                );
+                                return new Result<UserDTO>(true, "User retrieved successfully", user);
+                            }                         
+                            return new Result<UserDTO>(false, "User not found", null, 404);
                         }
-
-
                     }
                     catch (Exception ex)
                     {
