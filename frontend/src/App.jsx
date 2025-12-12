@@ -7,7 +7,8 @@ import ToastContainer from "./components/ui/Toast";
 function App() {
   const { language } = useLanguage();
   return (
-    <div dir={language === "en" ? "ltr" : "rtl"}>
+    // <div dir={language === "en" ? "ltr" : "rtl"}>
+    <div>
       <AppSettings />
       <ToastContainer />
       <Register />

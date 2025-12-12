@@ -1,4 +1,5 @@
 import { useLanguage } from "../../hooks/useLanguage";
+import "./Select.css";
 
 const Select = ({
   label,

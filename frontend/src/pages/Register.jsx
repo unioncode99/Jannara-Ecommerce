@@ -16,6 +16,7 @@ import Select from "../components/ui/Select";
 import Button from "../components/ui/Button";
 import { toast } from "../components/ui/Toast";
 import { create } from "../api/apiWrapper";
+import "./Register.css";
 
 const initialFormState = {
   role: "customer",
