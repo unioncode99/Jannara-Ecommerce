@@ -9,13 +9,15 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
     public class AddressRepository : IAddressRepository
     {
         private readonly string _connectionString;
-        public AddressRepository(IOptions<DatabaseSettings> options)
+        private readonly ILogger<IAddressRepository> _logger;
+        public AddressRepository(IOptions<DatabaseSettings> options, ILogger<IAddressRepository> logger)
         {
             _connectionString = options.Value.DefaultConnection;
+            _logger = logger;
         }
         public async Task<Result<AddressDTO>> AddNewAsync(AddressDTO newAddress)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 INSERT INTO Addresses
@@ -25,6 +27,7 @@ street,
 city,
 state
 )
+OUTPUT inserted.*
 VALUES
 (
 @person_id,
@@ -32,9 +35,8 @@ VALUES
 @city,
 @state
 );
-Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@person_id", newAddress.PersonId);
                     command.Parameters.AddWithValue("@street", newAddress.Street);
@@ -43,7 +45,7 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
@@ -57,14 +59,15 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<AddressDTO>(true, "Address added successfully.", insertedAddress);
+                                return new Result<AddressDTO>(true, "address_added_successfully", insertedAddress);
                             }
-                            return new Result<AddressDTO>(false, "Failed To Add Address", null, 500);
+                            return new Result<AddressDTO>(false, "failed_to_add_address", null, 500);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<AddressDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        _logger.LogError(ex, "Failed to add new address");
+                        return new Result<AddressDTO>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -72,10 +75,10 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM Addresses WHERE id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     try
@@ -85,31 +88,32 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "Address deleted successfully.", true);
+                            return new Result<bool>(true, "address_deleted_successfully", true);
                         }
-                        return new Result<bool>(false, "Role Not Found", false, 404);
+                        return new Result<bool>(false, "address_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        _logger.LogError(ex, "Failed to delete address with AddressId {AddressId}", id);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }
         }
 
-        public async Task<Result<IEnumerable<AddressDTO>>> GetAllAsync(int person_id)
+        public async Task<Result<IEnumerable<AddressDTO>>> GetAllAsync(int personId)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from Addresses Where person_id  = @person_id;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@person_id", person_id);
-                    List<AddressDTO> personAddresses = new List<AddressDTO>();
+                    command.Parameters.AddWithValue("@person_id", personId);
+                    var personAddresses = new List<AddressDTO>();
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             while (await reader.ReadAsync())
                             {
@@ -126,14 +130,15 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                             }
                             if (personAddresses.Count > 0)
                             {
-                                return new Result<IEnumerable<AddressDTO>>(true, "Addresses retrieved successfully", personAddresses);
+                                return new Result<IEnumerable<AddressDTO>>(true, "addresses_retrieved_successfully", personAddresses);
                             }
-                            return new Result<IEnumerable<AddressDTO>>(false, "Addresses Not Found", null, 404);
+                            return new Result<IEnumerable<AddressDTO>>(false, "addresses_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<IEnumerable<AddressDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        _logger.LogError(ex, "Failed to get all addresses for PersonId {PersonId}", personId);
+                        return new Result<IEnumerable<AddressDTO>>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -141,16 +146,16 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<AddressDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from Addresses Where id  = @id;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
@@ -164,14 +169,15 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<AddressDTO>(true, "Address retrieved successfully.", address);
+                                return new Result<AddressDTO>(true, "address_retrieved_successfully", address);
                             }
-                            return new Result<AddressDTO>(false, "Address Not Found", null, 404);
+                            return new Result<AddressDTO>(false, "address_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<AddressDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        _logger.LogError(ex, "Failed to retrieve information for AddressId {AddressId}", id);
+                        return new Result<AddressDTO>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -179,7 +185,7 @@ Select * from Addresses Where id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<bool>> UpdateAsync(int id, AddressDTO updatedAddress)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE Addresses
@@ -190,7 +196,7 @@ SET
 WHERE id = @id;
 select @@ROWCOUNT
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@street", updatedAddress.Street);
                     command.Parameters.AddWithValue("@city", updatedAddress.City);
@@ -202,13 +208,14 @@ select @@ROWCOUNT
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "Address updated successfully.", true);
+                            return new Result<bool>(true, "address_updated_successfully", true);
                         }
-                        return new Result<bool>(false, "Address Not Found.", false, 404);
+                        return new Result<bool>(false, "address_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        _logger.LogError(ex, "Failed to update address for AddressId {AddressId}", id);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }

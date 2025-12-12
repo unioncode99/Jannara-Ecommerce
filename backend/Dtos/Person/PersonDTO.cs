@@ -1,11 +1,11 @@
 ﻿using Jannara_Ecommerce.Enums;
 
-namespace Jannara_Ecommerce.DTOs
+namespace Jannara_Ecommerce.DTOs.Person
 {
     public class PersonDTO
     {
-        public PersonDTO(int id, string firstName, string lastName, string phone,
-            string imageUrl, Gender gender, DateOnly dateOfBirth, DateTime createdAt, DateTime updatedAt)
+        public PersonDTO(int id, string firstName, string lastName, string phone, 
+            string? imageUrl, Gender gender, DateOnly dateOfBirth, DateTime createdAt, DateTime updatedAt)
         {
             Id = id;
             FirstName = firstName;
@@ -22,7 +22,7 @@ namespace Jannara_Ecommerce.DTOs
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Phone { get; set; }
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
         public Gender Gender { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public DateTime CreatedAt { get; set; }

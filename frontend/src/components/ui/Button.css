@@ -1,0 +1,39 @@
+.btn {
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  border: transparent;
+  letter-spacing: var(--letter-spacing);
+  padding: 0.5rem 1rem;
+  transition: var(--transition);
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+.btn-primary {
+  color: var(--white);
+  background-color: var(--primary-500);
+}
+.btn-primary:hover {
+  background-color: var(--primary-700);
+}
+.btn-primary-outline {
+  color: var(--primary-500);
+  background-color: transparent;
+  border: 2px solid var(--primary-500);
+}
+.btn-primary-outline:hover {
+  color: var(--white);
+  background-color: var(--primary-500);
+}
+.btn-block {
+  width: 100%;
+}
+
+.clear-btn {
+  margin-bottom: 0.5rem;
+}
+
+.btn-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

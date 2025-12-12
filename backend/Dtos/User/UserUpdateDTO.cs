@@ -1,0 +1,17 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Jannara_Ecommerce.DTOs.User
+{
+    public class UserUpdateDTO
+    {
+        [Required(ErrorMessage = "Id is required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Id must be greater than zero")]
+        public int Id { get; set; }
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Email format is invalid.")]
+        public string Email { get; set; }
+        [Required(ErrorMessage = "Username is required.")]
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+}

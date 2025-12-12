@@ -1,6 +1,5 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs;
-using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
@@ -10,13 +9,15 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
     public class RoleRepository : IRoleRepository
     {
         private readonly string _connectionString;
-        public RoleRepository(IOptions<DatabaseSettings> options)
+        private readonly ILogger<IRoleRepository> _logger;
+        public RoleRepository(IOptions<DatabaseSettings> options, ILogger<IRoleRepository> logger)
         {
             _connectionString = options.Value.DefaultConnection;
+            _logger = logger;
         }
         public async Task<Result<RoleDTO>> AddNewAsync(RoleDTO newRole)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 INSERT INTO Roles
@@ -24,25 +25,25 @@ INSERT INTO Roles
 name_en,
 name_ar
 )
+OUTPUT inserted.*
 VALUES
 (
 @name_en,
 @name_ar
 );
-Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 ";
-                using (SqlCommand command = new SqlCommand(query, connection)) 
+                using (var command = new SqlCommand(query, connection)) 
                 {
                     command.Parameters.AddWithValue("@name_en", newRole.NameEn);
                     command.Parameters.AddWithValue("@name_ar", newRole.NameAr);
                     try 
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync()) 
+                        using (var reader = await command.ExecuteReaderAsync()) 
                         {
                             if (await reader.ReadAsync())
                             {
-                                RoleDTO insertedRole = new RoleDTO
+                                var insertedRole = new RoleDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
                                     reader.GetString(reader.GetOrdinal("name_en")),
@@ -50,13 +51,15 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<RoleDTO>(true, "Role added successfully.", insertedRole);
+                                return new Result<RoleDTO>(true, "role_added_successfully", insertedRole);
                             }
-                            return new Result<RoleDTO>(false, "Failed To Add Role", null, 500);
+                            return new Result<RoleDTO>(false, "failed_to_add_role", null, 500);
                         }
-                    } catch (Exception ex) 
+                    } 
+                    catch (Exception ex) 
                     {
-                        return new Result<RoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        _logger.LogError(ex, "Failed to add a new role with NameEn {NameEn} and NameAr {NameAr}", newRole.NameEn, newRole.NameAr);
+                        return new Result<RoleDTO>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -64,10 +67,10 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM Roles WHERE id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     try
@@ -77,13 +80,14 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "Role deleted successfully.", true);
+                            return new Result<bool>(true, "role_deleted_successfully", true);
                         }
-                        return new Result<bool>(false, "Role Not Found", false, 404);
+                        return new Result<bool>(false, "role_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        _logger.LogError(ex, "Failed to delete role with RoleId {RoleId}", id);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }
@@ -91,16 +95,16 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<IEnumerable<RoleDTO>>> GetAllAsync()
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from Roles";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
-                    List<RoleDTO> roles = new List<RoleDTO>();
+                    var roles = new List<RoleDTO>();
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             while (await reader.ReadAsync())
                             {
@@ -115,14 +119,15 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
                             }
                             if (roles.Count > 0)
                             {
-                                return new Result<IEnumerable<RoleDTO>>(true, "Roles retrieved successfully", roles);
+                                return new Result<IEnumerable<RoleDTO>>(true, "roles_retrieved_successfully", roles);
                             }
-                            return new Result<IEnumerable<RoleDTO>>(false, "Roles Not Found", null, 404);
+                            return new Result<IEnumerable<RoleDTO>>(false, "roles_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<IEnumerable<RoleDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        _logger.LogError(ex, "Failed to retrieve all roles from database");
+                        return new Result<IEnumerable<RoleDTO>>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -130,20 +135,20 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<RoleDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from Roles Where id  = @id;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
-                                RoleDTO role = new RoleDTO
+                                var role = new RoleDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
                                     reader.GetString(reader.GetOrdinal("name_en")),
@@ -151,14 +156,15 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<RoleDTO>(true, "Role retrieved successfully.", role);
+                                return new Result<RoleDTO>(true, "role_retrieved_successfully", role);
                             }
-                            return new Result<RoleDTO>(false, "Role Not Found", null, 404);
+                            return new Result<RoleDTO>(false, "role_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<RoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        _logger.LogError(ex, "Failed to retrieve role with RoleId {RoleId}", id);
+                        return new Result<RoleDTO>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -166,7 +172,7 @@ Select * from Roles Where Id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<bool>> UpdateAsync(int id, RoleDTO updatedRole)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE Roles
@@ -176,7 +182,7 @@ SET
 WHERE Id = @id;
 select @@ROWCOUNT
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     command.Parameters.AddWithValue("@name_en", updatedRole.NameEn);
@@ -188,13 +194,14 @@ select @@ROWCOUNT
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "Role updated successfully.", true);
+                            return new Result<bool>(true, "role_updated_successfully", true);
                         }
-                        return new Result<bool>(false, "Role Not Found.", false, 404);
+                        return new Result<bool>(false, "role_not_found", false, 404);
                     }
                     catch (SqlException ex)
                     {
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        _logger.LogError(ex, "Failed to update role with RoleId {RoleId}", id);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }

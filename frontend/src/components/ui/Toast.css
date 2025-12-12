@@ -1,0 +1,96 @@
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 9999;
+}
+
+/* Toast box styling */
+.toast {
+  position: relative;
+  padding: 14px 40px 16px 16px;
+  min-width: 240px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #333;
+  font-size: 0.95rem;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.8s forwards;
+  overflow: hidden;
+}
+
+/* Close button */
+.toast-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #666;
+}
+
+.toast-close:hover {
+  color: #000;
+}
+
+/* Progress line (animated) */
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  animation: progressBar 3s linear forwards;
+}
+
+/* Colors based on toast type */
+.toast-progress-default {
+  background: #888;
+}
+
+.toast-progress-success {
+  background: #28a745; /* green */
+}
+
+.toast-progress-warning {
+  background: #f0ad4e; /* yellow */
+}
+
+.toast-progress-error {
+  background: #d9534f; /* red */
+}
+
+/* Slide in & fade out */
+@keyframes slideIn {
+  from {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(120%);
+  }
+}
+
+/* Progress shrinking animation */
+@keyframes progressBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}

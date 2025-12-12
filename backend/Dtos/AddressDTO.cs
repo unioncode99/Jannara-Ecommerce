@@ -1,4 +1,6 @@
-﻿namespace Jannara_Ecommerce.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Jannara_Ecommerce.DTOs
 {
     public class AddressDTO
     {
@@ -14,8 +16,11 @@
         }
 
         public int Id { get; set; }
+        [Required(ErrorMessage = "PersonId is required.")]
         public int PersonId { get; set; }
+        [Required(ErrorMessage = "Street is required.")]
         public string Street {  get; set; }
+        [Required(ErrorMessage = "City is required.")]
         public string City { get; set; }
         public string State { get; set; }
         public DateTime CreatedAt { get; set; }
