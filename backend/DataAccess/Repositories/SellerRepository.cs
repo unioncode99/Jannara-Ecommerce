@@ -71,17 +71,17 @@ OUTPUT inserted.*
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
                         {
-                            return new Result<bool>(true, "Seller deleted successfully.", true);
+                            return new Result<bool>(true, "seller_deleted_successfully", true);
                         }
                         else
                         {
-                            return new Result<bool>(false, "Seller not found", false, 404);
+                            return new Result<bool>(false, "seller_not_found", false, 404);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to delete seller with SellerId {SellerId}", id);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 
                 }
@@ -132,9 +132,11 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
                                ));
                             }
                             if (sellers.Count() < 1)
-                                return new Result<PagedResponseDTO<SellerDTO>>(false, "No seller found", null, 404);
+                            {
+                                return new Result<PagedResponseDTO<SellerDTO>>(false, "sellers_not_found", null, 404);
+                            }
                             var response = new PagedResponseDTO<SellerDTO>(total, pageNumber, pageSize, sellers);
-                            return new Result<PagedResponseDTO<SellerDTO>>(true, "Sellers retrieved successfully", response);
+                            return new Result<PagedResponseDTO<SellerDTO>>(true, "sellers_retrieved_successfully", response);
 
 
                         }
@@ -142,7 +144,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve sellers for page {PageNumber} with page size {PageSize}", pageNumber, pageSize);
-                        return new Result<PagedResponseDTO<SellerDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<PagedResponseDTO<SellerDTO>>(false, "internal_server_error", null, 500);
                     }
 
                 }
@@ -177,9 +179,9 @@ Select * from Sellers where id = @id;
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                );
-                                return new Result<SellerDTO>(true, "Seller retrieved successfully.", customer);
+                                return new Result<SellerDTO>(true, "seller_retrieved_successfully", customer);
                             }
-                            return new Result<SellerDTO>(false, "Seller not found.", null, 404);
+                            return new Result<SellerDTO>(false, "seller_not_found", null, 404);
 
                         }
 
@@ -188,7 +190,7 @@ Select * from Sellers where id = @id;
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve seller with SellerId {SellerId}", id);
-                        return new Result<SellerDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<SellerDTO>(false, "internal_server_error", null, 500);
                     }
 
                 }
@@ -219,13 +221,13 @@ select @@ROWCOUNT";
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                            return new Result<bool>(true, "Seller updated successfully.", true);
-                        return new Result<bool>(false, "Seller not found.", false, 404);
+                            return new Result<bool>(true, "seller_updated_successfully", true);
+                        return new Result<bool>(false, "seller_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to update seller with SellerId {SellerId}", id);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 
                 }

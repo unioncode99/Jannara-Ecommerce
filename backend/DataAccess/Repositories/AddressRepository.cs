@@ -59,15 +59,15 @@ VALUES
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<AddressDTO>(true, "Address added successfully.", insertedAddress);
+                                return new Result<AddressDTO>(true, "address_added_successfully", insertedAddress);
                             }
-                            return new Result<AddressDTO>(false, "Failed To Add Address", null, 500);
+                            return new Result<AddressDTO>(false, "failed_to_add_address", null, 500);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to add new address");
-                        return new Result<AddressDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<AddressDTO>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -88,14 +88,14 @@ VALUES
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "Address deleted successfully.", true);
+                            return new Result<bool>(true, "address_deleted_successfully", true);
                         }
-                        return new Result<bool>(false, "Role Not Found", false, 404);
+                        return new Result<bool>(false, "address_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to delete address with AddressId {AddressId}", id);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }
@@ -130,15 +130,15 @@ VALUES
                             }
                             if (personAddresses.Count > 0)
                             {
-                                return new Result<IEnumerable<AddressDTO>>(true, "Addresses retrieved successfully", personAddresses);
+                                return new Result<IEnumerable<AddressDTO>>(true, "addresses_retrieved_successfully", personAddresses);
                             }
-                            return new Result<IEnumerable<AddressDTO>>(false, "Addresses Not Found", null, 404);
+                            return new Result<IEnumerable<AddressDTO>>(false, "addresses_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to get all addresses for PersonId {PersonId}", personId);
-                        return new Result<IEnumerable<AddressDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<IEnumerable<AddressDTO>>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -169,15 +169,15 @@ VALUES
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<AddressDTO>(true, "Address retrieved successfully.", address);
+                                return new Result<AddressDTO>(true, "address_retrieved_successfully", address);
                             }
-                            return new Result<AddressDTO>(false, "Address Not Found", null, 404);
+                            return new Result<AddressDTO>(false, "address_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve information for AddressId {AddressId}", id);
-                        return new Result<AddressDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<AddressDTO>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -208,14 +208,14 @@ select @@ROWCOUNT
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "Address updated successfully.", true);
+                            return new Result<bool>(true, "address_updated_successfully", true);
                         }
-                        return new Result<bool>(false, "Address Not Found.", false, 404);
+                        return new Result<bool>(false, "address_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to update address for AddressId {AddressId}", id);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }

@@ -82,13 +82,13 @@ OUTPUT inserted.*
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                            return new Result<bool>(true, "User deleted successfully.", true);
-                        return new Result<bool>(false, "User not found.", false, 404);
+                            return new Result<bool>(true, "user_deleted_successfully", true);
+                        return new Result<bool>(false, "user_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to delete user with UserId {UserId}", id);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 
                 }
@@ -166,17 +166,17 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
                                 ));
                             }
                             if (users.Count() < 1)
-                                return new Result<PagedResponseDTO<UserPublicDTO>>(false, "No user found!", null, 404);
+                                return new Result<PagedResponseDTO<UserPublicDTO>>(false, "users_not_found", null, 404);
 
                             var response = new PagedResponseDTO<UserPublicDTO>(total, pageNumber, pageSize, users);
 
-                            return new Result<PagedResponseDTO<UserPublicDTO>>(true, "Users retureved successfully", response);
+                            return new Result<PagedResponseDTO<UserPublicDTO>>(true, "users_retrieved_successfully", response);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve users for page {PageNumber} with page size {PageSize}", pageNumber, pageSize);
-                        return new Result<PagedResponseDTO<UserPublicDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<PagedResponseDTO<UserPublicDTO>>(false, "internal_server_error", null, 500);
                     }
 
                 }
@@ -238,15 +238,15 @@ where email = @email
                                     reader.GetDateTime(reader.GetOrdinal("updated_at")),
                                     rolesList ?? new List<UserRoleInfoDTO>()
                                 );
-                                return new Result<UserDTO>(true, "User retrieved successfully", user);
+                                return new Result<UserDTO>(true, "user_retrieved_successfully", user);
                             }
-                            return new Result<UserDTO>(false, "User not found", null, 404);
+                            return new Result<UserDTO>(false, "user_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve user with Email {Email}", email);
-                        return new Result<UserDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<UserDTO>(false, "internal_server_error", null, 500);
                     }
 
                 }
@@ -308,15 +308,15 @@ where id = @id
                                     reader.GetDateTime(reader.GetOrdinal("updated_at")),
                                     rolesList ?? new List<UserRoleInfoDTO>()
                                 );
-                                return new Result<UserDTO>(true, "User retrieved successfully", user);
+                                return new Result<UserDTO>(true, "user_retrieved_successfully", user);
                             }                         
-                            return new Result<UserDTO>(false, "User not found", null, 404);
+                            return new Result<UserDTO>(false, "user_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve user with UserId {UserId}", id);
-                        return new Result<UserDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<UserDTO>(false, "internal_server_error", null, 500);
                     }
 
                 }
@@ -339,13 +339,13 @@ where id = @id
                         {
                             isFound = reader.HasRows;
                         }
-                        return new Result<bool>(true, "User existence check completed.", isFound);
+                        return new Result<bool>(true, "user_exists", isFound);
 
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to check existence of user with Email {Email}", email);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 
                 }
@@ -368,13 +368,13 @@ where id = @id
                         {
                             isFound = reader.HasRows;
                         }
-                        return new Result<bool>(true, "User existence check completed.", isFound);
+                        return new Result<bool>(true, "user_exists", isFound);
 
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to check existence of user with Username {Username}", username);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 
                 }
@@ -407,13 +407,15 @@ select @@ROWCOUNT";
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                            return new Result<bool>(true, "user updated successfully.", true);
-                        return new Result<bool>(false, "Failed to update user.", false);
+                        {
+                            return new Result<bool>(true, "user_updated_successfully", true);
+                        }
+                        return new Result<bool>(false, "failed_to_update_user", false);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to update user with UserId {UserId} and Email {Email}", id, updatedUser.Email);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 
                 }

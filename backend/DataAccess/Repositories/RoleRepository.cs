@@ -51,15 +51,15 @@ VALUES
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<RoleDTO>(true, "Role added successfully.", insertedRole);
+                                return new Result<RoleDTO>(true, "role_added_successfully", insertedRole);
                             }
-                            return new Result<RoleDTO>(false, "Failed To Add Role", null, 500);
+                            return new Result<RoleDTO>(false, "failed_to_add_role", null, 500);
                         }
                     } 
                     catch (Exception ex) 
                     {
                         _logger.LogError(ex, "Failed to add a new role with NameEn {NameEn} and NameAr {NameAr}", newRole.NameEn, newRole.NameAr);
-                        return new Result<RoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<RoleDTO>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -80,14 +80,14 @@ VALUES
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "Role deleted successfully.", true);
+                            return new Result<bool>(true, "role_deleted_successfully", true);
                         }
-                        return new Result<bool>(false, "Role Not Found", false, 404);
+                        return new Result<bool>(false, "role_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to delete role with RoleId {RoleId}", id);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }
@@ -119,15 +119,15 @@ VALUES
                             }
                             if (roles.Count > 0)
                             {
-                                return new Result<IEnumerable<RoleDTO>>(true, "Roles retrieved successfully", roles);
+                                return new Result<IEnumerable<RoleDTO>>(true, "roles_retrieved_successfully", roles);
                             }
-                            return new Result<IEnumerable<RoleDTO>>(false, "Roles Not Found", null, 404);
+                            return new Result<IEnumerable<RoleDTO>>(false, "roles_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve all roles from database");
-                        return new Result<IEnumerable<RoleDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<IEnumerable<RoleDTO>>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -156,15 +156,15 @@ VALUES
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<RoleDTO>(true, "Role retrieved successfully.", role);
+                                return new Result<RoleDTO>(true, "role_retrieved_successfully", role);
                             }
-                            return new Result<RoleDTO>(false, "Role Not Found", null, 404);
+                            return new Result<RoleDTO>(false, "role_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve role with RoleId {RoleId}", id);
-                        return new Result<RoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<RoleDTO>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -194,14 +194,14 @@ select @@ROWCOUNT
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "Role updated successfully.", true);
+                            return new Result<bool>(true, "role_updated_successfully", true);
                         }
-                        return new Result<bool>(false, "Role Not Found.", false, 404);
+                        return new Result<bool>(false, "role_not_found", false, 404);
                     }
                     catch (SqlException ex)
                     {
                         _logger.LogError(ex, "Failed to update role with RoleId {RoleId}", id);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }
