@@ -1,0 +1,27 @@
+.app-settings {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.lang {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.app-settings button {
+  outline-color: transparent;
+  border-color: transparent;
+  background-color: transparent;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  color: var(--text-color);
+  cursor: pointer;
+}
+.app-settings button:hover {
+  background-color: var(--grey-100);
+}
