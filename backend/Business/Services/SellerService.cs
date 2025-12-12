@@ -73,7 +73,7 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
-                    var personResult = await _personService.AddNewAsync(newPerson, imageUrl, connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(newPerson, imageUrl?.Split("wwwroot/")[1], connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
@@ -99,7 +99,8 @@ namespace Jannara_Ecommerce.Business.Services
                         return new Result<SellerDTO>(false, sellerResult.Message, null, sellerResult.ErrorCode);
                     }
                     await transaction.CommitAsync();
-                    await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrl);
+                    if (sellerCreateRequestDTO.ProfileImage != null)
+                        await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrl);
                     return sellerResult;
                 }
                 catch (Exception ex)

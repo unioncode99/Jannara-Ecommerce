@@ -37,11 +37,13 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<CustomerDTO>> AddCustomer(CustomerCreateRequestDTO request)
         {
+
             var result = await _service.CreateAsync(request);
            
             if (result.IsSuccess)
             {
-                return CreatedAtRoute("GetCustomerByID", new { id = result.Data.Id }, result.Data);
+                //return CreatedAtRoute("GetCustomerByID", new { id = result.Data.Id }, result.Data);
+                return CreatedAtRoute("GetCustomerByID", new { id = result.Data.Id }, result);
             }
             return StatusCode(result.ErrorCode, result.Message);
         }

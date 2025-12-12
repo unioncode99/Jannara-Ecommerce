@@ -56,9 +56,11 @@ OUTPUT inserted.*
                             reader.GetDateTime(reader.GetOrdinal("updated_at")),
                             new List<UserRoleInfoDTO>()
                        );
-                        return new Result<UserPublicDTO>(true, "User added successfully.", insertedUser);
+                        //return new Result<UserPublicDTO>(true, "User added successfully.", insertedUser);
+                        return new Result<UserPublicDTO>(true, "user_added_successfully", insertedUser);
                     }
-                    return new Result<UserPublicDTO>(false, "Failed to add User.", null, 500);
+                    //return new Result<UserPublicDTO>(false, "Failed to add User.", null, 500);
+                    return new Result<UserPublicDTO>(false, "failed_to_add_user", null, 500);
 
                 }
 

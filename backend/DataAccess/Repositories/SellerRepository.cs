@@ -48,9 +48,9 @@ OUTPUT inserted.*
                             reader.GetDateTime(reader.GetOrdinal("created_at")),
                             reader.GetDateTime(reader.GetOrdinal("updated_at"))
                        );
-                        return new Result<SellerDTO>(true, "Seller added successfully.", insertedSeller);
+                        return new Result<SellerDTO>(true, "seller_added_successfully", insertedSeller);
                     }
-                    return new Result<SellerDTO>(false, "Failed to add seller.", null, 500);
+                    return new Result<SellerDTO>(false, "failed_to_add_seller", null, 500);
                 }
             }
         }

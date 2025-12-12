@@ -69,7 +69,7 @@ namespace Jannara_Ecommerce.Business.Services
             var fileName = Guid.NewGuid() + Path.GetExtension(newImage.FileName);
             string imageUrl =  Path.Combine(uploadPath, fileName);
             var relativePath = Path.Combine("Uploads",  imageUrl).Replace("\\", "/");
-            return new Result<string>(true, "Image url generated successfully", imageUrl);
+            return new Result<string>(true, "Image url generated successfully", relativePath);
         }
 
        

@@ -48,11 +48,13 @@ namespace Jannara_Ecommerce.Business.Services
             if (!checkEmailTask.Result.IsSuccess)
                 return new Result<UserPublicDTO>(false, checkEmailTask.Result.Message, null, checkEmailTask.Result.ErrorCode);
             if (checkEmailTask.Result.Data)
-                return new Result<UserPublicDTO>(false, "This email is already registered", null, 409);
+                //return new Result<UserPublicDTO>(false, "This email is already registered", null, 409);
+                return new Result<UserPublicDTO>(false, "email_exists", null, 409);
             if (!checkUsernameTask.Result.IsSuccess)
                 return new Result<UserPublicDTO>(false, checkUsernameTask.Result.Message, null, checkUsernameTask.Result.ErrorCode);
             if (checkUsernameTask.Result.Data)
-                return new Result<UserPublicDTO>(false, "This username is used by another user", null, 409);
+                //return new Result<UserPublicDTO>(false, "This username is used by another user", null, 409);
+                return new Result<UserPublicDTO>(false, "username_exists", null, 409);
 
             newUser.Password = _passwordService.HashPassword(newUser, newUser.Password);
             return await _repo.AddNewAsync(personId, newUser, connection, transaction);

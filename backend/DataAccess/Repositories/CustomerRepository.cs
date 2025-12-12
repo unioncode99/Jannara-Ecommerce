@@ -40,9 +40,11 @@ OUTPUT inserted.*
                             reader.GetDateTime(reader.GetOrdinal("created_at")),
                             reader.GetDateTime(reader.GetOrdinal("updated_at"))
                        );
-                        return new Result<CustomerDTO>(true, "Customer added successfully.", insertedCustomer);
+                        //return new Result<CustomerDTO>(true, "Customer added successfully.", insertedCustomer);
+                        return new Result<CustomerDTO>(true, "customer_added_successfully", insertedCustomer);
                     }
-                    return new Result<CustomerDTO>(false, "Failed to add customer.", null, 500);
+                    //return new Result<CustomerDTO>(false, "Failed to add customer.", null, 500);
+                    return new Result<CustomerDTO>(false, "failed_to_add_customer", null, 500);
                 }
             }
         }

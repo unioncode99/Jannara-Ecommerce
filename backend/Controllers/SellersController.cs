@@ -42,7 +42,8 @@ namespace Jannara_Ecommerce.Controllers
             var result = await _service.CreateAsync(request);
             if (result.IsSuccess)
             {
-                return CreatedAtRoute("GetSellerByID", new { id = result.Data.Id }, result.Data);
+                //return CreatedAtRoute("GetSellerByID", new { id = result.Data.Id }, result.Data);
+                return CreatedAtRoute("GetSellerByID", new { id = result.Data.Id }, result);
             }
             return StatusCode(result.ErrorCode, result.Message);
         }
