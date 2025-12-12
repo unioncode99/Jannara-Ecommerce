@@ -24,6 +24,7 @@ const apiWrapper = async (
     const response = await fetch(`${API_BASE_URL}${url}`, options);
 
     if (!response.ok) {
+      console.log(response);
       const errorData = await response.json();
       // If response is not OK (status code 4xx, 5xx)
       throw new Error(errorData.message);

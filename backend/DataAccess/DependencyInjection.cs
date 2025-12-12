@@ -1,4 +1,5 @@
-﻿using Jannara_Ecommerce.DataAccess.Interfaces;
+﻿
+using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DataAccess.Repositories;
 
 namespace Jannara_Ecommerce.DataAccess
@@ -14,6 +15,7 @@ namespace Jannara_Ecommerce.DataAccess
             services.AddScoped<ISellerRepository, SellerRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
             return services;
         }
     }
