@@ -115,7 +115,7 @@ namespace Jannara_Ecommerce.Business.Services
                             _logger.LogError(rollBackEx, "failed to roll back while insert a new user");
                         }
                     _logger.LogError(ex, "failed to insert a new user");
-                    return new Result<UserPublicDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                    return new Result<UserPublicDTO>(false, "internal_server_error", null, 500);
                 }
             }
         }
@@ -152,7 +152,7 @@ namespace Jannara_Ecommerce.Business.Services
                 if (!existByEmailResult.IsSuccess)
                     return new Result<bool>(false, existByEmailResult.Message, false, existByEmailResult.ErrorCode);
                 if (existByEmailResult.Data)
-                    return new Result<bool>(false, "This email is already registered", false, 409);
+                    return new Result<bool>(false, "email_exists", false, 409);
             }
             
             if (!string.Equals(currentUserResult.Data.Username, updatedUser.Username, StringComparison.OrdinalIgnoreCase))
@@ -161,7 +161,7 @@ namespace Jannara_Ecommerce.Business.Services
                 if (!existByUsernameResult.IsSuccess)
                     return new Result<bool>(false, existByUsernameResult.Message, false, existByUsernameResult.ErrorCode);
                 if (existByUsernameResult.Data)
-                    return new Result<bool>(false, "This username is used by another user", false, 409);
+                    return new Result<bool>(false, "username_exists", false, 409);
             }
             if (!string.IsNullOrWhiteSpace(updatedUser.Password))
             {

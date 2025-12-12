@@ -73,7 +73,7 @@ namespace Jannara_Ecommerce.Controllers
         {
             if (id <= 0)
             {
-                return BadRequest("Invalid Data");
+                return BadRequest("invalid_data");
             }
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
@@ -91,7 +91,7 @@ namespace Jannara_Ecommerce.Controllers
         {
             if (pageNumber == 0 || pageSize == 0)
             {
-                return BadRequest(new ResponseMessage("pageSize and pageNumber must be greater than zero."));
+                return BadRequest(new ResponseMessage("invalid_pagination_parameters"));
             }
             var result = await _service.GetAllAsync(pageNumber, pageSize);
             if (result.IsSuccess)

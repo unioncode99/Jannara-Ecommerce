@@ -118,7 +118,7 @@ namespace Jannara_Ecommerce.Business.Services
                         }
                     }
                     _logger.LogError(ex, "Failed to insert a new seller");
-                    return new Result<SellerDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                    return new Result<SellerDTO>(false, "internal_server_error", null, 500);
                 }
             }
         }

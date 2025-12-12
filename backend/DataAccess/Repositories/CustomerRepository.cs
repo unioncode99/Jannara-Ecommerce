@@ -53,7 +53,7 @@ OUTPUT inserted.*
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                string query = @"DELETE FROM Cutomers WHERE Id = @id";
+                string query = @"DELETE FROM Customers WHERE Id = @id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
@@ -64,13 +64,13 @@ OUTPUT inserted.*
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                            return new Result<bool>(true, "Customer deleted successfully.", true);
-                        return new Result<bool>(false, "Customer not found.", false, 404);
+                            return new Result<bool>(true, "customer_deleted_successfully", true);
+                        return new Result<bool>(false, "customer_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to delete customer with CustomerId {CustomerId}", id);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 
                 }
@@ -120,9 +120,12 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
                                ));
                             }
                             if (customers.Count() < 1)
-                                return new Result<PagedResponseDTO<CustomerDTO>> (false, "No cutomer found", null, 404);
+                            {
+                                return new Result<PagedResponseDTO<CustomerDTO>>(false, "customers_not_found", null, 404);
+                            }
+                                
                             PagedResponseDTO<CustomerDTO> response = new PagedResponseDTO<CustomerDTO>(total, pageNumber, pageSize, customers);
-                            return new Result<PagedResponseDTO<CustomerDTO>>(true, "Cutomers retrieved successfully", response);
+                            return new Result<PagedResponseDTO<CustomerDTO>>(true, "customers_retrieved_successfully", response);
 
                             
                         }
@@ -130,7 +133,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve all customers for page {PageNumber} with page size {PageSize}", pageNumber, pageSize);
-                        return new Result<PagedResponseDTO<CustomerDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<PagedResponseDTO<CustomerDTO>>(false, "internal_server_error", null, 500);
                     }
 
                 }
@@ -163,9 +166,9 @@ Select * from Customers where id = @id;
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                );
-                                return new Result<CustomerDTO>(true, "Customer retrieved successfully.", customer);
+                                return new Result<CustomerDTO>(true, "customer_retrieved_successfully", customer);
                             }
-                            return new Result<CustomerDTO>(false, "Cutomer not found .", null, 404);
+                            return new Result<CustomerDTO>(false, "customer_not_found", null, 404);
 
                         }
 
@@ -174,7 +177,7 @@ Select * from Customers where id = @id;
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve customer with CustomerId {CustomerId}", id);
-                        return new Result<CustomerDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        return new Result<CustomerDTO>(false, "internal_server_error", null, 500);
                     }
 
                 }
@@ -202,13 +205,13 @@ select @@ROWCOUNT";
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                            return new Result<bool>(true, "Cutomer updated successfully.", true);
-                        return new Result<bool>(false, "Customer not .", false, 404);
+                            return new Result<bool>(true, "customer_updated_successfully", true);
+                        return new Result<bool>(false, "customer_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to update customer with CustomerId {CustomerId}", id);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 
                 }
