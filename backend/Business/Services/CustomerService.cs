@@ -51,11 +51,13 @@ namespace Jannara_Ecommerce.Business.Services
         }
         public async Task<Result<CustomerDTO>> CreateAsync(CustomerCreateRequestDTO customerCreateRequestDTO)
         {
+          
 
             var personCreateDTO = customerCreateRequestDTO.GetPersonCreateDTO();
             var userCreateDTO = customerCreateRequestDTO.GetUserCreateDTO();
 
-            string imageUrl = null;
+          
+                string imageUrl = null;
             if (personCreateDTO.ProfileImage != null)
             {
                 var imageUrlResult = _imageService.GetImageUrl(personCreateDTO.ProfileImage, _imageSettings.Value.ProfileFolder);
@@ -73,7 +75,7 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
-                    var personResult = await _personService.AddNewAsync(personCreateDTO, imageUrl, connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(personCreateDTO, imageUrl?.Split("wwwroot/")[1], connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
@@ -101,7 +103,10 @@ namespace Jannara_Ecommerce.Business.Services
                         return new Result<CustomerDTO>(false, customerResult.Message, null, customerResult.ErrorCode);
                     }
                     await transaction.CommitAsync();
-                    await _imageService.SaveImageAsync(personCreateDTO.ProfileImage, imageUrl);
+                    if (personCreateDTO.ProfileImage != null)
+                    {
+                        await _imageService.SaveImageAsync(personCreateDTO.ProfileImage, imageUrl);
+                    }
                     return customerResult;
                 }
                 catch (Exception ex)
@@ -117,8 +122,8 @@ namespace Jannara_Ecommerce.Business.Services
                             _logger.LogError(rollBackEx, "Roll back failed while create a new customer");
                         }
                     }
-                    _logger.LogError(ex,"Failed to create a new cutomer");
-                    return new Result<CustomerDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                    _logger.LogError(ex,"Failed to create a new customer");
+                    return new Result<CustomerDTO>(false, "internal_server_error", null, 500);
                 }
             }
         }

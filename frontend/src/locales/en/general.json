@@ -1,0 +1,44 @@
+{
+  "form": {
+    "register_title": "Register",
+    "create_account": "Create a new account",
+    "seller_option": "Seller",
+    "customer_option": "Customer",
+    "personal_info": "Personal Info",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "phone": "Phone",
+    "date_of_birth": "Date of Birth",
+    "user_info": "User Info",
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "register_button": "Register",
+    "clear_button": "Clear",
+    "already_have_account": "Already have an account? Login",
+    "business_name": "Business Name",
+    "website_url": "Website URL",
+    "errors": {
+      "required": "This field is required",
+      "invalid_email": "Please enter a valid email address",
+      "weak_password": "Password must be at least 8 characters long and include a number and a special character",
+      "invalid_phone": "Please enter a valid phone number",
+      "invalid_date": "Please enter a valid date"
+    },
+    "messages": {
+      "general_error": "Something went wrong. Please fix the errors.",
+      "general_success": "Operation done successfully!"
+    }
+  },
+  "server_messages": {
+    "email_exists": "The email address is already registered.",
+    "username_exists": "The username is already taken.",
+    "customer_added_successfully": "Customer added successfully.",
+    "failed_to_add_customer": "Failed to add customer. Please try again.",
+    "user_added_successfully": "User added successfully.",
+    "failed_to_add_user": "Failed to add user. Please try again.",
+    "internal_server_error": "Internal server error. Please try again later.",
+    "seller_added_successfully": "Seller added successfully.",
+    "failed_to_add_seller": "Failed to add seller. Please try again."
+  }
+}

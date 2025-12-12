@@ -62,7 +62,7 @@ VALUES
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error happen");
-                    return new Result<UserRoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                    return new Result<UserRoleDTO>(false, "internal_server_error", null, 500);
                 }
             }
         }
