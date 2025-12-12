@@ -20,10 +20,11 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IUserRoleService _userRoleService;
         private readonly IImageService _imageService;
         private readonly IOptions<ImageSettings> _imageSettings;
+        private readonly ILogger<ICustomerService> _logger;
         public CustomerService(ICustomerRepository repo, IPersonService PersonService,
             IUserService UserService, IOptions<DatabaseSettings> dateBaseSettings,
             IUserRoleService userRoleService, IImageService imageService,
-            IOptions<ImageSettings> imageSettings)
+            IOptions<ImageSettings> imageSettings, ILogger<ICustomerService> logger)
         {
             _repo = repo;
             _connectionString = dateBaseSettings.Value.DefaultConnection;
@@ -32,6 +33,7 @@ namespace Jannara_Ecommerce.Business.Services
             _userRoleService = userRoleService;
             _imageService = imageService;
             _imageSettings = imageSettings;
+            _logger = logger;
         }
         public async Task<Result<CustomerDTO>> AddNewAsync(int userId, SqlConnection connection, SqlTransaction transaction)
         {
@@ -110,11 +112,12 @@ namespace Jannara_Ecommerce.Business.Services
                         {
                             await transaction.RollbackAsync();
                         }
-                        catch
+                        catch(Exception rollBackEx)
                         {
-
+                            _logger.LogError(rollBackEx, "Roll back failed while create a new customer");
                         }
                     }
+                    _logger.LogError(ex,"Failed to create a new cutomer");
                     return new Result<CustomerDTO>(false, "An unexpected error occurred on the server.", null, 500);
                 }
             }

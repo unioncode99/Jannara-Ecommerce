@@ -13,6 +13,7 @@ builder.Services.Configure<ImageSettings>(builder.Configuration.GetSection("Imag
 builder.Services.AddApplicationServices();
 builder.Services.AddApplicationRepositories();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddLogging();
 
 var app = builder.Build();
 

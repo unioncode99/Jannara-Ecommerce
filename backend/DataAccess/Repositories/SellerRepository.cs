@@ -3,6 +3,7 @@ using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Jannara_Ecommerce.DataAccess.Repositories
@@ -10,9 +11,11 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
     public class SellerRepository : ISellerRepository
     {
         private readonly string _connectionString;
-        public SellerRepository(IOptions<DatabaseSettings> options)
+        private readonly ILogger<ISellerRepository> _logger;
+        public SellerRepository(IOptions<DatabaseSettings> options, ILogger<ISellerRepository> logger)
         {
             _connectionString = options.Value.DefaultConnection;
+            _logger = logger;
         }
         public async Task<Result<SellerDTO>> AddNewAsync(int userId, SellerCreateDTO newSeller, SqlConnection connection, SqlTransaction transaction)
         {
@@ -77,6 +80,7 @@ OUTPUT inserted.*
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to delete seller with SellerId {SellerId}", id);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
 
@@ -137,6 +141,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ;
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve sellers for page {PageNumber} with page size {PageSize}", pageNumber, pageSize);
                         return new Result<PagedResponseDTO<SellerDTO>>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
@@ -182,6 +187,7 @@ Select * from Sellers where id = @id;
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve seller with SellerId {SellerId}", id);
                         return new Result<SellerDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
@@ -218,6 +224,7 @@ select @@ROWCOUNT";
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to update seller with SellerId {SellerId}", id);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
 

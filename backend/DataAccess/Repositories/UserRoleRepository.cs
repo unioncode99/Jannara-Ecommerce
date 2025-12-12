@@ -9,11 +9,13 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
     public class UserRoleRepository : IUserRoleRepository
     {
         private readonly string _connectionString;
-        public UserRoleRepository(IOptions<DatabaseSettings> options)
+        private readonly ILogger<IUserRoleRepository> _logger;
+        public UserRoleRepository(IOptions<DatabaseSettings> options, ILogger<IUserRoleRepository> logger)
         {
             _connectionString = options.Value.DefaultConnection;
+            _logger = logger;
         }
-        
+
 
         public async Task<Result<UserRoleDTO>> AddNewAsync(int roleId, int userId, bool isActive, SqlConnection connection, SqlTransaction transaction)
         {
@@ -59,6 +61,7 @@ VALUES
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex, "Error happen");
                     return new Result<UserRoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
                 }
             }
@@ -85,6 +88,7 @@ VALUES
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to delete user role with UserRoleId {UserRoleId}", id);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
                 }
@@ -125,6 +129,7 @@ VALUES
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve user roles for UserId {UserId}", userId);
                         return new Result<IEnumerable<UserRoleDTO>>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
@@ -163,6 +168,7 @@ VALUES
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve user role with UserRoleId {UserRoleId}", id);
                         return new Result<UserRoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
@@ -199,6 +205,7 @@ select @@ROWCOUNT
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to update user role with UserRoleId {UserRoleId}, RoleId {RoleId}, IsActive {IsActive}", updatedUserRole.Id, updatedUserRole.RoleId, updatedUserRole.IsActive);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
                 }

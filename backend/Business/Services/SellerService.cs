@@ -22,9 +22,11 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IUserRoleService _userRoleService;
         private readonly IOptions<ImageSettings> _imageSettings;
         private readonly IImageService _imageService;
+        private readonly ILogger<ISellerService> _logger;
         public SellerService(ISellerRepository repo, IPersonService PersonService, 
             IUserService UserService, IOptions<DatabaseSettings> options,
-            IUserRoleService userRoleService ,IOptions<ImageSettings> imageSettings, IImageService imageService)
+            IUserRoleService userRoleService ,IOptions<ImageSettings> imageSettings, IImageService imageService,
+            ILogger<ISellerService> logger)
         {
             _repo  = repo;
             _connectionString = options.Value.DefaultConnection;
@@ -33,6 +35,7 @@ namespace Jannara_Ecommerce.Business.Services
             _userRoleService = userRoleService;
             _imageSettings = imageSettings;
             _imageService = imageService;
+            _logger = logger;
         }
         public async Task<Result<SellerDTO>> AddNewAsync(int userId, SellerCreateDTO newSeller, SqlConnection connection, SqlTransaction transaction)
         {
@@ -108,11 +111,12 @@ namespace Jannara_Ecommerce.Business.Services
                         {
                             await transaction.RollbackAsync();
                         }
-                        catch
+                        catch(Exception rollBackEx) 
                         {
-
+                            _logger.LogError(rollBackEx, "Failed to rollback while create a new seller");
                         }
                     }
+                    _logger.LogError(ex, "Failed to insert a new seller");
                     return new Result<SellerDTO>(false, "An unexpected error occurred on the server.", null, 500);
                 }
             }

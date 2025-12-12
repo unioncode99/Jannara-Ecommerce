@@ -9,9 +9,11 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
     public class AddressRepository : IAddressRepository
     {
         private readonly string _connectionString;
-        public AddressRepository(IOptions<DatabaseSettings> options)
+        private readonly ILogger<IAddressRepository> _logger;
+        public AddressRepository(IOptions<DatabaseSettings> options, ILogger<IAddressRepository> logger)
         {
             _connectionString = options.Value.DefaultConnection;
+            _logger = logger;
         }
         public async Task<Result<AddressDTO>> AddNewAsync(AddressDTO newAddress)
         {
@@ -64,6 +66,7 @@ VALUES
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to add new address");
                         return new Result<AddressDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
@@ -91,20 +94,21 @@ VALUES
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to delete address with AddressId {AddressId}", id);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
                 }
             }
         }
 
-        public async Task<Result<IEnumerable<AddressDTO>>> GetAllAsync(int person_id)
+        public async Task<Result<IEnumerable<AddressDTO>>> GetAllAsync(int personId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from Addresses Where person_id  = @person_id;";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@person_id", person_id);
+                    command.Parameters.AddWithValue("@person_id", personId);
                     var personAddresses = new List<AddressDTO>();
                     try
                     {
@@ -133,6 +137,7 @@ VALUES
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to get all addresses for PersonId {PersonId}", personId);
                         return new Result<IEnumerable<AddressDTO>>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
@@ -171,6 +176,7 @@ VALUES
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve information for AddressId {AddressId}", id);
                         return new Result<AddressDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
                 }
@@ -208,6 +214,7 @@ select @@ROWCOUNT
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to update address for AddressId {AddressId}", id);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
                 }

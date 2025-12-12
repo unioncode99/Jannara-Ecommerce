@@ -3,6 +3,7 @@ using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Jannara_Ecommerce.DataAccess.Repositories
@@ -10,9 +11,11 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
     public class PersonRepository : IPersonRepository
     {
         private readonly string _connectionString;
-        public PersonRepository(IOptions<DatabaseSettings> options)
+        private readonly ILogger<IPersonRepository> _logger;
+        public PersonRepository(IOptions<DatabaseSettings> options, ILogger<IPersonRepository> logger)
         {
             _connectionString = options.Value.DefaultConnection;
+            _logger = logger;
         }
         public async Task<Result<PersonDTO>> AddNewAsync(PersonCreateDTO  personCreateDTO, string imageUrl, SqlConnection connection, SqlTransaction transaction)
         {
@@ -88,6 +91,7 @@ OUTPUT inserted.*
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to delete person with PersonId {PersonId}", id);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
 
@@ -134,6 +138,7 @@ Select * from People Where Id  = @id;
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to retrieve person with PersonId {PersonId}", id);
                         return new Result<PersonDTO>(false, "An unexpected error occurred on the server.", null, 500);
                     }
 
@@ -176,6 +181,7 @@ select @@ROWCOUNT";
                     }
                     catch (Exception ex)
                     {
+                        _logger.LogError(ex, "Failed to update person with PersonId {PersonId}", id);
                         return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                     }
 

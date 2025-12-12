@@ -21,10 +21,11 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IUserRoleService _userRoleService;
         private readonly IImageService _imageService;
         private readonly IOptions<ImageSettings> _imageSettings;
+        private readonly ILogger<IUserService> _logger;
         public UserService(IUserRepository repo, IPasswordService passwordService,
             IOptions<DatabaseSettings> options, IPersonService personService, 
             IUserRoleService userRoleService, IImageService imageService,
-            IOptions<ImageSettings> imageSettings)
+            IOptions<ImageSettings> imageSettings, ILogger<IUserService> logger)
         {
             _repo = repo;
             _passwordService = passwordService;
@@ -33,9 +34,10 @@ namespace Jannara_Ecommerce.Business.Services
             _userRoleService = userRoleService;
             _imageService = imageService;
             _imageSettings = imageSettings;
+            _logger = logger;
         }
-       
-        
+
+
 
         public async Task<Result<UserPublicDTO>> AddNewAsync(int personId, UserCreateDTO newUser, SqlConnection connection, SqlTransaction transaction)
         {
@@ -106,10 +108,11 @@ namespace Jannara_Ecommerce.Business.Services
                         try
                         {
                             await transaction.RollbackAsync();
-                        }catch 
+                        }catch (Exception rollBackEx) 
                         {
-
+                            _logger.LogError(rollBackEx, "failed to roll back while insert a new user");
                         }
+                    _logger.LogError(ex, "failed to insert a new user");
                     return new Result<UserPublicDTO>(false, "An unexpected error occurred on the server.", null, 500);
                 }
             }
