@@ -5,7 +5,8 @@
 }
 
 :root {
-  /* colors */
+  /* ---------------- Colors ---------------- */
+  /* Primary palette */
   --primary-100: #ffe9c4;
   --primary-200: #ffd58a;
   --primary-300: #ffbf4d;
@@ -16,7 +17,7 @@
   --primary-800: #865604;
   --primary-900: #593903;
 
-  /* grey */
+  /* Grey palette */
   --grey-50: #f8fafc;
   --grey-100: #f1f5f9;
   --grey-200: #e2e8f0;
@@ -28,40 +29,117 @@
   --grey-800: #1e293b;
   --grey-900: #0f172a;
 
-  /* rest of the colors */
-  --color-secondary: hsla(182, 63%, 54%);
-  --color-gold: #c59d5f;
+  /* Other colors */
+  --white: #fff;
   --black: #222;
   --white: #fff;
   --red-light: #f8d7da;
   --red-dark: #842029;
   --green-light: #d1e7dd;
   --green-dark: #0f5132;
+  --color-secondary: hsla(182, 63%, 54%);
+  --color-gold: #c59d5f;
 
-  /* fonts */
-  --heading-font: "Roboto", sans-serif;
-  --body-font: "Nunito", sans-serif;
+  /* Other */
+  --text-color: var(--grey-900);
+  --alert-color: #d9534f;
+
+  /* ---------------- Typography ---------------- */
+
+  --heading-font: var(--heading-font-en);
+  --body-font: var(--body-font-en);
   --small-text: 0.875rem;
   --extra-small-text: 0.7em;
 
-  /* rest of the vars */
-  --background-color: var(--grey-50);
-  --text-color: var(--grey-900);
+  /* ---------------- Layout ---------------- */
   --border-radius: 0.25rem;
   --letter-spacing: 1px;
   --transition: 0.3s ease-in-out all;
-  /* --max-width: 1170px; */
   --max-width: 1200px;
   --fixed-width: 600px;
 
-  /* box shadow */
-  --shadow-1: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-3: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-4: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  /* ---------------- Shadows ---------------- */
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-2: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-3: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-4: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+
+  /* ---------------- Backgrounds ---------------- */
+  --background-color: var(--grey-50);
+  --card-background: var(--white);
+  --input-background: var(--background-color);
+  --form-background: var(--white);
+
+  /* ---------------- Borders ---------------- */
+  --border-color: #e2e8f0;
+  --border-color-hover: #cbd5e1;
+  --border-color-focus: var(--primary-500);
+
+  /* ---------------- Inputs ---------------- */
+  --input-text-color: var(--text-color);
+  --input-placeholder-color: var(--grey-400);
+}
+
+html[data-theme="dark"] {
+  /* Grey palette */
+  --grey-50: #151c2b;
+  --grey-100: #1e2637;
+  --grey-200: #2b3448;
+  --grey-300: #394158;
+  --grey-400: #4c5469;
+  --grey-500: #6a748b;
+  --grey-600: #7b8799;
+  --grey-700: #8d99aa;
+  --grey-800: #a0a8bb;
+  --grey-900: #b3b7cc;
+
+  /* Primary colors */
+  --primary-100: #2c1a0f;
+  --primary-200: #55340f;
+  --primary-300: #88520a;
+  --primary-400: #b27307;
+  --primary-500: #ffbf4d;
+  --primary-600: #e6a91f;
+  --primary-700: #b37305;
+  --primary-800: #865604;
+  --primary-900: #593903;
+
+  /* Other colors */
+  --white: #fff;
+  --black: #222;
+  --red-light: #f8d7da;
+  --red-dark: #842029;
+  --green-light: #d1e7dd;
+  --green-dark: #0f5132;
+  --color-secondary: hsla(182, 63%, 54%);
+  --color-gold: #c59d5f;
+
+  --text-color: #f1f5f9;
+  --alert-color: #d9534f;
+
+  /* ---------------- Backgrounds ---------------- */
+  --background-color: #0f172a;
+  --card-background: #1e2637;
+  --input-background: var(--background-color);
+  --form-background: #1e2637;
+
+  /* ---------------- Borders ---------------- */
+  --border-color: #394158;
+  --border-color-hover: #4c5469;
+  --border-color-focus: #ffbf4d;
+
+  /* ---------------- Inputs ---------------- */
+  --input-text-color: #f1f5f9;
+  --input-placeholder-color: var(--grey-500);
+}
+
+html[dir="rtl"] {
+  ---heading-font: "Cairo", sans-serif;
+  --body-font: "Tajawal", sans-serif;
+}
+html[dir="ltr"] {
+  --heading-font: "Roboto", sans-serif;
+  --body-font: "Nunito", sans-serif;
 }
 
 body {
@@ -200,7 +278,7 @@ small,
 }
 
 .form-alert {
-  color: var(--red-dark);
+  color: var(--alert-color);
   letter-spacing: var(--letter-spacing);
   text-transform: capitalize;
   font-size: var(--small-text);

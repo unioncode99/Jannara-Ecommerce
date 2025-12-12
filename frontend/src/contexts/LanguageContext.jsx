@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import enGeneral from "../locales/en/general.json";
 import arGeneral from "../locales/ar/general.json";
 
@@ -16,6 +16,13 @@ export const LanguageProvider = ({ children }) => {
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "en" ? "ar" : "en"));
   };
+
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      "dir",
+      language === "ar" ? "rtl" : "ltr"
+    );
+  }, [language]);
 
   return (
     <LanguageContext.Provider
