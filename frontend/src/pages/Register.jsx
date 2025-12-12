@@ -98,6 +98,10 @@ const Register = () => {
       temp.password = msgs.weak_password;
     }
 
+    if (!formData.businessName.trim()) {
+      temp.businessName = msgs.required;
+    }
+
     setErrors(temp);
 
     return Object.keys(temp).length === 0; // true = valid

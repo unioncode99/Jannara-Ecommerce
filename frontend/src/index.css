@@ -129,7 +129,7 @@ ul {
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-2);
   padding: 2rem 2.5rem;
-  margin: 3rem auto;
+  margin: 4rem auto;
 }
 
 small,
@@ -209,7 +209,7 @@ small,
 /* Register Page */
 .register-page {
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
