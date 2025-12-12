@@ -1,4 +1,6 @@
-﻿namespace Jannara_Ecommerce.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Jannara_Ecommerce.DTOs
 {
     public class RoleDTO
     {
@@ -12,7 +14,9 @@
         }
 
         public int Id { get; set; }
+        [Required(ErrorMessage = "NameEn is required.")]
         public string NameEn { get; set; }
+        [Required(ErrorMessage = "NameAr is required.")]
         public string NameAr { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

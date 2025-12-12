@@ -9,69 +9,70 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
     public class UserRoleRepository : IUserRoleRepository
     {
         private readonly string _connectionString;
-        public UserRoleRepository(IOptions<DatabaseSettings> options)
+        private readonly ILogger<IUserRoleRepository> _logger;
+        public UserRoleRepository(IOptions<DatabaseSettings> options, ILogger<IUserRoleRepository> logger)
         {
             _connectionString = options.Value.DefaultConnection;
+            _logger = logger;
         }
-        public async Task<Result<UserRoleDTO>> AddNewAsync(UserRoleDTO newUserRole)
+
+
+        public async Task<Result<UserRoleDTO>> AddNewAsync(int roleId, int userId, bool isActive, SqlConnection connection, SqlTransaction transaction)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                string query = @"
+            string query = @"
 INSERT INTO UserRoles
 (
 user_id,
 role_id,
 is_active
 )
+OUTPUT inserted.*
 VALUES
 (
 @user_id,
 @role_id,
 @is_active
 );
-Select * from UserRoles Where id  = (SELECT SCOPE_IDENTITY());
 ";
-                using (SqlCommand command = new SqlCommand(_connectionString))
+            using (var command = new SqlCommand(query,connection,transaction))
+            {
+                command.Parameters.AddWithValue("@user_id", userId);
+                command.Parameters.AddWithValue("@role_id", roleId);
+                command.Parameters.AddWithValue("@is_active", isActive);
+                try
                 {
-                    command.Parameters.AddWithValue("@user_id", newUserRole.UserId);
-                    command.Parameters.AddWithValue("@role_id", newUserRole.RoleId);
-                    command.Parameters.AddWithValue("@is_active", newUserRole.isActive);
-                    try
+                    using (var reader = await command.ExecuteReaderAsync())
                     {
-                        await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        if (await reader.ReadAsync())
                         {
-                            if (await reader.ReadAsync())
-                            {
-                                UserRoleDTO insertedUserRole = new UserRoleDTO
-                                (
-                                    reader.GetInt32(reader.GetOrdinal("id")),
-                                    reader.GetInt32(reader.GetOrdinal("role_id")),
-                                    reader.GetInt32(reader.GetOrdinal("user_id")),
-                                    reader.GetBoolean(reader.GetOrdinal("is_active")),
-                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                                );
-                                return new Result<UserRoleDTO>(true, "User Role added successfully.", insertedUserRole);
-                            }
-                            return new Result<UserRoleDTO>(false, "Failed To Add Address", null, 500);
+                            var insertedUserRole = new UserRoleDTO
+                            (
+                                reader.GetInt32(reader.GetOrdinal("id")),
+                                reader.GetInt32(reader.GetOrdinal("role_id")),
+                                reader.GetInt32(reader.GetOrdinal("user_id")),
+                                reader.GetBoolean(reader.GetOrdinal("is_active")),
+                                reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                            );
+                            return new Result<UserRoleDTO>(true, "user_role_added_successfully", insertedUserRole);
                         }
+                        return new Result<UserRoleDTO>(false, "failed_to_add_user_role", null, 500);
                     }
-                    catch (Exception ex)
-                    {
-                        return new Result<UserRoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error happen");
+                    return new Result<UserRoleDTO>(false, "internal_server_error", null, 500);
                 }
             }
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM UserRoles WHERE id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("id", id);
                     try
@@ -81,30 +82,31 @@ Select * from UserRoles Where id  = (SELECT SCOPE_IDENTITY());
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "User Role deleted successfully.", true);
+                            return new Result<bool>(true, "user_role_deleted_successfully", true);
                         }
-                        return new Result<bool>(false, "User Role Not Found.", false, 404);
+                        return new Result<bool>(false, "user_role_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        _logger.LogError(ex, "Failed to delete user role with UserRoleId {UserRoleId}", id);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }
         }
-        public async Task<Result<IEnumerable<UserRoleDTO>>> GetAllAsync(int user_id)
+        public async Task<Result<IEnumerable<UserRoleDTO>>> GetAllAsync(int userId)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from UserRoles Where user_id  = @user_id;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@user_id", user_id);
-                    List<UserRoleDTO> userRoles = new List<UserRoleDTO>();
+                    command.Parameters.AddWithValue("@user_id", userId);
+                    var userRoles = new List<UserRoleDTO>();
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             while (await reader.ReadAsync())
                             {
@@ -120,14 +122,15 @@ Select * from UserRoles Where id  = (SELECT SCOPE_IDENTITY());
                             }
                             if (userRoles.Count > 0)
                             {
-                                return new Result<IEnumerable<UserRoleDTO>>(true, "User Roles retrieved successfully.", userRoles);
+                                return new Result<IEnumerable<UserRoleDTO>>(true, "user_roles_retrieved_successfully", userRoles);
                             }
-                            return new Result<IEnumerable<UserRoleDTO>>(false, "User Roles Not Found.", null, 404);
+                            return new Result<IEnumerable<UserRoleDTO>>(false, "user_roles_not_found", null, 404);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<IEnumerable<UserRoleDTO>>(false, "An unexpected error occurred on the server.", null, 500);
+                        _logger.LogError(ex, "Failed to retrieve user roles for UserId {UserId}", userId);
+                        return new Result<IEnumerable<UserRoleDTO>>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -135,20 +138,20 @@ Select * from UserRoles Where id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<UserRoleDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"Select * from UserRoles Where id  = @id;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
-                                UserRoleDTO userRole = new UserRoleDTO
+                                var userRole = new UserRoleDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
                                     reader.GetInt32(reader.GetOrdinal("role_id")),
@@ -157,15 +160,16 @@ Select * from UserRoles Where id  = (SELECT SCOPE_IDENTITY());
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
-                                return new Result<UserRoleDTO>(true, "User Role retrieved successfully.", userRole);
+                                return new Result<UserRoleDTO>(true, "user_role_retrieved_successfully", userRole);
                             }
-                            return new Result<UserRoleDTO>(false, "User Role Not Found", null, 404);
+                            return new Result<UserRoleDTO>(false, "user_role_not_found", null, 404);
 
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<UserRoleDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        _logger.LogError(ex, "Failed to retrieve user role with UserRoleId {UserRoleId}", id);
+                        return new Result<UserRoleDTO>(false, "internal_server_error", null, 500);
                     }
                 }
             }
@@ -173,7 +177,7 @@ Select * from UserRoles Where id  = (SELECT SCOPE_IDENTITY());
 
         public async Task<Result<bool>> UpdateAsync(int id, UserRoleDTO updatedUserRole)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE UserRoles
@@ -183,11 +187,11 @@ SET
 WHERE id = @id;
 select @@ROWCOUNT
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", updatedUserRole.Id);
                     command.Parameters.AddWithValue("@role_id", updatedUserRole.RoleId);
-                    command.Parameters.AddWithValue("@is_active", updatedUserRole.isActive);
+                    command.Parameters.AddWithValue("@is_active", updatedUserRole.IsActive);
                     try
                     {
                         await connection.OpenAsync();
@@ -195,13 +199,14 @@ select @@ROWCOUNT
                         int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowsAffected > 0)
                         {
-                            return new Result<bool>(true, "User Role updated successfully.", true);
+                            return new Result<bool>(true, "user_role_updated_successfully", true);
                         }
-                        return new Result<bool>(false, "User Role Not Found.", false, 404);
+                        return new Result<bool>(false, "user_role_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        _logger.LogError(ex, "Failed to update user role with UserRoleId {UserRoleId}, RoleId {RoleId}, IsActive {IsActive}", updatedUserRole.Id, updatedUserRole.RoleId, updatedUserRole.IsActive);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }

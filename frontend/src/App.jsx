@@ -1,7 +1,19 @@
 import "./App.css";
+import AppSettings from "./components/AppSettings";
+import Register from "./pages/Register";
+import { useLanguage } from "./hooks/useLanguage";
+import ToastContainer from "./components/ui/Toast";
 
 function App() {
-  return <p className="read-the-docs">The application will be here</p>;
+  const { language } = useLanguage();
+  return (
+    // <div dir={language === "en" ? "ltr" : "rtl"}>
+    <div>
+      <AppSettings />
+      <ToastContainer />
+      <Register />
+    </div>
+  );
 }
 
 export default App;

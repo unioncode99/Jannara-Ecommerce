@@ -1,4 +1,6 @@
-﻿namespace Jannara_Ecommerce.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Jannara_Ecommerce.DTOs.Seller
 {
     public class SellerDTO
     {
@@ -13,7 +15,9 @@
         }
 
         public int Id { get; set; }
+        [Required(ErrorMessage = "UserId is required.")]
         public int UserId { get; set; }
+        [Required(ErrorMessage = "BusinessName is required.")]
         public string BusinessName { get; set; }
         public string? WebsiteUrl { get; set; }
         public DateTime CreatedAt { get; set; }

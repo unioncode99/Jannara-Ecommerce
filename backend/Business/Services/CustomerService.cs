@@ -1,10 +1,13 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
-using Jannara_Ecommerce.DTOs.Mapper;
+using Jannara_Ecommerce.DTOs.Customer;
+using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.Enums;
+using Jannara_Ecommerce.Mappers;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using System.Data.Common;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -14,16 +17,27 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly string _connectionString;
         private readonly IPersonService _personService;
         private readonly IUserService _userService;
-        public CustomerService(ICustomerRepository repo, IPersonService PersonService, IUserService UserService, IOptions<DatabaseSettings> options)
+        private readonly IUserRoleService _userRoleService;
+        private readonly IImageService _imageService;
+        private readonly IOptions<ImageSettings> _imageSettings;
+        private readonly ILogger<ICustomerService> _logger;
+        public CustomerService(ICustomerRepository repo, IPersonService PersonService,
+            IUserService UserService, IOptions<DatabaseSettings> dateBaseSettings,
+            IUserRoleService userRoleService, IImageService imageService,
+            IOptions<ImageSettings> imageSettings, ILogger<ICustomerService> logger)
         {
             _repo = repo;
-            _connectionString = options.Value.DefaultConnection;
+            _connectionString = dateBaseSettings.Value.DefaultConnection;
             _personService = PersonService;
             _userService = UserService;
+            _userRoleService = userRoleService;
+            _imageService = imageService;
+            _imageSettings = imageSettings;
+            _logger = logger;
         }
-        public async Task<Result<CustomerDTO>> AddNewAsync(CustomerDTO newCustomer, SqlConnection connection, SqlTransaction transaction)
+        public async Task<Result<CustomerDTO>> AddNewAsync(int userId, SqlConnection connection, SqlTransaction transaction)
         {
-            return await _repo.AddNewAsync(newCustomer, connection, transaction);
+            return await _repo.AddNewAsync(userId, connection, transaction);
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)
@@ -35,43 +49,81 @@ namespace Jannara_Ecommerce.Business.Services
         {
             return await _repo.GetByIdAsync(id);
         }
-        public async Task<Result<CustomerDTO>> RegisterAsync(RegisteredCustomerDTO registeredCustomer)
+        public async Task<Result<CustomerDTO>> CreateAsync(CustomerCreateRequestDTO customerCreateRequestDTO)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+          
+
+            var personCreateDTO = customerCreateRequestDTO.GetPersonCreateDTO();
+            var userCreateDTO = customerCreateRequestDTO.GetUserCreateDTO();
+
+          
+                string imageUrl = null;
+            if (personCreateDTO.ProfileImage != null)
             {
-                SqlTransaction transaction = null;
+                var imageUrlResult = _imageService.GetImageUrl(personCreateDTO.ProfileImage, _imageSettings.Value.ProfileFolder);
+                if (!imageUrlResult.IsSuccess) 
+                    return new Result<CustomerDTO>(false, imageUrlResult.Message, null, imageUrlResult.ErrorCode);
+                imageUrl = imageUrlResult.Data;
+            }
+               
+                
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                DbTransaction transaction = null;
                 try
                 {
                     await connection.OpenAsync();
-                    transaction = connection.BeginTransaction();
-                    PersonDTO PersonInfo = registeredCustomer.GetPersonDTO();
-                    Result<PersonDTO> PersonResult = await _personService.AddNewAsync(PersonInfo, connection, transaction);
-                    if (!PersonResult.IsSuccess)
+                    transaction = await connection.BeginTransactionAsync();
+                    var personResult = await _personService.AddNewAsync(personCreateDTO, imageUrl?.Split("wwwroot/")[1], connection,(SqlTransaction) transaction);
+                    if (!personResult.IsSuccess)
                     {
-                        transaction.Rollback();
-                        return new Result<CustomerDTO>(false, PersonResult.Message, null, PersonResult.ErrorCode);
+                        await transaction.RollbackAsync();
+                        return new Result<CustomerDTO>(false, personResult.Message, null, personResult.ErrorCode);
                     }
-                    UserDTO UserInfo = registeredCustomer.GetUserDTO(PersonResult.Data.Id);
-                    Result<UserPublicDTO> UserResult = await _userService.AddNewAsync(UserInfo, connection, transaction);
-                    if (!UserResult.IsSuccess)
+                    
+                    var userResult = await _userService.AddNewAsync(personResult.Data.Id, userCreateDTO, connection, (SqlTransaction)transaction);
+                    if (!userResult.IsSuccess)
                     {
-                        transaction.Rollback();
-                        return new Result<CustomerDTO>(false, UserResult.Message, null, UserResult.ErrorCode);
+                        await transaction.RollbackAsync();
+                        return new Result<CustomerDTO>(false, userResult.Message, null, userResult.ErrorCode);
                     }
-                    CustomerDTO CustomerInfo = new CustomerDTO(-1, UserInfo.Id, DateTime.Now, DateTime.Now);
-                    Result<CustomerDTO> CustomerResult = await AddNewAsync(CustomerInfo, connection, transaction);
-                    if (!CustomerResult.IsSuccess)
+
+                    var userRoleResult = await _userRoleService.AddNewAsync((int)Roles.Customer, userResult.Data.Id, true, connection, (SqlTransaction)transaction);
+                    if (!userRoleResult.IsSuccess)
                     {
-                        transaction.Rollback();
-                        return new Result<CustomerDTO>(false, CustomerResult.Message, null, CustomerResult.ErrorCode);
+                        await transaction.RollbackAsync();
+                        return new Result<CustomerDTO>(false, userRoleResult.Message, null, userRoleResult.ErrorCode);
                     }
-                    transaction.Commit();
-                    return CustomerResult;
+
+                    var customerResult = await AddNewAsync(userResult.Data.Id,  connection, (SqlTransaction)transaction);
+                    if (!customerResult.IsSuccess)
+                    {
+                       await transaction.RollbackAsync();
+                        return new Result<CustomerDTO>(false, customerResult.Message, null, customerResult.ErrorCode);
+                    }
+                    await transaction.CommitAsync();
+                    if (personCreateDTO.ProfileImage != null)
+                    {
+                        await _imageService.SaveImageAsync(personCreateDTO.ProfileImage, imageUrl);
+                    }
+                    return customerResult;
                 }
                 catch (Exception ex)
                 {
-                    transaction?.Rollback();
-                    return new Result<CustomerDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                    if (transaction != null)
+                    {
+                        try
+                        {
+                            await transaction.RollbackAsync();
+                        }
+                        catch(Exception rollBackEx)
+                        {
+                            _logger.LogError(rollBackEx, "Roll back failed while create a new customer");
+                        }
+                    }
+                    _logger.LogError(ex,"Failed to create a new customer");
+                    return new Result<CustomerDTO>(false, "internal_server_error", null, 500);
                 }
             }
         }
@@ -79,6 +131,11 @@ namespace Jannara_Ecommerce.Business.Services
         public async Task<Result<bool>> UpdateAsync(int id, CustomerDTO updatedCustomer)
         {
             return await _repo.UpdateAsync(id, updatedCustomer);
+        }
+
+        public Task<Result<PagedResponseDTO<CustomerDTO>>> GetAllAsync(int pageNumber, int pageSize)
+        {
+            return _repo.GetAllAsync(pageNumber, pageSize);
         }
     }
 }

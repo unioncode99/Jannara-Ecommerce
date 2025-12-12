@@ -1,4 +1,6 @@
-﻿namespace Jannara_Ecommerce.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Jannara_Ecommerce.DTOs
 {
     public class UserRoleDTO
     {
@@ -7,15 +9,18 @@
             Id = id;
             RoleId = roleId;
             UserId = userId;
-            this.isActive = isActive;
+            IsActive = isActive;
             CreatedAt = createdAt;
             UpdatedAt = updatedAt;
         }
 
         public int Id { get; set; }
+        [Required(ErrorMessage = "RoleId is required.")]
         public int RoleId { get; set; }
+        [Required(ErrorMessage = "UserId is required.")]
         public int UserId { get; set; }
-        public bool isActive { get; set; }
+        [Required(ErrorMessage = "isActive is required.")]
+        public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }

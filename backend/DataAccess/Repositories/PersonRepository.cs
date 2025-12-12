@@ -1,21 +1,23 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Security.Principal;
 
 namespace Jannara_Ecommerce.DataAccess.Repositories
 {
     public class PersonRepository : IPersonRepository
     {
         private readonly string _connectionString;
-        public PersonRepository(IOptions<DatabaseSettings> options)
+        private readonly ILogger<IPersonRepository> _logger;
+        public PersonRepository(IOptions<DatabaseSettings> options, ILogger<IPersonRepository> logger)
         {
             _connectionString = options.Value.DefaultConnection;
+            _logger = logger;
         }
-        public async Task<Result<PersonDTO>> AddNewAsync(PersonDTO newPerson, SqlConnection connection, SqlTransaction transaction)
+        public async Task<Result<PersonDTO>> AddNewAsync(PersonCreateDTO  personCreateDTO, string imageUrl, SqlConnection connection, SqlTransaction transaction)
         {
             string query = @"
 
@@ -27,6 +29,7 @@ phone,
 image_url,
 gender,
 date_of_birth)
+OUTPUT inserted.*
  VALUES(
 @first_name,
 @last_name,
@@ -35,35 +38,34 @@ date_of_birth)
 @gender,
 @date_of_birth
 );
-Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
 ";
-            using (SqlCommand command = new SqlCommand(query, connection, transaction))
+            using (var command = new SqlCommand(query, connection, transaction))
             {
-                command.Parameters.AddWithValue("@first_name", newPerson.FirstName);
-                command.Parameters.AddWithValue("@last_name", newPerson.LastName);
-                command.Parameters.AddWithValue("@phone", newPerson.Phone);
-                command.Parameters.AddWithValue("@image_url", newPerson.ImageUrl ?? (object)DBNull.Value);
-                command.Parameters.AddWithValue("@gender", (int)newPerson.Gender);
-                command.Parameters.AddWithValue("@date_of_birth", newPerson.DateOfBirth);
-                using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                command.Parameters.AddWithValue("@first_name", personCreateDTO.FirstName);
+                command.Parameters.AddWithValue("@last_name", personCreateDTO.LastName);
+                command.Parameters.AddWithValue("@phone", personCreateDTO.Phone);
+                command.Parameters.AddWithValue("@image_url", imageUrl ?? (object)DBNull.Value);
+                command.Parameters.AddWithValue("@gender", (int)personCreateDTO.Gender);
+                command.Parameters.AddWithValue("@date_of_birth", personCreateDTO.DateOfBirth);
+                using (var reader = await command.ExecuteReaderAsync())
                 {
                     if (await reader.ReadAsync())
                     {
-                        PersonDTO insertedPerson = new PersonDTO
+                        var insertedPerson = new PersonDTO
                         (
                             reader.GetInt32(reader.GetOrdinal("Id")),
                             reader.GetString(reader.GetOrdinal("first_name")),
                             reader.GetString(reader.GetOrdinal("last_name")),
                             reader.GetString(reader.GetOrdinal("phone")),
                             reader.IsDBNull(reader.GetOrdinal("image_url")) ? null : reader.GetString(reader.GetOrdinal("image_url")),
-                            (Gender)reader.GetInt32(reader.GetOrdinal("gender")),
+                            (Gender)reader.GetByte(reader.GetOrdinal("gender")),
                             DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("date_of_birth"))),
                             reader.GetDateTime(reader.GetOrdinal("created_at")),
                             reader.GetDateTime(reader.GetOrdinal("updated_at"))
                        );
-                        return new Result<PersonDTO>(true, "Person added successfully.", insertedPerson);
+                        return new Result<PersonDTO>(true, "person_added_successfully", insertedPerson);
                     }
-                    return new Result<PersonDTO>(false, "Failed to add person.", null, 500);
+                    return new Result<PersonDTO>(false, "failed_to_add_person", null, 500);
 
                 }
 
@@ -71,10 +73,10 @@ Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
         }
         public async Task<Result<bool>> DeleteAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"DELETE FROM People WHERE Id = @id";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
@@ -84,12 +86,13 @@ Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                            return new Result<bool>(true, "Person deleted successfully.", true);
-                        return new Result<bool>(false, "Person not found.", false, 500);
+                            return new Result<bool>(true, "person_deleted_successfully", true);
+                        return new Result<bool>(false, "person_not_found", false, 500);
                     }
                     catch (Exception ex)
                     {
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        _logger.LogError(ex, "Failed to delete person with PersonId {PersonId}", id);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 
                 }
@@ -97,19 +100,19 @@ Select * from People Where Id  = (SELECT SCOPE_IDENTITY());
         }
         public async Task<Result<PersonDTO>> GetByIdAsync(int id)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 Select * from People Where Id  = @id;
 ";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
 
                     try
                     {
                         await connection.OpenAsync();
-                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        using (var reader = await command.ExecuteReaderAsync())
                         {
                             if (await reader.ReadAsync())
                             {
@@ -120,14 +123,14 @@ Select * from People Where Id  = @id;
                                     reader.GetString(reader.GetOrdinal("last_name")),
                                     reader.GetString(reader.GetOrdinal("phone")),
                                     reader.IsDBNull(reader.GetOrdinal("image_url")) ? null : reader.GetString(reader.GetOrdinal("image_url")),
-                                    (Gender)reader.GetInt32(reader.GetOrdinal("gender")),
+                                    (Gender)reader.GetByte(reader.GetOrdinal("gender")),
                                     DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("date_of_birth"))),
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                );
-                                return new Result<PersonDTO>(true, "Person retrieved successfully.", person);
+                                return new Result<PersonDTO>(true, "person_retrieved_successfully", person);
                             }
-                            return new Result<PersonDTO>(false, "Person not found.", null, 404);
+                            return new Result<PersonDTO>(false, "person_not_found", null, 404);
 
                         }
 
@@ -135,15 +138,16 @@ Select * from People Where Id  = @id;
                     }
                     catch (Exception ex)
                     {
-                        return new Result<PersonDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                        _logger.LogError(ex, "Failed to retrieve person with PersonId {PersonId}", id);
+                        return new Result<PersonDTO>(false, "internal_server_error", null, 500);
                     }
 
                 }
             }
         }
-        public async Task<Result<bool>> UpdateAsync(int id, PersonDTO updatedPerson)
+        public async Task<Result<bool>> UpdateAsync(int id, PersonUpdateDTO  updatedPerson, string imageUrl)
         {
-            using(SqlConnection connection = new SqlConnection(_connectionString))
+            using(var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE People
@@ -156,16 +160,15 @@ SET
     date_of_birth = @date_of_birth
 WHERE Id = @id;
 select @@ROWCOUNT";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@first_name", updatedPerson.FirstName);
                     command.Parameters.AddWithValue("@id", id);
                     command.Parameters.AddWithValue("@last_name", updatedPerson.LastName);
                     command.Parameters.AddWithValue("@phone", updatedPerson.Phone);
-                    command.Parameters.AddWithValue("@image_url", updatedPerson.ImageUrl ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@image_url", imageUrl ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@gender", (int)updatedPerson.Gender);
                     command.Parameters.AddWithValue("@date_of_birth", updatedPerson.DateOfBirth);
-
 
                     try
                     {
@@ -173,17 +176,17 @@ select @@ROWCOUNT";
                         object? result = await command.ExecuteScalarAsync();
                         int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                         if (rowAffected > 0)
-                            return new Result<bool>(true, "Person updated successfully.", true);
-                        return new Result<bool>(false, "Person not found.", false, 404);
+                            return new Result<bool>(true, "person_updated_successfully", true);
+                        return new Result<bool>(false, "person_not_found", false, 404);
                     }
                     catch (Exception ex)
                     {
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        _logger.LogError(ex, "Failed to update person with PersonId {PersonId}", id);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 
                 }
             }
         }
-
     }
 }
