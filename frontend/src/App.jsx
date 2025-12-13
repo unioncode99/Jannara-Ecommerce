@@ -14,7 +14,7 @@ function App() {
     // <div dir={language === "en" ? "ltr" : "rtl"}>
     <div>
       <ToastContainer />
-      <AppSettings />
+      <AppSettings isTopLeft={true} />
       <BrowserRouter>
         <Routes>
           {/* <Route path="/" element={<h1>Home Page</h1>} /> */}
