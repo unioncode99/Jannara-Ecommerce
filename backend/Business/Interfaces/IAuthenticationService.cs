@@ -13,6 +13,7 @@ namespace Jannara_Ecommerce.Business.Interfaces
         public Task<Result<bool>> ForgetPasswordAsync(string email);
 
         public Task<Result<bool>> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO);
+        public Task<Result<bool>> SendAccountConfirmationAsync(string email);
 
     }
 }
