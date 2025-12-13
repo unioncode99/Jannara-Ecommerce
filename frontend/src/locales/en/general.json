@@ -1,6 +1,11 @@
 {
   "form": {
     "register_title": "Register",
+    "login_title": "Jannara",
+    "login_subtitle": "Welcome back! Please log in to your account.",
+    "login_button": "Login",
+    "forgot_password": "Forgot Password?",
+    "no_account": "Don't have an account?",
     "create_account": "Create a new account",
     "seller_option": "Seller",
     "customer_option": "Customer",

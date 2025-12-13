@@ -1,6 +1,11 @@
 {
   "form": {
     "register_title": "إنشاء حساب",
+    "login_title": "جنّارة",
+    "login_subtitle": "مرحبًا بعودتك! الرجاء تسجيل الدخول إلى حسابك.",
+    "login_button": "تسجيل الدخول",
+    "forgot_password": "هل نسيت كلمة المرور؟",
+    "no_account": "ليس لديك حساب؟  ",
     "create_account": "إنشاء حساب جديد",
     "seller_option": "بائع",
     "customer_option": "عميل",
