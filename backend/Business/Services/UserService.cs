@@ -174,5 +174,21 @@ namespace Jannara_Ecommerce.Business.Services
 
             return await _repo.UpdateAsync(id, updatedUser);
         }
+
+
+        public async Task<Result<bool>> ResetPasswordAsync(int id, string newPassword, SqlConnection conn, SqlTransaction transaction)
+        {
+            Result<UserDTO> userResult = await _repo.GetByIdAsync(id);
+            if (!userResult.IsSuccess)
+            {
+                return new Result<bool>(false, userResult.Message, false, userResult.ErrorCode);
+            }
+
+
+            userResult.Data.Password = newPassword;
+
+            return await _repo.ResetPasswordAsync(id, _passwordService.HashPassword(userResult.Data, userResult.Data.Password), conn, transaction);
+        }
+
     }
 }

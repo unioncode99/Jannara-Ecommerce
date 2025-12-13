@@ -1,4 +1,5 @@
-﻿using Jannara_Ecommerce.DTOs.General;
+﻿using Jannara_Ecommerce.Business.Services;
+using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
@@ -14,5 +15,7 @@ namespace Jannara_Ecommerce.Business.Interfaces
         public Task<Result<bool>> UpdateAsync(int id, UserUpdateDTO updatedUser);
         public Task<Result<bool>> DeleteAsync(int id);
         public Task<Result<PagedResponseDTO<UserPublicDTO>>> GetAllAsync(int pageNumber, int pageSize);
+        public Task<Result<bool>> ResetPasswordAsync(int id, string newPassword, SqlConnection conn, SqlTransaction transaction);
+
     }
 }

@@ -2,6 +2,7 @@
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.Token;
 using Jannara_Ecommerce.Utilities;
+using Microsoft.Data.SqlClient;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -15,6 +16,21 @@ namespace Jannara_Ecommerce.Business.Services
         public async Task<Result<int>> AddNewAsync(ConfirmationTokenDTO passwordResetTokenDTO)
         {
             return await _confirmationTokenRepository.AddNewAsync(passwordResetTokenDTO);
+        }
+
+        public async Task<Result<ConfirmationTokenDTO>> GetByTokenAsync(string token)
+        {
+            return await _confirmationTokenRepository.GetByTokenAsync(token);
+        }
+
+        public async Task<Result<ConfirmationTokenDTO>> GetByCodeAsync(string code)
+        {
+            return await _confirmationTokenRepository.GetByCodeAsync(code);
+        }
+
+        public async Task<Result<bool>> MarkAsUsedAsync(int id, SqlConnection conn, SqlTransaction tran)
+        {
+            return await _confirmationTokenRepository.MarkAsUsedAsync(id, conn, tran);
         }
     }
 }
