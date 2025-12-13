@@ -36,13 +36,24 @@ namespace Jannara_Ecommerce.Controllers
         }
 
         [HttpPost("forget-password")]
-        public async Task<ActionResult> ForgetPassword([FromForm] string email)
+        public async Task<ActionResult> ForgetPassword([FromBody] string email)
         {
             Result<bool> result = await _service.ForgetPasswordAsync(email);
             if (result.IsSuccess)
             {
                 return Ok();
             }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
+
+        [HttpPost("reset-password")]
+        public async Task<ActionResult<LoginResponseDTO>> ResetPassword([FromForm] ResetPasswordDTO resetPasswordDTO)
+        {
+            Result<bool> result = await _service.ResetPasswordAsync(resetPasswordDTO);
+
+            if (result.IsSuccess)
+                return Ok(result.Data);
             return StatusCode(result.ErrorCode, result.Message);
         }
 

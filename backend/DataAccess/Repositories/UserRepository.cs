@@ -421,5 +421,69 @@ select @@ROWCOUNT";
                 }
             }
         }
+
+        public async Task<Result<bool>> ResetPasswordAsync(int id, string newPassword, SqlConnection conn, SqlTransaction transaction)
+        {
+            string query = @"
+UPDATE Users
+SET 
+    password = @newPassword
+WHERE id = @id;
+select @@ROWCOUNT";
+            using (SqlCommand command = new SqlCommand(query, conn, transaction))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                command.Parameters.AddWithValue("@newPassword", newPassword);
+                object result = await command.ExecuteScalarAsync();
+                int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                if (rowAffected > 0)
+                {
+                    return new Result<bool>(true, "Password changed successfully.", true);
+                }
+                else
+                {
+                    return new Result<bool>(false, "Failed to  change password.", false);
+                }
+
+
+
+            }
+        }
+        public async Task<Result<bool>> ResetPasswordAsync(int id, string newPassword)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+UPDATE Users
+SET 
+    password = @newPassword
+WHERE id = @id;
+select @@ROWCOUNT";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    try
+                    {
+                        await connection.OpenAsync();
+                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@newPassword", newPassword);
+                        object result = await command.ExecuteScalarAsync();
+                        int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                        if (rowAffected > 0)
+                        {
+                            return new Result<bool>(true, "Password changed successfully.", true);
+                        }
+                        else
+                        {
+                            return new Result<bool>(false, "Failed to  change password.", false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                    }
+                }
+            }
+        }
+
     }
 }

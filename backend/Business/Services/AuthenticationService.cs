@@ -11,7 +11,9 @@ using Jannara_Ecommerce.Mappers;
 using Jannara_Ecommerce.Utilities;
 using Jannara_Ecommerce.Utilities.WrapperClasses;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -29,11 +31,12 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IEmailSenderService _emailSenderService;
         private readonly ILogger<ICustomerRepository> _logger;
         private readonly ICodeService _codeService;
+        private readonly string _connectionString;
 
         public AuthenticationService(IUserService userService, IPasswordService passwordService, ITokenService tokenService, IRefreshTokenService refreshTokenService, 
             IPersonService personService, ICustomerService customerService, ISellerService sellerService, IConfirmationTokenServiceInterface confirmationTokenService,
             IConfiguration configuration, IEmailSenderService emailSenderService, ILogger<ICustomerRepository> logger,
-            ICodeService codeService)
+            ICodeService codeService, IOptions<DatabaseSettings> dateBaseSettings)
         {
             _userService = userService;
             _passwordService = passwordService;
@@ -47,6 +50,7 @@ namespace Jannara_Ecommerce.Business.Services
             _emailSenderService = emailSenderService;
             _logger = logger;
             _codeService = codeService;
+            _connectionString = dateBaseSettings.Value.DefaultConnection;
         }
 
         public async Task<Result<LoginResult>> LogInAsync(LoginDTO request)
@@ -196,6 +200,77 @@ namespace Jannara_Ecommerce.Business.Services
             }
             
         }
-    
+
+        public async Task<Result<bool>> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
+        {
+            Result<ConfirmationTokenDTO> getResetTokenResult = null;
+
+            if (string.IsNullOrWhiteSpace(resetPasswordDTO.Token) &&
+                string.IsNullOrWhiteSpace(resetPasswordDTO.Code))
+            {
+                return new Result<bool>(false, "Token or code is required", false, 400);
+            }
+
+            if (!string.IsNullOrWhiteSpace(resetPasswordDTO.Token))
+            {
+                getResetTokenResult = await _confirmationTokenService
+                    .GetByTokenAsync(resetPasswordDTO.Token);
+            }
+            else
+            {
+                getResetTokenResult = await _confirmationTokenService
+                    .GetByCodeAsync(resetPasswordDTO.Code);
+            }
+
+            if (!getResetTokenResult.IsSuccess || getResetTokenResult.Data == null)
+            {
+                return new Result<bool>(false, "Invalid or expired token", false, 401);
+            }
+
+            var tokenData = getResetTokenResult.Data;
+
+            if (tokenData.IsUsed || tokenData.ExpireAt < DateTime.UtcNow)
+            {
+                return new Result<bool>(false, "Invalid or expired token", false, 401);
+            }
+
+            if (!string.IsNullOrWhiteSpace(resetPasswordDTO.Code) &&
+                tokenData.Code != resetPasswordDTO.Code)
+            {
+                return new Result<bool>(false, "Invalid or expired token", false, 401);
+            }
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                SqlTransaction transaction = null;
+                try
+                {
+                    await connection.OpenAsync();
+                    transaction = connection.BeginTransaction();
+                    Result<bool> resetPasswordResult = await _userService.ResetPasswordAsync(getResetTokenResult.Data.UserId, resetPasswordDTO.NewPassword, connection, transaction);
+                    if (!resetPasswordResult.IsSuccess)
+                    {
+                        transaction.Rollback();
+                        return new Result<bool>(false, resetPasswordResult.Message, false, resetPasswordResult.ErrorCode);
+                    }
+                    Result<bool> markAsUsed = await _confirmationTokenService.MarkAsUsedAsync(getResetTokenResult.Data.Id, connection, transaction);
+                    if (!markAsUsed.IsSuccess)
+                    {
+                        transaction.Rollback();
+                        return new Result<bool>(false, markAsUsed.Message, false, markAsUsed.ErrorCode);
+                    }
+                    await transaction.CommitAsync();
+                    return resetPasswordResult;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    _logger.LogError(ex.Message);
+                    return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                }
+            }
+
+        }
+
     }
 }
