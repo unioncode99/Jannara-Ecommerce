@@ -17,6 +17,7 @@ import Button from "../components/ui/Button";
 import { toast } from "../components/ui/Toast";
 import { create } from "../api/apiWrapper";
 import "./Register.css";
+import { Link } from "react-router-dom";
 
 const initialFormState = {
   role: "customer",
@@ -358,7 +359,9 @@ const Register = () => {
         </Button>
 
         <div className="link-container">
-          <a href="#">{translations.general.form.already_have_account}</a>
+          <Link to="/login">
+            {translations.general.form.already_have_account}
+          </Link>
         </div>
       </form>
     </div>
