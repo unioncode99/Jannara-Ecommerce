@@ -1,12 +1,16 @@
 .app-settings {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
   background-color: transparent;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
+.app-settings.top-left {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
 .lang {
   display: flex;
   gap: 0.5rem;
