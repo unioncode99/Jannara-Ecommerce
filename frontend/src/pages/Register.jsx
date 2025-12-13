@@ -18,6 +18,7 @@ import { toast } from "../components/ui/Toast";
 import { create } from "../api/apiWrapper";
 import "./Register.css";
 import AppSettings from "../components/AppSettings";
+import { Link } from "react-router-dom";
 
 const initialFormState = {
   role: "customer",
@@ -179,7 +180,6 @@ const Register = () => {
 
   return (
     <div className="register-page">
-      <AppSettings isTopLeft={true} />
       <form className="form" onSubmit={handleSubmit}>
         <h2>{translations.general.form.register_title}</h2>
         <p className="text-small">{translations.general.form.create_account}</p>
