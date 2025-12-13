@@ -24,8 +24,6 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly ITokenService _tokenService;
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IPersonService _personService;
-        private readonly ICustomerService _customerService;
-        private readonly ISellerService _SellerService;
         private readonly IConfirmationTokenServiceInterface _confirmationTokenService;
         private readonly IConfiguration _configuration;
         private readonly IEmailSenderService _emailSenderService;
@@ -34,7 +32,7 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly string _connectionString;
 
         public AuthenticationService(IUserService userService, IPasswordService passwordService, ITokenService tokenService, IRefreshTokenService refreshTokenService, 
-            IPersonService personService, ICustomerService customerService, ISellerService sellerService, IConfirmationTokenServiceInterface confirmationTokenService,
+            IPersonService personService,  IConfirmationTokenServiceInterface confirmationTokenService,
             IConfiguration configuration, IEmailSenderService emailSenderService, ILogger<ICustomerRepository> logger,
             ICodeService codeService, IOptions<DatabaseSettings> dateBaseSettings)
         {
@@ -43,8 +41,6 @@ namespace Jannara_Ecommerce.Business.Services
             _tokenService = tokenService;
             _refreshTokenService = refreshTokenService;
             _personService = personService;
-            _customerService = customerService;
-            _SellerService = sellerService;
             _confirmationTokenService = confirmationTokenService;
             _configuration = configuration;
             _emailSenderService = emailSenderService;
@@ -105,7 +101,7 @@ namespace Jannara_Ecommerce.Business.Services
                 return new Result<bool>(false, "internal_server_error", false, 500);
             }
 
-            string resetUrl = $"{_configuration.GetValue<string>("EMAIL_CONFIGURATION:FRONTEND_DOMAIN")}/reset-password/{token}";
+            string resetUrl = $"{_configuration.GetValue<string>("EMAIL_CONFIGURATION:FRONTEND_DOMAIN")}/reset-password?token={token}";
             string body = $@"
 <html>
 <head>
@@ -205,43 +201,22 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
         {
-            Result<ConfirmationTokenDTO> getResetTokenResult = null;
 
-            if (string.IsNullOrWhiteSpace(resetPasswordDTO.Token) &&
-                string.IsNullOrWhiteSpace(resetPasswordDTO.Code))
-            {
-                return new Result<bool>(false, "Token or code is required", false, 400);
-            }
+            var getResetTokenResult = await _confirmationTokenService.GetByTokenAsync(resetPasswordDTO.Token);
 
-            if (!string.IsNullOrWhiteSpace(resetPasswordDTO.Token))
+            if (!getResetTokenResult.IsSuccess && getResetTokenResult.ErrorCode == 404)
             {
-                getResetTokenResult = await _confirmationTokenService
-                    .GetByTokenAsync(resetPasswordDTO.Token);
+                return new Result<bool>(false, "invalid_or_expired_token", false, 401);
             }
-            else
-            {
-                getResetTokenResult = await _confirmationTokenService
-                    .GetByCodeAsync(resetPasswordDTO.Code);
-            }
-
-            if (!getResetTokenResult.IsSuccess || getResetTokenResult.Data == null)
-            {
-                return new Result<bool>(false, "Invalid or expired token", false, 401);
-            }
+            if (!getResetTokenResult.IsSuccess)
+                return new Result<bool>(false, getResetTokenResult.Message, false, getResetTokenResult.ErrorCode);
 
             var tokenData = getResetTokenResult.Data;
 
             if (tokenData.IsUsed || tokenData.ExpireAt < DateTime.UtcNow)
             {
-                return new Result<bool>(false, "Invalid or expired token", false, 401);
+                return new Result<bool>(false, "invalid_or_expired_token", false, 401);
             }
-
-            if (!string.IsNullOrWhiteSpace(resetPasswordDTO.Code) &&
-                tokenData.Code != resetPasswordDTO.Code)
-            {
-                return new Result<bool>(false, "Invalid or expired token", false, 401);
-            }
-
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 SqlTransaction transaction = null;
@@ -266,13 +241,28 @@ namespace Jannara_Ecommerce.Business.Services
                 }
                 catch (Exception ex)
                 {
-                    transaction.Rollback();
-                    _logger.LogError(ex.Message);
-                    return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                    {
+                        transaction.Rollback();
+                        _logger.LogError(ex.Message);
+                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                    }
                 }
-            }
 
+            }
         }
 
+        public async Task<Result<string>> VerifyResetCodeAsync(string resetCode)
+        {
+            Result<ConfirmationTokenDTO> result = await _confirmationTokenService.GetByCodeAsync(resetCode);
+            if (!result.IsSuccess && result.ErrorCode == 404)
+                return  new Result<string>(false, "invalid_or_expired_code", "", 401);
+            if (!result.IsSuccess)
+                return new Result<string>(false,result.Message, "", result.ErrorCode);
+            if (result.Data.ExpireAt > DateTime.Now || result.Data.IsUsed)
+                new Result<string>(false, "invalid_or_expired_code", "", 401);
+
+            return new Result<string>(true, "verification_success", result.Data.Token);
+
+        }
     }
 }
