@@ -48,7 +48,7 @@ namespace Jannara_Ecommerce.Controllers
 
 
         [HttpPost("reset-password")]
-        public async Task<ActionResult<LoginResponseDTO>> ResetPassword([FromForm] ResetPasswordDTO resetPasswordDTO)
+        public async Task<ActionResult<LoginResponseDTO>> ResetPassword([FromBody] ResetPasswordDTO resetPasswordDTO)
         {
             Result<bool> result = await _service.ResetPasswordAsync(resetPasswordDTO);
 
@@ -57,5 +57,14 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
+        [HttpPost("verify-reset-Code")]
+        public async Task<ActionResult<string>> VerifyResetCode([FromBody] string resetCode)
+        {
+            Result<string> result = await _service.VerifyResetCodeAsync(resetCode);
+
+            if (result.IsSuccess)
+                return Ok(result.Data);
+            return StatusCode(result.ErrorCode, result.Message);
+        }
     }
 }

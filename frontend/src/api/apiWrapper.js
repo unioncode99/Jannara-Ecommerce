@@ -32,7 +32,7 @@ const apiWrapper = async (url, method = "GET", data = null) => {
       config.headers["Content-Type"] = "application/json";
       config.data = data;
     }
-
+    console.log(config);
     return await api(config);
   } catch (error) {
     console.log(error);

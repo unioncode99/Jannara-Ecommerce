@@ -1,28 +1,38 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { Loader2, Lock } from "lucide-react";
 import "./ResetPasswordPage.css";
 import { useLanguage } from "../hooks/useLanguage";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "../components/ui/Toast";
+import { create } from "../api/apiWrapper";
 const ResetPasswordPage = () => {
   const { translations, language } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+  if (!token) throw new Error("Token is required to reset password");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateFormData()) {
       toast.show(translations.general.form.messages.general_error, "error");
       return;
     }
     setIsLoading(true);
-    // Simulate an API call
-    setTimeout(() => {
+    try {
+      await create("auth/reset-password", { token, newPassword: password });
+      toast.show("Password reset successfully", "success");
+      navigate(`/login`);
+    } catch (error) {
+      toast.show(error.message, "error");
+    } finally {
       setIsLoading(false);
-      toast.show("Password has been reset successfully!", "success");
-    }, 2000);
+    }
   };
   const validateFormData = () => {
     let temp = {};
