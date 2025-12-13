@@ -29,7 +29,8 @@
       "invalid_email": "Please enter a valid email address",
       "weak_password": "Password must be at least 8 characters long and include a number and a special character",
       "invalid_phone": "Please enter a valid phone number",
-      "invalid_date": "Please enter a valid date"
+      "invalid_date": "Please enter a valid date",
+      "passwords_do_not_match": "Passwords do not match"
     },
     "messages": {
       "general_error": "Something went wrong. Please fix the errors.",
@@ -110,6 +111,35 @@
       "title": "Page Not Found",
       "subtitle": "The page you are looking for does not exist.",
       "home_button": "Go to Home"
+    },
+    "forget_password": {
+      "title": "Forget Password",
+      "subtitle": "Enter email to reset password",
+      "form": {
+        "submit_button": "Submit",
+        "back_to_login": "Back to Login"
+      }
+    },
+    "verify_code": {
+      "title": "Enter Verification Code",
+      "message_prefix": "A verification code has been sent to your email",
+      "message_suffix": "Please enter the code below to continue.",
+      "form": {
+        "input_placeholder": "Enter  code",
+        "submit_button": "Verify",
+        "resend_code": "Resend Code"
+      },
+      "back_to_login": "Back to Login"
+    },
+    "reset_password": {
+      "form": {
+        "title": "Reset Password",
+        "subtitle": "Set a new password for your account",
+        "input_placeholder_password": "New Password",
+        "input_placeholder_confirm_password": "Confirm New Password",
+        "submit_button": "Reset Password",
+        "back_to_login": "Back to Login"
+      }
     }
   }
 }

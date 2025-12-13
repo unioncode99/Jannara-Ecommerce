@@ -6,6 +6,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ToastContainer from "./components/ui/Toast";
 import NotFoundPage from "./pages/NotFoundPage";
 import AppSettings from "./components/AppSettings";
+import ForgetPasswordPage from "./pages/ForgetPasswordPage";
+import VerifyCodePage from "./pages/VerifyCodePage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function App() {
   const { language } = useLanguage();
@@ -18,9 +21,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* <Route path="/" element={<h1>Home Page</h1>} /> */}
+          <Route path="*" element={<NotFoundPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="*" element={<NotFoundPage />} />
+          <Route path="/forget-password" element={<ForgetPasswordPage />} />
+          <Route path="/verify-code" element={<VerifyCodePage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
         </Routes>
       </BrowserRouter>
     </div>
