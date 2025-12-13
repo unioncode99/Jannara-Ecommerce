@@ -4,6 +4,7 @@ import { useLanguage } from "../hooks/useLanguage";
 import "./ForgetPasswordPage.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { create } from "../api/apiWrapper";
 import { toast } from "../components/ui/Toast";
 
 const ForgetPasswordPage = () => {
@@ -11,10 +12,17 @@ const ForgetPasswordPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { translations } = useLanguage();
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    toast.show("Not implemented yet", "error");
-    navigate("/verify-code", { state: { email } });
+    setIsLoading(true);
+    try {
+      await create("auth/forget-password", email);
+      navigate("/verify-code", { state: { email } });
+    } catch (error) {
+      toast.show(error.message, "error");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -36,7 +44,7 @@ const ForgetPasswordPage = () => {
         />
         <button type="submit">
           {isLoading ? (
-            <Loader2 className="spinner" />
+            <Loader2 className="animate-spin" />
           ) : (
             translations.general.pages.forget_password.form.submit_button
           )}
