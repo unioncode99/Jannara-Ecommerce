@@ -15,6 +15,7 @@ namespace Jannara_Ecommerce.Business
             services.AddScoped<ISellerService, SellerService>();
             services.AddScoped<IUserRoleService, UserRoleService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserConfirmationService, UserConfirmationService>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
             services.AddScoped<ITokenService, TokenService>();
@@ -23,6 +24,7 @@ namespace Jannara_Ecommerce.Business
             services.AddScoped<ICodeService, CodeService>();
             services.AddScoped<IConfirmationTokenServiceInterface, ConfirmationTokenService>();
             services.AddScoped<IEmailSenderService, EmailSenderService>();
+            services.AddScoped<IAccountConfirmationServiceInterface, AccountConfirmationServiceInterface>();
             return services;
         }
     }

@@ -18,6 +18,11 @@ namespace Jannara_Ecommerce.Business.Services
             return await _confirmationTokenRepository.AddNewAsync(passwordResetTokenDTO);
         }
 
+        public async Task<Result<int>> AddNewAsync(ConfirmationTokenDTO accountConfirmationDTO, SqlConnection conn, SqlTransaction transaction)
+        {
+            return await _confirmationTokenRepository.AddNewAsync(accountConfirmationDTO, conn, transaction);
+        }
+
         public async Task<Result<ConfirmationTokenDTO>> GetByTokenAsync(string token)
         {
             return await _confirmationTokenRepository.GetByTokenAsync(token);
@@ -28,9 +33,9 @@ namespace Jannara_Ecommerce.Business.Services
             return await _confirmationTokenRepository.GetByCodeAsync(code);
         }
 
-        public async Task<Result<bool>> MarkAsUsedAsync(int id, SqlConnection conn, SqlTransaction tran)
+        public async Task<Result<bool>> MarkAsUsedAsync(int id, SqlConnection conn, SqlTransaction transaction)
         {
-            return await _confirmationTokenRepository.MarkAsUsedAsync(id, conn, tran);
+            return await _confirmationTokenRepository.MarkAsUsedAsync(id, conn, transaction);
         }
     }
 }
