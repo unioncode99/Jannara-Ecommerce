@@ -19,13 +19,15 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly string _connectionString;
         private readonly IPersonService _personService;
         private readonly IUserRoleService _userRoleService;
+        private readonly IAccountConfirmationServiceInterface _accountConfirmationService;
         private readonly IImageService _imageService;
         private readonly IOptions<ImageSettings> _imageSettings;
         private readonly ILogger<IUserService> _logger;
         public UserService(IUserRepository repo, IPasswordService passwordService,
             IOptions<DatabaseSettings> options, IPersonService personService, 
             IUserRoleService userRoleService, IImageService imageService,
-            IOptions<ImageSettings> imageSettings, ILogger<IUserService> logger)
+            IOptions<ImageSettings> imageSettings, ILogger<IUserService> logger, 
+            IAccountConfirmationServiceInterface accountConfirmationService)
         {
             _repo = repo;
             _passwordService = passwordService;
@@ -35,6 +37,7 @@ namespace Jannara_Ecommerce.Business.Services
             _imageService = imageService;
             _imageSettings = imageSettings;
             _logger = logger;
+            _accountConfirmationService = accountConfirmationService;
         }
 
 
@@ -57,7 +60,20 @@ namespace Jannara_Ecommerce.Business.Services
                 return new Result<UserPublicDTO>(false, "username_exists", null, 409);
 
             newUser.Password = _passwordService.HashPassword(newUser, newUser.Password);
-            return await _repo.AddNewAsync(personId, newUser, connection, transaction);
+            var userResult = await _repo.AddNewAsync(personId, newUser, connection, transaction);
+            if (!userResult.IsSuccess)
+            {
+                return new Result<UserPublicDTO>(false, "internal_server_error", null, 500);
+            }
+
+            var accountConfirmationResult = _accountConfirmationService.SendAccountConfirmationAsync(userResult.Data, connection, transaction);
+
+            if (!accountConfirmationResult.Result.IsSuccess)
+            {
+                return new Result<UserPublicDTO>(false, "internal_server_error", null, 500);
+            }
+
+            return userResult;
         }
 
         public async Task<Result<UserPublicDTO>> CreateAsync(UserCreateRequestDTO  userCreateRequestDTO)

@@ -7,6 +7,7 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
     public interface IConfirmationTokenRepository
     {
         public Task<Result<int>> AddNewAsync(ConfirmationTokenDTO passwordResetTokenDTO);
+        public Task<Result<int>> AddNewAsync(ConfirmationTokenDTO accountConfirmationDTO, SqlConnection connection, SqlTransaction transaction);
 
         public Task<Result<ConfirmationTokenDTO>> GetByTokenAsync(string token);
         public Task<Result<ConfirmationTokenDTO>> GetByCodeAsync(string code);
