@@ -104,5 +104,12 @@
     "image_url_generated_successfully": "Image URL generated successfully.",
     "invalid_pagination_parameters": "pageSize and pageNumber must be greater than zero.",
     "invalid_data": "The provided data is invalid."
+  },
+  "pages": {
+    "Not_Found": {
+      "title": "Page Not Found",
+      "subtitle": "The page you are looking for does not exist.",
+      "home_button": "Go to Home"
+    }
   }
 }
