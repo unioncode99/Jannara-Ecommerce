@@ -1,11 +1,16 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://localhost:7094/api/";
+const API_BASE_URL = "https://localhost:7179/api/";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
+export const setAuthToken = (token) => {
+  api.defaults.headers.common["Authorization"] = token
+    ? `Bearer ${token}`
+    : undefined;
+};
 // Interceptor: return only the response data
 api.interceptors.response.use(
   (response) => response.data,
@@ -30,7 +35,8 @@ const apiWrapper = async (url, method = "GET", data = null) => {
 
     return await api(config);
   } catch (error) {
-    console.error("API error:", error);
+    console.log(error);
+    // console.error("API error:", error);
     throw error;
   }
 };
