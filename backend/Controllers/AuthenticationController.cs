@@ -34,5 +34,17 @@ namespace Jannara_Ecommerce.Controllers
             });
             return Ok(result.Data.LoginResponse);
         }
+
+        [HttpPost("forget-password")]
+        public async Task<ActionResult> ForgetPassword([FromForm] string email)
+        {
+            Result<bool> result = await _service.ForgetPasswordAsync(email);
+            if (result.IsSuccess)
+            {
+                return Ok();
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
     }
 }

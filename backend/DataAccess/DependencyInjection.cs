@@ -16,6 +16,7 @@ namespace Jannara_Ecommerce.DataAccess
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            services.AddScoped<IConfirmationTokenRepository, ConfirmationTokenRepository>();
             return services;
         }
     }

@@ -8,5 +8,8 @@ namespace Jannara_Ecommerce.Business.Interfaces
     {
         AccessTokenDTO GenerateAccessToken(UserDTO user);
         string GenerateRefreshToken();
+
+        public string GenerateResetToken(int length = 32);
+
     }
 }

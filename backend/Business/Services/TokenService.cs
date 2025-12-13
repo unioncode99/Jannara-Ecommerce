@@ -2,6 +2,7 @@
 using Jannara_Ecommerce.DTOs.Token;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Utilities;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -54,5 +55,12 @@ namespace Jannara_Ecommerce.Business.Services
 
             return Convert.ToBase64String(randomNumber);
         }
+
+        public string GenerateResetToken(int length = 32)
+        {
+            var bytes = RandomNumberGenerator.GetBytes(length);
+            return WebEncoders.Base64UrlEncode(bytes);
+        }
+
     }
 }
