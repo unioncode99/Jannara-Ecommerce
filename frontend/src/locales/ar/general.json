@@ -30,7 +30,8 @@
       "weak_password": "يجب أن تكون كلمة المرور 8 أحرف على الأقل وتحتوي على رقم وحرف خاص",
       "invalid_phone": "الرجاء إدخال رقم هاتف صالح",
       "invalid_date": "الرجاء إدخال تاريخ صالح",
-      "general_error": "حدث خطأ ما. يرجى تصحيح الأخطاء."
+      "general_error": "حدث خطأ ما. يرجى تصحيح الأخطاء.",
+      "passwords_do_not_match": "كلمات المرور غير متطابقة"
     },
     "messages": {
       "general_error": "حدث خطأ ما. يرجى تصحيح الأخطاء.",
@@ -111,6 +112,35 @@
       "title": "الصفحة غير موجودة",
       "subtitle": "الصفحة التي تبحث عنها غير موجودة.",
       "home_button": "الذهاب إلى الصفحة الرئيسية"
+    },
+    "forget_password": {
+      "title": "نسيت كلمة المرور",
+      "subtitle": "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور",
+      "form": {
+        "submit_button": "إرسال",
+        "back_to_login": "العودة لتسجيل الدخول"
+      }
+    },
+    "verify_code": {
+      "title": "أدخل رمز التحقق",
+      "message_prefix": "تم إرسال رمز التحقق إلى بريدك الإلكتروني",
+      "message_suffix": "الرجاء إدخال الرمز أدناه للمتابعة.",
+      "form": {
+        "input_placeholder": "أدخل رمز التحقق",
+        "submit_button": "تحقق",
+        "resend_code": "إعادة إرسال الرمز"
+      },
+      "back_to_login": "العودة لتسجيل الدخول"
+    },
+    "reset_password": {
+      "form": {
+        "title": "إعادة تعيين كلمة المرور",
+        "subtitle": "أدخل كلمة مرور جديدة لحسابك",
+        "input_placeholder_password": "كلمة المرور الجديدة",
+        "input_placeholder_confirm_password": "تأكيد كلمة المرور الجديدة",
+        "submit_button": "إعادة تعيين كلمة المرور",
+        "back_to_login": "العودة لتسجيل الدخول"
+      }
     }
   }
 }

@@ -75,9 +75,9 @@ const LoginPage = () => {
               {translations.general.form.remember_me}
             </label>
           </div>
-          <a href="/forgot-password" className="forgot-password-link">
+          <Link to="/forget-password" className="forgot-password-link">
             {translations.general.form.forgot_password}
-          </a>
+          </Link>
         </div>
 
         <Button
