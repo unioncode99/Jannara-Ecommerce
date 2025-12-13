@@ -7,6 +7,7 @@ import { create, setAuthToken } from "../api/apiWrapper";
 import { toast } from "../components/ui/Toast";
 import "./LoginPage.css";
 import { useAuth } from "../hooks/useAuth";
+import { Link } from "react-router-dom";
 
 const LoginPage = () => {
   const { translations, language } = useLanguage();
@@ -71,7 +72,7 @@ const LoginPage = () => {
               id="rememberMe"
             />
             <label className="remember-me_label" htmlFor="rememberMe">
-              Remember me
+              {translations.general.form.remember_me}
             </label>
           </div>
           <a href="/forgot-password" className="forgot-password-link">
@@ -92,7 +93,7 @@ const LoginPage = () => {
         </Button>
         <p className="form-hint">
           {translations.general.form.no_account}{" "}
-          <a href="/register">{translations.general.form.register_title}</a>
+          <Link to="/register">{translations.general.form.register_title}</Link>
         </p>
       </form>
     </div>
