@@ -1,0 +1,23 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--card-backgroud);
+  color: var(--text-color);
+  height: 60px;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+}
+.navbar > div {
+  display: flex;
+  align-items: center;
+}
+
+.burger-btn {
+  font-size: 1.5rem;
+  background: transparent;
+  color: var(--text-color);
+  border: none;
+  cursor: pointer;
+}
