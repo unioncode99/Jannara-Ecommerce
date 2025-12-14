@@ -22,9 +22,9 @@ namespace Jannara_Ecommerce.Business
             services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICodeService, CodeService>();
-            services.AddScoped<IConfirmationTokenServiceInterface, ConfirmationTokenService>();
+            services.AddScoped<IConfirmationTokenService, ConfirmationTokenService>();
             services.AddScoped<IEmailSenderService, EmailSenderService>();
-            services.AddScoped<IAccountConfirmationServiceInterface, AccountConfirmationServiceInterface>();
+            services.AddScoped<IConfirmationService, ConfirmationService>();
             return services;
         }
     }

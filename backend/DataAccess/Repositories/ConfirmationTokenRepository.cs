@@ -73,47 +73,6 @@ SELECT SCOPE_IDENTITY();
             }
         }
 
-        public async Task<Result<int>> AddNewAsync(ConfirmationTokenDTO accountConfirmationDTO, SqlConnection connection, SqlTransaction transaction)
-        {
-            string query = @"
-INSERT INTO ConfirmationTokens
-(
-    user_id,
-    token,
-    verification_code,
-    expires_at,
-    is_used
-)
-VALUES
-(
-    @user_id,
-    @token,
-    @verification_code,
-    @expires_at,
-    @is_used
-);
-SELECT SCOPE_IDENTITY();
-";
-
-            using (SqlCommand command = new SqlCommand(query, connection, transaction))
-            {
-                command.Parameters.AddWithValue("@user_id", accountConfirmationDTO.UserId);
-                command.Parameters.AddWithValue("@verification_code", accountConfirmationDTO.Code);
-                command.Parameters.AddWithValue("@token", accountConfirmationDTO.Token);
-                command.Parameters.AddWithValue("@expires_at", accountConfirmationDTO.ExpireAt);
-                command.Parameters.AddWithValue("@is_used", accountConfirmationDTO.IsUsed);
-                object? result = await command.ExecuteScalarAsync();
-                int id = result != DBNull.Value ? Convert.ToInt32(result) : 0;
-                if (id > 0)
-                {
-                    return new Result<int>(true, "token_added_successfully", id);
-                }
-                else
-                {
-                    return new Result<int>(false, "failed_to_add_token", -1);
-                }
-            }
-        }
 
         public async Task<Result<ConfirmationTokenDTO>> GetByTokenAsync(string token)
         {
@@ -199,17 +158,17 @@ SELECT SCOPE_IDENTITY();
             }
         }
 
-        public async Task<Result<bool>> MarkAsUsedAsync(int id, SqlConnection conn, SqlTransaction tran)
+        public async Task<Result<bool>> MarkAsUsedAsync(int user_id, SqlConnection conn, SqlTransaction tran)
         {
             string query = @"
 UPDATE ConfirmationTokens
 SET 
     is_used = 1
-WHERE id = @id;
+WHERE user_id = @user_id;
 select @@ROWCOUNT";
             using (SqlCommand command = new SqlCommand(query, conn, tran))
             {
-                command.Parameters.AddWithValue("@id", id);
+                command.Parameters.AddWithValue("@user_id", user_id);
                 object result = await command.ExecuteScalarAsync();
                 int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                 if (rowAffected > 0)
