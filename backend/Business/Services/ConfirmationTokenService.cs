@@ -6,7 +6,7 @@ using Microsoft.Data.SqlClient;
 
 namespace Jannara_Ecommerce.Business.Services
 {
-    public class ConfirmationTokenService : IConfirmationTokenServiceInterface
+    public class ConfirmationTokenService : IConfirmationTokenService
     {
         IConfirmationTokenRepository _confirmationTokenRepository;
         public ConfirmationTokenService(IConfirmationTokenRepository ConfirmationTokenRepository) 
@@ -16,11 +16,6 @@ namespace Jannara_Ecommerce.Business.Services
         public async Task<Result<int>> AddNewAsync(ConfirmationTokenDTO passwordResetTokenDTO)
         {
             return await _confirmationTokenRepository.AddNewAsync(passwordResetTokenDTO);
-        }
-
-        public async Task<Result<int>> AddNewAsync(ConfirmationTokenDTO accountConfirmationDTO, SqlConnection conn, SqlTransaction transaction)
-        {
-            return await _confirmationTokenRepository.AddNewAsync(accountConfirmationDTO, conn, transaction);
         }
 
         public async Task<Result<ConfirmationTokenDTO>> GetByTokenAsync(string token)

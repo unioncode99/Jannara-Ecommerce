@@ -24,17 +24,21 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly ITokenService _tokenService;
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IPersonService _personService;
-        private readonly IConfirmationTokenServiceInterface _confirmationTokenService;
+        private readonly ICustomerService _customerService;
+        private readonly ISellerService _SellerService;
+        private readonly IConfirmationTokenService _confirmationTokenService;
         private readonly IConfiguration _configuration;
         private readonly IEmailSenderService _emailSenderService;
         private readonly ILogger<ICustomerRepository> _logger;
         private readonly ICodeService _codeService;
         private readonly string _connectionString;
+        private readonly IConfirmationService _confirmationService;
 
         public AuthenticationService(IUserService userService, IPasswordService passwordService, ITokenService tokenService, IRefreshTokenService refreshTokenService, 
-            IPersonService personService,  IConfirmationTokenServiceInterface confirmationTokenService,
+            IPersonService personService, ICustomerService customerService, ISellerService sellerService, IConfirmationTokenService confirmationTokenService,
             IConfiguration configuration, IEmailSenderService emailSenderService, ILogger<ICustomerRepository> logger,
-            ICodeService codeService, IOptions<DatabaseSettings> dateBaseSettings)
+            ICodeService codeService, IOptions<DatabaseSettings> dateBaseSettings,
+            IConfirmationService confirmationService)
         {
             _userService = userService;
             _passwordService = passwordService;
@@ -47,6 +51,7 @@ namespace Jannara_Ecommerce.Business.Services
             _logger = logger;
             _codeService = codeService;
             _connectionString = dateBaseSettings.Value.DefaultConnection;
+            _confirmationService = confirmationService;
         }
 
         public async Task<Result<LoginResult>> LogInAsync(LoginDTO request)
@@ -91,132 +96,40 @@ namespace Jannara_Ecommerce.Business.Services
             {
                 return new Result<bool>(false, userResult.Message, false, userResult.ErrorCode);
             }
-            string token = _tokenService.GenerateResetToken();
-            string code = _codeService.GenerateCode(4);
-
-            ConfirmationTokenDTO resetPasswordDTO = new ConfirmationTokenDTO(0, userResult.Data.Id, token, code, DateTime.Now.AddMinutes(15), false);
-            Result<int> saveTokenResult = await _confirmationTokenService.AddNewAsync(resetPasswordDTO);
-            if (!saveTokenResult.IsSuccess)
+            var sendingForgetPasswordConfirmationResult = _confirmationService.SendForgetPasswordConfirmationAsync(userResult.Data);
+            if (!sendingForgetPasswordConfirmationResult.Result.IsSuccess)
             {
                 return new Result<bool>(false, "internal_server_error", false, 500);
             }
 
-            string resetUrl = $"{_configuration.GetValue<string>("EMAIL_CONFIGURATION:FRONTEND_DOMAIN")}/reset-password?token={token}";
-            string body = $@"
-<html>
-<head>
-  <style>
-    body {{
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }}
-    .container {{
-      max-width: 600px;
-      margin: 40px auto;
-      background-color: #ffffff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }}
-    .header {{
-      background-color: #e89a0a;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-      font-size: 24px;
-      font-weight: bold;
-    }}
-    .content {{
-      padding: 30px 20px;
-      color: #333;
-      font-size: 16px;
-      line-height: 1.6;
-    }}
-    .code {{
-      display: inline-block;
-      background-color: #e89a0a;
-      color: #fff;
-      font-weight: bold;
-      font-size: 20px;
-      padding: 10px 20px;
-      border-radius: 6px;
-      letter-spacing: 2px;
-      text-align: center;
-      margin: 20px 0;
-    }}
-    .button {{
-      display: inline-block;
-      background-color: #e89a0a;
-      color: #fff !important;
-      text-decoration: none;
-      padding: 12px 24px;
-      border-radius: 6px;
-      font-weight: bold;
-      margin-top: 20px;
-    }}
-    .footer {{
-      padding: 20px;
-      font-size: 12px;
-      color: #777;
-      text-align: center;
-    }}
-  </style>
-</head>
-<body>
-  <div class='container'>
-    <div class='header'>Jannara App</div>
-    <div class='content'>
-      <p>Hello,</p>
-      <p>You recently requested to reset your password. You can use the code below or click the button to reset your password:</p>
-      <div class='code'>{code}</div>
-      <p style='text-align:center;'>
-        <a href='{resetUrl}' class='button'>Reset Password</a>
-      </p>
-      <p>If you did not request a password reset, you can safely ignore this email.</p>
-      <p>Thanks,<br/>The Jannara Team</p>
-    </div>
-    <div class='footer'>
-      &copy; {DateTime.UtcNow.Year} Jannara. All rights reserved.
-    </div>
-  </div>
-</body>
-</html>";
-
-            try
-            {
-                await _emailSenderService.SendEmailAsync(email, "RESET PASSWORD", body);
-                return new Result<bool>(true, "reset-link-sent", true);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return new Result<bool>(false, "internal_server_error", false, 500);
-            }
-            
+            return new Result<bool>(true, "reset_link_sent", true);
         }
-
-        
 
         public async Task<Result<bool>> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
         {
-
-            var getResetTokenResult = await _confirmationTokenService.GetByTokenAsync(resetPasswordDTO.Token);
-
-            if (!getResetTokenResult.IsSuccess && getResetTokenResult.ErrorCode == 404)
+            if ((resetPasswordDTO.Code != null && resetPasswordDTO.Token != null) ||
+                (resetPasswordDTO.Code == null && resetPasswordDTO.Token == null))
             {
-                return new Result<bool>(false, "invalid_or_expired_token", false, 401);
+                return new Result<bool>(false, "invalid data", false, 400);
             }
-            if (!getResetTokenResult.IsSuccess)
-                return new Result<bool>(false, getResetTokenResult.Message, false, getResetTokenResult.ErrorCode);
 
-            var tokenData = getResetTokenResult.Data;
+            Result<int> validatingTokenResult;
 
-            if (tokenData.IsUsed || tokenData.ExpireAt < DateTime.UtcNow)
+            if (!string.IsNullOrWhiteSpace(resetPasswordDTO.Code))
             {
-                return new Result<bool>(false, "invalid_or_expired_token", false, 401);
+                validatingTokenResult = await _confirmationService.ValidateCodeAsync(resetPasswordDTO.Code);
             }
+            else
+            {
+                validatingTokenResult = await _confirmationService.ValidateTokenAsync(resetPasswordDTO.Token);
+            }
+
+            if (!validatingTokenResult.IsSuccess || validatingTokenResult.Data <= 0)
+            {
+                return new Result<bool>(false, "Invalid or expired code/token", false, 400);
+
+            }
+
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 SqlTransaction transaction = null;
@@ -224,13 +137,13 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = connection.BeginTransaction();
-                    Result<bool> resetPasswordResult = await _userService.ResetPasswordAsync(getResetTokenResult.Data.UserId, resetPasswordDTO.NewPassword, connection, transaction);
+                    Result<bool> resetPasswordResult = await _userService.ResetPasswordAsync(validatingTokenResult.Data, resetPasswordDTO.NewPassword, connection, transaction);
                     if (!resetPasswordResult.IsSuccess)
                     {
                         transaction.Rollback();
                         return new Result<bool>(false, resetPasswordResult.Message, false, resetPasswordResult.ErrorCode);
                     }
-                    Result<bool> markAsUsed = await _confirmationTokenService.MarkAsUsedAsync(getResetTokenResult.Data.Id, connection, transaction);
+                    Result<bool> markAsUsed = await _confirmationTokenService.MarkAsUsedAsync(validatingTokenResult.Data, connection, transaction);
                     if (!markAsUsed.IsSuccess)
                     {
                         transaction.Rollback();

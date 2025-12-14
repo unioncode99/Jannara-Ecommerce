@@ -20,13 +20,14 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IPersonService _personService;
         private readonly IUserService _userService;
         private readonly IUserRoleService _userRoleService;
+        private readonly IConfirmationService _confirmationService;
         private readonly IOptions<ImageSettings> _imageSettings;
         private readonly IImageService _imageService;
         private readonly ILogger<ISellerService> _logger;
         public SellerService(ISellerRepository repo, IPersonService PersonService, 
             IUserService UserService, IOptions<DatabaseSettings> options,
             IUserRoleService userRoleService ,IOptions<ImageSettings> imageSettings, IImageService imageService,
-            ILogger<ISellerService> logger)
+            ILogger<ISellerService> logger, IConfirmationService confirmationService)
         {
             _repo  = repo;
             _connectionString = options.Value.DefaultConnection;
@@ -36,6 +37,7 @@ namespace Jannara_Ecommerce.Business.Services
             _imageSettings = imageSettings;
             _imageService = imageService;
             _logger = logger;
+            _confirmationService = confirmationService;
         }
         public async Task<Result<SellerDTO>> AddNewAsync(int userId, SellerCreateDTO newSeller, SqlConnection connection, SqlTransaction transaction)
         {
@@ -99,6 +101,14 @@ namespace Jannara_Ecommerce.Business.Services
                         return new Result<SellerDTO>(false, sellerResult.Message, null, sellerResult.ErrorCode);
                     }
                     await transaction.CommitAsync();
+
+                    var accountConfirmationResult = await _confirmationService.SendAccountConfirmationAsync(userResult.Data);
+
+                    if (!accountConfirmationResult.IsSuccess)
+                    {
+                        _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
+                    }
+
                     if (sellerCreateRequestDTO.ProfileImage != null)
                         await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrl);
                     return sellerResult;

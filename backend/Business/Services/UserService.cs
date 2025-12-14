@@ -19,7 +19,7 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly string _connectionString;
         private readonly IPersonService _personService;
         private readonly IUserRoleService _userRoleService;
-        private readonly IAccountConfirmationServiceInterface _accountConfirmationService;
+        private readonly IConfirmationService _accountConfirmationService;
         private readonly IImageService _imageService;
         private readonly IOptions<ImageSettings> _imageSettings;
         private readonly ILogger<IUserService> _logger;
@@ -27,7 +27,7 @@ namespace Jannara_Ecommerce.Business.Services
             IOptions<DatabaseSettings> options, IPersonService personService, 
             IUserRoleService userRoleService, IImageService imageService,
             IOptions<ImageSettings> imageSettings, ILogger<IUserService> logger, 
-            IAccountConfirmationServiceInterface accountConfirmationService)
+            IConfirmationService accountConfirmationService)
         {
             _repo = repo;
             _passwordService = passwordService;
@@ -62,13 +62,6 @@ namespace Jannara_Ecommerce.Business.Services
             newUser.Password = _passwordService.HashPassword(newUser, newUser.Password);
             var userResult = await _repo.AddNewAsync(personId, newUser, connection, transaction);
             if (!userResult.IsSuccess)
-            {
-                return new Result<UserPublicDTO>(false, "internal_server_error", null, 500);
-            }
-
-            var accountConfirmationResult = _accountConfirmationService.SendAccountConfirmationAsync(userResult.Data, connection, transaction);
-
-            if (!accountConfirmationResult.Result.IsSuccess)
             {
                 return new Result<UserPublicDTO>(false, "internal_server_error", null, 500);
             }
@@ -117,6 +110,14 @@ namespace Jannara_Ecommerce.Business.Services
                     }
                     userResult.Data.Roles.Add(new UserRoleInfoDTO(userRoleResult.Data.Id,Roles.Admin.ToString(), Roles.Admin.GetNameAr() , userRoleResult.Data.IsActive, userRoleResult.Data.CreatedAt, userRoleResult.Data.UpdatedAt));
                     await transaction.CommitAsync();
+
+                    var accountConfirmationResult = await _accountConfirmationService.SendAccountConfirmationAsync(userResult.Data);
+
+                    if (!accountConfirmationResult.IsSuccess)
+                    {
+                        _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
+                    }
+
                     await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrl);
                     return userResult;
                 }

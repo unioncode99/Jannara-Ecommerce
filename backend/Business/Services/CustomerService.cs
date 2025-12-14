@@ -18,13 +18,15 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IPersonService _personService;
         private readonly IUserService _userService;
         private readonly IUserRoleService _userRoleService;
+        private readonly IConfirmationService _confirmationService;
         private readonly IImageService _imageService;
         private readonly IOptions<ImageSettings> _imageSettings;
         private readonly ILogger<ICustomerService> _logger;
         public CustomerService(ICustomerRepository repo, IPersonService PersonService,
             IUserService UserService, IOptions<DatabaseSettings> dateBaseSettings,
             IUserRoleService userRoleService, IImageService imageService,
-            IOptions<ImageSettings> imageSettings, ILogger<ICustomerService> logger)
+            IOptions<ImageSettings> imageSettings, ILogger<ICustomerService> logger, 
+            IConfirmationService confirmationService)
         {
             _repo = repo;
             _connectionString = dateBaseSettings.Value.DefaultConnection;
@@ -34,6 +36,7 @@ namespace Jannara_Ecommerce.Business.Services
             _imageService = imageService;
             _imageSettings = imageSettings;
             _logger = logger;
+            _confirmationService = confirmationService;
         }
         public async Task<Result<CustomerDTO>> AddNewAsync(int userId, SqlConnection connection, SqlTransaction transaction)
         {
@@ -103,6 +106,14 @@ namespace Jannara_Ecommerce.Business.Services
                         return new Result<CustomerDTO>(false, customerResult.Message, null, customerResult.ErrorCode);
                     }
                     await transaction.CommitAsync();
+
+                    var accountConfirmationResult = await _confirmationService.SendAccountConfirmationAsync(userResult.Data);
+
+                    if (!accountConfirmationResult.IsSuccess)
+                    {
+                        _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
+                    }
+
                     if (personCreateDTO.ProfileImage != null)
                     {
                         await _imageService.SaveImageAsync(personCreateDTO.ProfileImage, imageUrl);

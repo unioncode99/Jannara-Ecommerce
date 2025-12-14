@@ -4,10 +4,9 @@ using Microsoft.Data.SqlClient;
 
 namespace Jannara_Ecommerce.Business.Interfaces
 {
-    public interface IConfirmationTokenServiceInterface
+    public interface IConfirmationTokenService
     {
         public Task<Result<int>> AddNewAsync(ConfirmationTokenDTO passwordResetTokenDTO);
-        public Task<Result<int>> AddNewAsync(ConfirmationTokenDTO accountConfirmationDTO, SqlConnection conn, SqlTransaction transaction);
 
         public Task<Result<ConfirmationTokenDTO>> GetByTokenAsync(string token);
         public Task<Result<ConfirmationTokenDTO>> GetByCodeAsync(string code);
