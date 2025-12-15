@@ -1,5 +1,5 @@
 import { Code, Loader2, Mail } from "lucide-react";
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import Input from "../components/ui/Input";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./VerifyCodePage.css";
@@ -36,8 +36,14 @@ const VerifyCodePage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await create("auth/verify-reset-code", `"${code}"`);
-      navigate(`/reset-password?token=${response}`);
+      const response = await create("auth/verify-code", { code });
+      if (response.purpose == "VerifyEmail") {
+        navigate(`/confirm-account?token=${response.token}`);
+      } else if (response.purpose == "ResetPassword") {
+        navigate(`/reset-password?token=${response.token}`);
+      } else {
+        throw new Error("Unknown verification purpose.");
+      }
     } catch (error) {
       toast.show(error.message, "error");
     } finally {

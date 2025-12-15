@@ -10,7 +10,7 @@ import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 
 const LoginPage = () => {
-  const { translations, language } = useLanguage();
+  const { translations } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

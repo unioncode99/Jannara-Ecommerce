@@ -140,6 +140,13 @@
         "submit_button": "Reset Password",
         "back_to_login": "Back to Login"
       }
+    },
+    "account_confirmation": {
+      "title": "Account Confirmed",
+      "subtitle": "Your account has been successfully verified.",
+      "loading": "Confirming account...",
+      "login_button": "Go to Login",
+      "back_to_login": "Back to Login"
     }
   }
 }

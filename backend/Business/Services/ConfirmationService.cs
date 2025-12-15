@@ -3,6 +3,7 @@ using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.Authentication;
 using Jannara_Ecommerce.DTOs.Token;
 using Jannara_Ecommerce.DTOs.User;
+using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -36,7 +37,7 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> SendAccountConfirmationAsync(UserPublicDTO userInfo)
         {
-            var confirmationTokenResult = await CreateAndSaveConfirmationTokenAsync(userInfo.Id, 15);
+            var confirmationTokenResult = await CreateAndSaveConfirmationTokenAsync(userInfo.Id, ConfirmationPurpose.VerifyEmail, 15 );
             if (!confirmationTokenResult.IsSuccess)
             {
                 return new Result<bool>(false, "internal_server_error", false, 500);
@@ -133,7 +134,7 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> SendForgetPasswordConfirmationAsync(UserDTO userInfo)
         {
-            var confirmationTokenResult = await CreateAndSaveConfirmationTokenAsync(userInfo.Id, 15);
+            var confirmationTokenResult = await CreateAndSaveConfirmationTokenAsync(userInfo.Id, ConfirmationPurpose.ResetPassword, 15);
             if (!confirmationTokenResult.IsSuccess)
             {
                 return new Result<bool>(false, "internal_server_error", false, 500);
@@ -229,7 +230,7 @@ namespace Jannara_Ecommerce.Business.Services
         }
 
         public async Task<Result<ConfirmationTokenDTO>> CreateAndSaveConfirmationTokenAsync(int UserId,
-            int MinutesToExpires = 15, string successMessage = "token_created_successfully")
+             ConfirmationPurpose purpose, int MinutesToExpires = 15, string successMessage = "token_created_successfully")
         {
             string token = _tokenService.GenerateResetToken();
             string code = _codeService.GenerateCode(4);
@@ -239,6 +240,7 @@ namespace Jannara_Ecommerce.Business.Services
                 UserId,
                 token,
                 code,
+                purpose,
                 DateTime.Now.AddMinutes(MinutesToExpires),
                 false
             );

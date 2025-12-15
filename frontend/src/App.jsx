@@ -9,6 +9,7 @@ import AppSettings from "./components/AppSettings";
 import ForgetPasswordPage from "./pages/ForgetPasswordPage";
 import VerifyCodePage from "./pages/VerifyCodePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import AccountConfirmationPage from "./pages/AccountConfirmationPage";
 
 function App() {
   const { language } = useLanguage();
@@ -27,6 +28,10 @@ function App() {
           <Route path="/forget-password" element={<ForgetPasswordPage />} />
           <Route path="/verify-code" element={<VerifyCodePage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route
+            path="/confirm-account"
+            element={<AccountConfirmationPage />}
+          />
         </Routes>
       </BrowserRouter>
     </div>

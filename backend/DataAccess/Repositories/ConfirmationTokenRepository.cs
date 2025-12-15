@@ -1,5 +1,6 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.Token;
+using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
@@ -26,6 +27,7 @@ INSERT INTO ConfirmationTokens
 (
     user_id,
     token,
+    purpose,
     verification_code,
     expires_at,
     is_used
@@ -34,6 +36,7 @@ VALUES
 (
     @user_id,
     @token,
+    @purpose,
     @verification_code,
     @expires_at,
     @is_used
@@ -45,6 +48,7 @@ SELECT SCOPE_IDENTITY();
                     command.Parameters.AddWithValue("@user_id", passwordResetTokenDTO.UserId);
                     command.Parameters.AddWithValue("@verification_code", passwordResetTokenDTO.Code);
                     command.Parameters.AddWithValue("@token", passwordResetTokenDTO.Token);
+                    command.Parameters.AddWithValue("@purpose",(int) passwordResetTokenDTO.Purpose);
                     command.Parameters.AddWithValue("@expires_at", passwordResetTokenDTO.ExpireAt);
                     command.Parameters.AddWithValue("@is_used", passwordResetTokenDTO.IsUsed);
 
@@ -96,6 +100,7 @@ SELECT SCOPE_IDENTITY();
                                 reader.GetInt32(reader.GetOrdinal("user_id")),
                                  reader.GetString(reader.GetOrdinal("token")),
                                  reader.GetString(reader.GetOrdinal("verification_code")),
+                                 (ConfirmationPurpose)reader.GetByte(reader.GetOrdinal("purpose")),
                                  reader.GetDateTime(reader.GetOrdinal("expires_at")),
                                  reader.GetBoolean(reader.GetOrdinal("is_used"))
                                  );
@@ -138,6 +143,7 @@ SELECT SCOPE_IDENTITY();
                                 reader.GetInt32(reader.GetOrdinal("user_id")),
                                  reader.GetString(reader.GetOrdinal("token")),
                                  reader.GetString(reader.GetOrdinal("verification_code")),
+                                 (ConfirmationPurpose)reader.GetByte(reader.GetOrdinal("purpose")),
                                  reader.GetDateTime(reader.GetOrdinal("expires_at")),
                                  reader.GetBoolean(reader.GetOrdinal("is_used"))
                                  );
@@ -158,7 +164,7 @@ SELECT SCOPE_IDENTITY();
             }
         }
 
-        public async Task<Result<bool>> MarkAsUsedAsync(int user_id, SqlConnection conn, SqlTransaction tran)
+        public async Task<Result<bool>> MarkAsUsedAsync(int userId, SqlConnection conn, SqlTransaction tran)
         {
             string query = @"
 UPDATE ConfirmationTokens
@@ -168,7 +174,7 @@ WHERE user_id = @user_id;
 select @@ROWCOUNT";
             using (SqlCommand command = new SqlCommand(query, conn, tran))
             {
-                command.Parameters.AddWithValue("@user_id", user_id);
+                command.Parameters.AddWithValue("@user_id", userId);
                 object result = await command.ExecuteScalarAsync();
                 int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
                 if (rowAffected > 0)
@@ -184,19 +190,19 @@ select @@ROWCOUNT";
             }
         }
 
-        public async Task<Result<bool>> MarkAsUsedAsync(int user_id)
+        public async Task<Result<bool>> MarkAsUsedAsync(int userId)
         {
             string query = @"
 UPDATE ConfirmationTokens
 SET 
     is_used = 1
-WHERE user_id = @user_id;
+WHERE user_id = @userId;
 select @@ROWCOUNT";
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@user_id", user_id);
+                    command.Parameters.AddWithValue("@userId", userId);
 
                     try
                     {
@@ -209,12 +215,13 @@ select @@ROWCOUNT";
                         }
                         else
                         {
-                            return new Result<bool>(false, "Failed to mark token as used.", false);
+                            return new Result<bool>(false, "Failed to mark token as used.", false, 500);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new Result<bool>(false, "An unexpected error occurred on the server", false);
+                        _logger.LogError(ex, "Failed to to mark as used  for UserId {UserId}", userId);
+                        return new Result<bool>(false, "An unexpected error occurred on the server", false, 500);
                     }
 
     
