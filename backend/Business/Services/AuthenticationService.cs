@@ -1,4 +1,5 @@
-﻿using Jannara_Ecommerce.Business.Interfaces;
+﻿using Azure.Core;
+using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.Authentication;
 using Jannara_Ecommerce.DTOs.Customer;
@@ -25,21 +26,13 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly ITokenService _tokenService;
         private readonly IRefreshTokenService _refreshTokenService;
         private readonly IPersonService _personService;
-        private readonly ICustomerService _customerService;
-        private readonly ISellerService _SellerService;
         private readonly IConfirmationTokenService _confirmationTokenService;
-        private readonly IConfiguration _configuration;
-        private readonly IEmailSenderService _emailSenderService;
         private readonly ILogger<ICustomerRepository> _logger;
-        private readonly ICodeService _codeService;
         private readonly string _connectionString;
         private readonly IConfirmationService _confirmationService;
 
-        public AuthenticationService(IUserService userService, IPasswordService passwordService, ITokenService tokenService, IRefreshTokenService refreshTokenService, 
-            IPersonService personService, ICustomerService customerService, ISellerService sellerService, IConfirmationTokenService confirmationTokenService,
-            IConfiguration configuration, IEmailSenderService emailSenderService, ILogger<ICustomerRepository> logger,
-            ICodeService codeService, IOptions<DatabaseSettings> dateBaseSettings,
-            IConfirmationService confirmationService)
+        public AuthenticationService(IUserService userService, IPasswordService passwordService, ITokenService tokenService, IRefreshTokenService refreshTokenService, IPersonService personService, IConfirmationTokenService confirmationTokenService,
+            ILogger<ICustomerRepository> logger, IOptions<DatabaseSettings> dateBaseSettings, IConfirmationService confirmationService)
         {
             _userService = userService;
             _passwordService = passwordService;
@@ -47,14 +40,22 @@ namespace Jannara_Ecommerce.Business.Services
             _refreshTokenService = refreshTokenService;
             _personService = personService;
             _confirmationTokenService = confirmationTokenService;
-            _configuration = configuration;
-            _emailSenderService = emailSenderService;
             _logger = logger;
-            _codeService = codeService;
             _connectionString = dateBaseSettings.Value.DefaultConnection;
             _confirmationService = confirmationService;
         }
 
+        private async Task<Result<GenerateLoginInfoResult>> _generateLoginInfo(UserDTO user, PersonDTO person)
+        {
+            var accessToken = _tokenService.GenerateAccessToken(user);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+            var refreshTokenResult = await _refreshTokenService.AddNewAsync(user.Id, refreshToken, DateTime.UtcNow.AddDays(7));
+            if (!refreshTokenResult.IsSuccess)
+                return new Result<GenerateLoginInfoResult>(false, refreshTokenResult.Message, null, refreshTokenResult.ErrorCode);
+            var loginResponse = new LoginResponseDTO(person, user.ToUserPublicDTO(), accessToken);
+            var result = new GenerateLoginInfoResult(loginResponse, refreshToken);
+            return new Result<GenerateLoginInfoResult>(true, "login_info_generated_successfully", result);
+        }
         public async Task<Result<LoginResult>> LogInAsync(LoginDTO request)
         {
             var userResult = await _userService.FindAsync(request.Email);
@@ -76,16 +77,12 @@ namespace Jannara_Ecommerce.Business.Services
             {
                 return new Result<LoginResult>(false, personResult.Message, null, personResult.ErrorCode);
             }
-            
 
-            var accessToken = _tokenService.GenerateAccessToken(userResult.Data);
-            var refreshToken = _tokenService.GenerateRefreshToken();
-            var refreshTokenResult = await _refreshTokenService.AddNewAsync(userResult.Data.Id, refreshToken, DateTime.UtcNow.AddDays(7));
-            if (!refreshTokenResult.IsSuccess)
-                return new Result<LoginResult>(false, refreshTokenResult.Message, null, refreshTokenResult.ErrorCode);
-            var loginResponse = new LoginResponseDTO(personResult.Data, userResult.Data.ToUserPublicDTO(), accessToken);
+            var loginInfoResult = await _generateLoginInfo(userResult.Data, personResult.Data);
+            if (!loginInfoResult.IsSuccess) 
+                return new Result<LoginResult>(false, loginInfoResult.Message, null, loginInfoResult.ErrorCode);
 
-            var loginResult = new LoginResult(loginResponse, refreshToken);
+            var loginResult = new LoginResult(loginInfoResult.Data.LoginResponse, loginInfoResult.Data.RefreshToken);
 
             return new Result<LoginResult>(true, "Successfuly Logged in", loginResult);
         }
@@ -108,26 +105,11 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> ResetPasswordAsync(ResetPasswordDTO resetPasswordDTO)
         {
-            if ((resetPasswordDTO.Code != null && resetPasswordDTO.Token != null) ||
-                (resetPasswordDTO.Code == null && resetPasswordDTO.Token == null))
-            {
-                return new Result<bool>(false, "invalid data", false, 400);
-            }
+            var validatingTokenResult = await _confirmationService.ValidateTokenAsync(resetPasswordDTO.Token);
 
-            Result<int> validatingTokenResult;
-
-            if (!string.IsNullOrWhiteSpace(resetPasswordDTO.Code))
+            if (!validatingTokenResult.IsSuccess)
             {
-                validatingTokenResult = await _confirmationService.ValidateCodeAsync(resetPasswordDTO.Code);
-            }
-            else
-            {
-                validatingTokenResult = await _confirmationService.ValidateTokenAsync(resetPasswordDTO.Token);
-            }
-
-            if (!validatingTokenResult.IsSuccess || validatingTokenResult.Data <= 0)
-            {
-                return new Result<bool>(false, "Invalid or expired code/token", false, 400);
+                return new Result<bool>(false, "invalid_or_expired_token", false, 401);
 
             }
 
@@ -165,22 +147,40 @@ namespace Jannara_Ecommerce.Business.Services
             }
         }
 
-        public async Task<Result<bool>> ConfirmAccountAsync(string token)
+        public async Task<Result<LoginResult>> ConfirmAccountAsync(string token)
         {
-            Result<int> validatingTokenResult = await _confirmationService.ValidateTokenAsync(token);
-            if (!validatingTokenResult.IsSuccess)
-            {
-                return new Result<bool>(false, "Invalid or expired code/token", false, 400);
-            }
+            Result<ConfirmationTokenDTO> confirmationTokenResult = await _confirmationTokenService.GetByTokenAsync(token);
+            if (!confirmationTokenResult.IsSuccess && confirmationTokenResult.ErrorCode == 404)
+                return new Result<LoginResult>(false, "invalid_or_expired_token", null, 401);
 
-            Result<bool> markAsUsedResult = await _confirmationTokenService.MarkAsUsedAsync(validatingTokenResult.Data);
+            if (!confirmationTokenResult.IsSuccess)
+                return new Result<LoginResult>(false, confirmationTokenResult.Message, null, confirmationTokenResult.ErrorCode);
+            if (confirmationTokenResult.Data.ExpireAt < DateTime.Now || confirmationTokenResult.Data.IsUsed)
+                return new Result<LoginResult>(false, "invalid_or_expired_token", null, 401);
 
-            if (!markAsUsedResult.IsSuccess)
-            {
-                return new Result<bool>(false, "internal_server_error", false, 500);
-            }
+            var getUserTask = _userService.FindAsync(confirmationTokenResult.Data.UserId);
+            var markTokenAsUsedTask = _confirmationTokenService.MarkAsUsedAsync(confirmationTokenResult.Data.UserId);
+            var markEmailAsConfirmedTask = _userService.MarkEmailAsConfirmed(confirmationTokenResult.Data.UserId);
+            await Task.WhenAll(markEmailAsConfirmedTask, markTokenAsUsedTask, getUserTask);
 
-            return new Result<bool>(true, "Account confirmed successfully", true, 200);
+            if (!markTokenAsUsedTask.Result.IsSuccess)
+                return new Result<LoginResult>(false, markTokenAsUsedTask.Result.Message, null, markTokenAsUsedTask.Result.ErrorCode);
+            if (!markEmailAsConfirmedTask.Result.IsSuccess)
+                return new Result<LoginResult>(false, markEmailAsConfirmedTask.Result.Message, null, markEmailAsConfirmedTask.Result.ErrorCode);
+            if (!getUserTask.Result.IsSuccess)
+                return new Result<LoginResult>(false, getUserTask.Result.Message, null, getUserTask.Result.ErrorCode);
+
+            var personResult = await _personService.FindAsync(getUserTask.Result.Data.PersonId);
+            if (!personResult.IsSuccess)
+                return new Result<LoginResult>(false, personResult.Message, null, personResult.ErrorCode);
+
+            var loginInfoResult = await _generateLoginInfo(getUserTask.Result.Data, personResult.Data);
+            if (!loginInfoResult.IsSuccess)
+                return new Result<LoginResult>(false, loginInfoResult.Message, null, loginInfoResult.ErrorCode);
+
+            var loginRsult =  new LoginResult(loginInfoResult.Data.LoginResponse, loginInfoResult.Data.RefreshToken);
+            return new Result<LoginResult>(true, "verification_success", loginRsult);
+
         } 
 
         public async Task<Result<bool>> ResendAccountConfirmationAsync(string email)
@@ -204,17 +204,18 @@ namespace Jannara_Ecommerce.Business.Services
             return new Result<bool>(true, "Confirmation link/code resent successfully", true, 200);
         }
 
-        public async Task<Result<string>> VerifyResetCodeAsync(string resetCode)
+        public async Task<Result<VerifyCodeResposeDTO>> VerifyCodeAsync(string code)
         {
-            Result<ConfirmationTokenDTO> result = await _confirmationTokenService.GetByCodeAsync(resetCode);
-            if (!result.IsSuccess && result.ErrorCode == 404)
-                return  new Result<string>(false, "invalid_or_expired_code", "", 401);
-            if (!result.IsSuccess)
-                return new Result<string>(false,result.Message, "", result.ErrorCode);
-            if (result.Data.ExpireAt > DateTime.Now || result.Data.IsUsed)
-                new Result<string>(false, "invalid_or_expired_code", "", 401);
+            Result<ConfirmationTokenDTO> getCodeResult = await _confirmationTokenService.GetByCodeAsync(code);
+            if (!getCodeResult.IsSuccess && getCodeResult.ErrorCode == 404)
+                return  new Result<VerifyCodeResposeDTO>(false, "invalid_or_expired_code", null, 401);
+            if (!getCodeResult.IsSuccess)
+                return new Result<VerifyCodeResposeDTO>(false, getCodeResult.Message, null, getCodeResult.ErrorCode);
+            if (getCodeResult.Data.ExpireAt < DateTime.Now || getCodeResult.Data.IsUsed)
+                return new Result<VerifyCodeResposeDTO>(false, "invalid_or_expired_code", null, 401);
 
-            return new Result<string>(true, "verification_success", result.Data.Token);
+            var respponse = new VerifyCodeResposeDTO(getCodeResult.Data.Purpose, getCodeResult.Data.Token);
+            return new Result<VerifyCodeResposeDTO>(true, "verification_success", respponse);
 
         }
     }

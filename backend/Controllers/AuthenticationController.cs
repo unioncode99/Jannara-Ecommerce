@@ -36,9 +36,9 @@ namespace Jannara_Ecommerce.Controllers
         }
 
         [HttpPost("forget-password")]
-        public async Task<ActionResult> ForgetPassword([FromBody] string email)
+        public async Task<ActionResult> ForgetPassword([FromBody] ForgetPasswordRequestDTO request)
         {
-            Result<bool> result = await _service.ForgetPasswordAsync(email);
+            Result<bool> result = await _service.ForgetPasswordAsync(request.Email);
             if (result.IsSuccess)
             {
                 return Ok();
@@ -57,23 +57,29 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
-        [HttpPost("verify-reset-Code")]
-        public async Task<ActionResult<string>> VerifyResetCode([FromBody] string resetCode)
+        [HttpPost("verify-Code")]
+        public async Task<ActionResult<VerifyCodeResposeDTO>> VerifyCode([FromBody] VerifyCodeRequestDTO request)
         {
-            Result<string> result = await _service.VerifyResetCodeAsync(resetCode);
-
-            if (result.IsSuccess)
-                return Ok(result.Data);
-            return StatusCode(result.ErrorCode, result.Message);
+            var result = await _service.VerifyCodeAsync(request.Code);
+            if (!result.IsSuccess)
+                return StatusCode(result.ErrorCode, result.Message);
+            return Ok(result.Data);
         }
 
         [HttpPost("confirm-account")]
-        public async Task<ActionResult<bool>> ConfirmAccount([FromBody] string token)
+        public async Task<ActionResult<LoginResponseDTO>> ConfirmAccount([FromBody] ConfirmAccountRequestDTO request)
         {
-            Result<bool> result = await _service.ConfirmAccountAsync(token);
-            if (result.IsSuccess)
-                return Ok(result.Data);
-            return StatusCode(result.ErrorCode, result.Message);
+            Result<LoginResult> result = await _service.ConfirmAccountAsync(request.Token);
+            if (!result.IsSuccess)
+                return StatusCode(result.ErrorCode, result.Message);
+            Response.Cookies.Append("refreshToken", result.Data.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
+            return Ok(result.Data.LoginResponse);
         }
 
         [HttpPost("resend-account-confirmation")]

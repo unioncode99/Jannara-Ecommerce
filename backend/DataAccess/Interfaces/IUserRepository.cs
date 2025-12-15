@@ -17,6 +17,7 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
         public Task<Result<bool>> IsExistByUsername(string username);
         public Task<Result<bool>> ResetPasswordAsync(int id, string newPassword);
         public Task<Result<bool>> ResetPasswordAsync(int id, string newPassword, SqlConnection conn, SqlTransaction transaction);
+        public Task<Result<bool>> MarkEmailAsConfirmed(int id);
 
     }
 }

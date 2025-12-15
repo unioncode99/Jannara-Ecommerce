@@ -207,5 +207,9 @@ namespace Jannara_Ecommerce.Business.Services
             return await _repo.ResetPasswordAsync(id, _passwordService.HashPassword(userResult.Data, userResult.Data.Password), conn, transaction);
         }
 
+        public async Task<Result<bool>> MarkEmailAsConfirmed(int id)
+        {
+            return await _repo.MarkEmailAsConfirmed(id);
+        }
     }
 }

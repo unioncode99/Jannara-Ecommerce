@@ -18,7 +18,7 @@ import { toast } from "../components/ui/Toast";
 import { create } from "../api/apiWrapper";
 import "./Register.css";
 import AppSettings from "../components/AppSettings";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const initialFormState = {
   role: "customer",
@@ -42,6 +42,7 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
+  const navigate = useNavigate();
   useEffect(() => {
     // Re-validate form whenever language changes
     if (Object.keys(errors).length > 0) {
@@ -152,6 +153,7 @@ const Register = () => {
           translations.general.server_messages[result?.message?.message],
           "success"
         );
+        navigate("/verify-code", { state: { email: formData.email } });
       } else {
         toast.show(
           translations.general.form.messages.general_success,
