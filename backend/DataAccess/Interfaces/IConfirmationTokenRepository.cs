@@ -11,5 +11,6 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
         public Task<Result<ConfirmationTokenDTO>> GetByTokenAsync(string token);
         public Task<Result<ConfirmationTokenDTO>> GetByCodeAsync(string code);
         public Task<Result<bool>> MarkAsUsedAsync(int user_id, SqlConnection conn, SqlTransaction transaction);
+        public Task<Result<bool>> MarkAsUsedAsync(int user_id);
     }
 }

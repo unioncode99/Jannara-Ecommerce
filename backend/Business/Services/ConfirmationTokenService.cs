@@ -32,5 +32,11 @@ namespace Jannara_Ecommerce.Business.Services
         {
             return await _confirmationTokenRepository.MarkAsUsedAsync(id, conn, transaction);
         }
+
+        public async Task<Result<bool>> MarkAsUsedAsync(int id)
+        {
+            return await _confirmationTokenRepository.MarkAsUsedAsync(id);
+        }
+
     }
 }

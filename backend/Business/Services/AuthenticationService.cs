@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using System.Transactions;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -162,6 +163,45 @@ namespace Jannara_Ecommerce.Business.Services
                 }
 
             }
+        }
+
+        public async Task<Result<bool>> ConfirmAccountAsync(string token)
+        {
+            Result<int> validatingTokenResult = await _confirmationService.ValidateTokenAsync(token);
+            if (!validatingTokenResult.IsSuccess)
+            {
+                return new Result<bool>(false, "Invalid or expired code/token", false, 400);
+            }
+
+            Result<bool> markAsUsedResult = await _confirmationTokenService.MarkAsUsedAsync(validatingTokenResult.Data);
+
+            if (!markAsUsedResult.IsSuccess)
+            {
+                return new Result<bool>(false, "internal_server_error", false, 500);
+            }
+
+            return new Result<bool>(true, "Account confirmed successfully", true, 200);
+        } 
+
+        public async Task<Result<bool>> ResendAccountConfirmationAsync(string email)
+        {
+            Result<UserDTO> userResult = await _userService.FindAsync(email);
+            if (!userResult.IsSuccess)
+            {
+                return new Result<bool>(false, userResult.Message, false, userResult.ErrorCode);
+            }
+            if (userResult.Data.IsConfirmed)
+            {
+                return new Result<bool>(false, "Account already confirmed", false, 400);
+            }
+
+            var sendingConfirmationEmailResult = await _confirmationService.SendAccountConfirmationAsync(userResult.Data.ToUserPublicDTO());
+            if (!sendingConfirmationEmailResult.IsSuccess)
+            {
+                return new Result<bool>(false, "internal_server_error", false, 500);
+            }
+
+            return new Result<bool>(true, "Confirmation link/code resent successfully", true, 200);
         }
 
         public async Task<Result<string>> VerifyResetCodeAsync(string resetCode)
