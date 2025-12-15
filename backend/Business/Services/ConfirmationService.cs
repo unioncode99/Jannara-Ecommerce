@@ -124,11 +124,7 @@ namespace Jannara_Ecommerce.Business.Services
   </div>
 </body>
 </html>";
-            var sendingConfirmationEmailResult = await SendConfirmationEmailAsync(userInfo.Email, "Account Confirmation", body, "account_confirmation_link_sent");
-            if (!sendingConfirmationEmailResult.Data)
-            {
-                return new Result<bool>(false, "internal_server_error", false, 500);
-            }
+            await SendConfirmationEmailAsync(userInfo.Email, "Account Confirmation", body, "account_confirmation_link_sent");
             return new Result<bool>(true, "account_confirmation_link_sent", true);
         }
 
@@ -221,11 +217,7 @@ namespace Jannara_Ecommerce.Business.Services
   </div>
 </body>
 </html>";
-            var sendingConfirmationEmailResult = await SendConfirmationEmailAsync(userInfo.Email, "RESET PASSWORD", body, "reset_link_sent");
-            if (!sendingConfirmationEmailResult.Data)
-            {
-                return new Result<bool>(false, "reset_link_sent", false, 500);
-            }
+             await SendConfirmationEmailAsync(userInfo.Email, "RESET PASSWORD", body, "reset_link_sent");
             return new Result<bool>(true, "account_confirmation_link_sent", true);
         }
 
@@ -260,18 +252,22 @@ namespace Jannara_Ecommerce.Business.Services
             return new Result<ConfirmationTokenDTO>(true, successMessage, confirmationTokenDto, 200);
         }
 
-        public async Task<Result<bool>> SendConfirmationEmailAsync(string toEmail, string subject, string body, string successMessage = "link_was_sent")
+        public  Task SendConfirmationEmailAsync(string toEmail, string subject, string body, string successMessage = "link_was_sent")
         {
-            try
+            _ = Task.Run(async () =>
             {
-                await _emailSenderService.SendEmailAsync(toEmail, subject, body);
-                return new Result<bool>(true, successMessage, true);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to send email. Subject: {Subject}, To: {To}", subject, toEmail);
-                return new Result<bool>(false, "internal_server_error", false, 500);
-            }
+                try
+                {
+                    await _emailSenderService.SendEmailAsync(toEmail, subject, body);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex,
+                        "Failed to send email. Subject: {Subject}, To: {To}",
+                        subject, toEmail);
+                }
+            });
+            return Task.CompletedTask;
         }
 
         public async Task<Result<int>> ValidateTokenAsync(string token)

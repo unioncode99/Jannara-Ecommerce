@@ -232,5 +232,53 @@ select @@ROWCOUNT";
             
         }
 
+        public async Task<Result<ConfirmationTokenDTO>> GetByEmailAsync(string email)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT TOP 1 ct.*
+FROM ConfirmationTokens ct
+INNER JOIN Users u ON ct.user_id = u.id
+WHERE u.email = @email
+  AND ct.is_used = 0
+ORDER BY ct.id DESC;  ";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@email", email);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using (SqlDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                ConfirmationTokenDTO resetTokenDTO = new ConfirmationTokenDTO
+                                (
+                                reader.GetInt32(reader.GetOrdinal("id")),
+                                reader.GetInt32(reader.GetOrdinal("user_id")),
+                                 reader.GetString(reader.GetOrdinal("token")),
+                                 reader.GetString(reader.GetOrdinal("verification_code")),
+                                 (ConfirmationPurpose)reader.GetByte(reader.GetOrdinal("purpose")),
+                                 reader.GetDateTime(reader.GetOrdinal("expires_at")),
+                                 reader.GetBoolean(reader.GetOrdinal("is_used"))
+                                 );
+                                return new Result<ConfirmationTokenDTO>(true, "Token found successfully", resetTokenDTO);
+                            }
+                            else
+                            {
+                                return new Result<ConfirmationTokenDTO>(false, "Token not found.", null, 404);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex,"Failed to retireved confimation token with email {Email}", email);
+                        return new Result<ConfirmationTokenDTO>(false, "An unexpected error occurred on the server.", null, 500);
+                    }
+
+                }
+            }
+        }
     }
 }

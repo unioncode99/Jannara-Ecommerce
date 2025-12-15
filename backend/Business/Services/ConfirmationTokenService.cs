@@ -8,35 +8,39 @@ namespace Jannara_Ecommerce.Business.Services
 {
     public class ConfirmationTokenService : IConfirmationTokenService
     {
-        IConfirmationTokenRepository _confirmationTokenRepository;
-        public ConfirmationTokenService(IConfirmationTokenRepository ConfirmationTokenRepository) 
+        private readonly IConfirmationTokenRepository _repo;
+        public ConfirmationTokenService(IConfirmationTokenRepository repo) 
         {
-            _confirmationTokenRepository = ConfirmationTokenRepository;
+            _repo = repo;
         }
         public async Task<Result<int>> AddNewAsync(ConfirmationTokenDTO passwordResetTokenDTO)
         {
-            return await _confirmationTokenRepository.AddNewAsync(passwordResetTokenDTO);
+            return await _repo.AddNewAsync(passwordResetTokenDTO);
         }
 
         public async Task<Result<ConfirmationTokenDTO>> GetByTokenAsync(string token)
         {
-            return await _confirmationTokenRepository.GetByTokenAsync(token);
+            return await _repo.GetByTokenAsync(token);
         }
 
         public async Task<Result<ConfirmationTokenDTO>> GetByCodeAsync(string code)
         {
-            return await _confirmationTokenRepository.GetByCodeAsync(code);
+            return await _repo.GetByCodeAsync(code);
         }
 
         public async Task<Result<bool>> MarkAsUsedAsync(int id, SqlConnection conn, SqlTransaction transaction)
         {
-            return await _confirmationTokenRepository.MarkAsUsedAsync(id, conn, transaction);
+            return await _repo.MarkAsUsedAsync(id, conn, transaction);
         }
 
-        public async Task<Result<bool>> MarkAsUsedAsync(int id)
+        public async Task<Result<bool>> MarkAsUsedAsync(int userId)
         {
-            return await _confirmationTokenRepository.MarkAsUsedAsync(id);
+            return await _repo.MarkAsUsedAsync(userId);
         }
 
+        public async Task<Result<ConfirmationTokenDTO>> GetByEmailAsync(string email)
+        {
+            return await _repo.GetByEmailAsync(email);
+        }
     }
 }

@@ -7,6 +7,7 @@ using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Mappers;
 using Jannara_Ecommerce.Utilities;
+using Jannara_Ecommerce.Utilities.WrapperClasses;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using System.Data.Common;
@@ -73,13 +74,13 @@ namespace Jannara_Ecommerce.Business.Services
         {
             var newPerson = userCreateRequestDTO.GetPersonCreateDTO();
             var newUser = userCreateRequestDTO.GetUserCreateDTO();
-            string imageUrl = null;
+            GetImageUrlsResult imageUrls = null;
             if (newPerson.ProfileImage != null)
             {
-                var imageUrlResult = _imageService.GetImageUrl(newPerson.ProfileImage, _imageSettings.Value.ProfileFolder);
+                var imageUrlResult = _imageService.GetImageUrls(newPerson.ProfileImage, _imageSettings.Value.ProfileFolder);
                 if (!imageUrlResult.IsSuccess)
                     return new Result<UserPublicDTO>(false, imageUrlResult.Message, null, imageUrlResult.ErrorCode);
-                imageUrl = imageUrlResult.Data;
+                imageUrls = imageUrlResult.Data;
             }
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -89,7 +90,7 @@ namespace Jannara_Ecommerce.Business.Services
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
 
-                    var personResult = await _personService.AddNewAsync(newPerson, imageUrl,  connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls.RelativeUrl,  connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
@@ -117,8 +118,8 @@ namespace Jannara_Ecommerce.Business.Services
                     {
                         _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
                     }
-
-                    await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrl);
+                    Console.WriteLine(imageUrls.PhysicalUrl);
+                    await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrls.PhysicalUrl);
                     return userResult;
                 }
                 catch (Exception ex)
