@@ -184,5 +184,46 @@ select @@ROWCOUNT";
             }
         }
 
+        public async Task<Result<bool>> MarkAsUsedAsync(int user_id)
+        {
+            string query = @"
+UPDATE ConfirmationTokens
+SET 
+    is_used = 1
+WHERE user_id = @user_id;
+select @@ROWCOUNT";
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@user_id", user_id);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+                        object result = await command.ExecuteScalarAsync();
+                        int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                        if (rowAffected > 0)
+                        {
+                            return new Result<bool>(true, "Token marked as used successfully.", true);
+                        }
+                        else
+                        {
+                            return new Result<bool>(false, "Failed to mark token as used.", false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return new Result<bool>(false, "An unexpected error occurred on the server", false);
+                    }
+
+    
+
+
+                }
+            }
+            
+        }
+
     }
 }

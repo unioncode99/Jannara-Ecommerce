@@ -66,5 +66,24 @@ namespace Jannara_Ecommerce.Controllers
                 return Ok(result.Data);
             return StatusCode(result.ErrorCode, result.Message);
         }
+
+        [HttpPost("confirm-account")]
+        public async Task<ActionResult<bool>> ConfirmAccount([FromBody] string token)
+        {
+            Result<bool> result = await _service.ConfirmAccountAsync(token);
+            if (result.IsSuccess)
+                return Ok(result.Data);
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
+        [HttpPost("resend-account-confirmation")]
+        public async Task<ActionResult<bool>> ResendAccountConfirmation(string email)
+        {
+            Result<bool> result = await _service.ResendAccountConfirmationAsync(email);
+            if (result.IsSuccess)
+                return Ok(result.Data);
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
     }
 }
