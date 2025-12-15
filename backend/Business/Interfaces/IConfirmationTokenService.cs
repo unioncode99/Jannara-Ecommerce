@@ -10,7 +10,8 @@ namespace Jannara_Ecommerce.Business.Interfaces
 
         public Task<Result<ConfirmationTokenDTO>> GetByTokenAsync(string token);
         public Task<Result<ConfirmationTokenDTO>> GetByCodeAsync(string code);
-        public Task<Result<bool>> MarkAsUsedAsync(int id, SqlConnection conn, SqlTransaction transaction);
-        public Task<Result<bool>> MarkAsUsedAsync(int id);
+        public Task<Result<bool>> MarkAsUsedAsync(int userId, SqlConnection conn, SqlTransaction transaction);
+        public Task<Result<bool>> MarkAsUsedAsync(int userId);
+        public Task<Result<ConfirmationTokenDTO>> GetByEmailAsync(string email);
     }
 }

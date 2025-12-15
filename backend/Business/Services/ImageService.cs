@@ -1,5 +1,6 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.Utilities;
+using Jannara_Ecommerce.Utilities.WrapperClasses;
 
 namespace Jannara_Ecommerce.Business.Services
 {
@@ -63,12 +64,12 @@ namespace Jannara_Ecommerce.Business.Services
             }
         }
 
-        public Result<string> GetImageUrl(IFormFile newImage, string folderName)
+        public Result<GetImageUrlsResult> GetImageUrls(IFormFile newImage, string folderName)
         {
             Result<bool> validationResult = _validateFile(newImage);
             if (!validationResult.IsSuccess)
             {
-                return new Result<string>(false, validationResult.Message, string.Empty, validationResult.ErrorCode);
+                return new Result<GetImageUrlsResult>(false, validationResult.Message, null, validationResult.ErrorCode);
             }
 
             var uploadPath = Path.Combine(_env.WebRootPath, "Uploads", folderName);
@@ -77,9 +78,10 @@ namespace Jannara_Ecommerce.Business.Services
                 Directory.CreateDirectory(uploadPath);
             }
             var fileName = Guid.NewGuid() + Path.GetExtension(newImage.FileName);
-            string imageUrl =  Path.Combine(uploadPath, fileName);
-            var relativePath = Path.Combine("Uploads",  imageUrl).Replace("\\", "/");
-            return new Result<string>(true, "image_url_generated_successfully", relativePath);
+            string physicalUrl =  Path.Combine(uploadPath, fileName);
+            var relativePath = Path.Combine("Uploads", folderName, fileName).Replace("\\", "/");
+            var result = new GetImageUrlsResult(physicalUrl, relativePath);
+            return new Result<GetImageUrlsResult>(true, "image_url_generated_successfully", result);
         }
 
        

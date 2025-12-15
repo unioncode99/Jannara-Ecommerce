@@ -218,5 +218,37 @@ namespace Jannara_Ecommerce.Business.Services
             return new Result<VerifyCodeResposeDTO>(true, "verification_success", respponse);
 
         }
+
+        public async Task<Result<bool>> ResendVerificationCodeAsync(string email)
+        {
+            var getConfirmationTokenResult = await _confirmationTokenService.GetByEmailAsync(email);
+            if (!getConfirmationTokenResult.IsSuccess && getConfirmationTokenResult.ErrorCode != 404)
+                return new Result<bool>(false, getConfirmationTokenResult.Message, false, getConfirmationTokenResult.ErrorCode);
+            if (!getConfirmationTokenResult.IsSuccess && getConfirmationTokenResult.ErrorCode == 404)
+                return new Result<bool>(true, "if an account exists, a code has been sent to your email.", true);
+            var getUserResult = await _userService.FindAsync(email);
+            if (!getUserResult.IsSuccess)
+                return new Result<bool>(false, getUserResult.Message, false, getUserResult.ErrorCode);
+
+            if (getConfirmationTokenResult.Data.Purpose == ConfirmationPurpose.ResetPassword)
+            {
+                var markAsUserResult = await _confirmationTokenService.MarkAsUsedAsync(getUserResult.Data.Id);
+                var sendForgetPasswordResult = await _confirmationService.SendForgetPasswordConfirmationAsync(getUserResult.Data);
+                if (!sendForgetPasswordResult.IsSuccess)
+                    return new Result<bool>(false, sendForgetPasswordResult.Message, false, sendForgetPasswordResult.ErrorCode);
+                return new Result<bool>(true, "successfully_resend_verification_code", true);
+            }
+            if (getConfirmationTokenResult.Data.Purpose == ConfirmationPurpose.VerifyEmail)
+            {
+                var markAsUserResultResult = await _confirmationTokenService.MarkAsUsedAsync(getUserResult.Data.Id);
+                var sendConfirmAccountResult = await _confirmationService.SendAccountConfirmationAsync(getUserResult.Data.ToUserPublicDTO());
+
+                if (!sendConfirmAccountResult.IsSuccess)
+                    return new Result<bool>(false, sendConfirmAccountResult.Message, false, sendConfirmAccountResult.ErrorCode);
+                return new Result<bool>(true, "successfully_resend_verification_code", true);
+            }
+
+            throw new Exception("Unspported Type of confirmatation code");
+        }
     }
 }

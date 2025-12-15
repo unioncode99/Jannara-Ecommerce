@@ -16,5 +16,6 @@ namespace Jannara_Ecommerce.Business.Interfaces
         public Task<Result<VerifyCodeResposeDTO>> VerifyCodeAsync(string Code);
         public Task<Result<LoginResult>> ConfirmAccountAsync(string token);
         public Task<Result<bool>> ResendAccountConfirmationAsync(string email);
+        public Task<Result<bool>> ResendVerificationCodeAsync(string email);
     }
 }

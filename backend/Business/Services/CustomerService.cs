@@ -5,6 +5,7 @@ using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Mappers;
 using Jannara_Ecommerce.Utilities;
+using Jannara_Ecommerce.Utilities.WrapperClasses;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using System.Data.Common;
@@ -60,13 +61,13 @@ namespace Jannara_Ecommerce.Business.Services
             var userCreateDTO = customerCreateRequestDTO.GetUserCreateDTO();
 
           
-                string imageUrl = null;
+                GetImageUrlsResult imageUrls = null;
             if (personCreateDTO.ProfileImage != null)
             {
-                var imageUrlResult = _imageService.GetImageUrl(personCreateDTO.ProfileImage, _imageSettings.Value.ProfileFolder);
+                var imageUrlResult = _imageService.GetImageUrls(personCreateDTO.ProfileImage, _imageSettings.Value.ProfileFolder);
                 if (!imageUrlResult.IsSuccess) 
                     return new Result<CustomerDTO>(false, imageUrlResult.Message, null, imageUrlResult.ErrorCode);
-                imageUrl = imageUrlResult.Data;
+                imageUrls = imageUrlResult.Data;
             }
                
                 
@@ -78,7 +79,7 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
-                    var personResult = await _personService.AddNewAsync(personCreateDTO, imageUrl?.Split("wwwroot/")[1], connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(personCreateDTO, imageUrls.RelativeUrl, connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
@@ -116,7 +117,7 @@ namespace Jannara_Ecommerce.Business.Services
 
                     if (personCreateDTO.ProfileImage != null)
                     {
-                        await _imageService.SaveImageAsync(personCreateDTO.ProfileImage, imageUrl);
+                        await _imageService.SaveImageAsync(personCreateDTO.ProfileImage, imageUrls.PhysicalUrl);
                     }
                     return customerResult;
                 }

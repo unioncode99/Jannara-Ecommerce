@@ -11,7 +11,8 @@ import { toast } from "../components/ui/Toast";
 const VerifyCodePage = () => {
   const { translations } = useLanguage();
   const [code, setCode] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const navigate = useNavigate();
   const handleCodeChange = (e) => {
     if (/^\d*$/.test(e.target.value)) {
@@ -34,7 +35,7 @@ const VerifyCodePage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+    setIsVerifying(true);
     try {
       const response = await create("auth/verify-code", { code });
       if (response.purpose == "VerifyEmail") {
@@ -47,7 +48,19 @@ const VerifyCodePage = () => {
     } catch (error) {
       toast.show(error.message, "error");
     } finally {
-      setIsLoading(false);
+      setIsVerifying(false);
+    }
+  };
+  const handleResend = async () => {
+    setIsResending(true);
+    try {
+      await create("auth/resend-code", { email });
+      toast.show("Verification code resent.", "success");
+    } catch (error) {
+      console.log(error);
+      toast.show(error.message, "error");
+    } finally {
+      setIsResending(false);
     }
   };
   return (
@@ -77,16 +90,28 @@ const VerifyCodePage = () => {
             onChange={handleCodeChange}
           />
         </div>
-        <Button className="btn btn-primary btn-block" type="submit">
-          {isLoading ? (
+        <Button
+          disabled={isVerifying || isResending}
+          className="btn btn-primary btn-block"
+          type="submit"
+        >
+          {isVerifying ? (
             <Loader2 className="animate-spin" />
           ) : (
             translations.general.pages.verify_code.form.submit_button
           )}
         </Button>
-        <a href="#!" className="resend-code">
-          {translations.general.pages.verify_code.form.resend_code}
-        </a>
+        <Button
+          disabled={isResending || isVerifying}
+          className=" btn btn-primary-outline "
+          onClick={handleResend}
+        >
+          {isResending ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            translations.general.pages.verify_code.form.resend_code
+          )}
+        </Button>
         <div className="link-container">
           <Link to="/login">
             {translations.general.pages.verify_code.back_to_login}

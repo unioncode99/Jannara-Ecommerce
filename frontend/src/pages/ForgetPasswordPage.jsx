@@ -16,7 +16,7 @@ const ForgetPasswordPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await create("auth/forget-password", email);
+      await create("auth/forget-password", { email });
       navigate("/verify-code", { state: { email } });
     } catch (error) {
       toast.show(error.message, "error");
