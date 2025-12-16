@@ -1,0 +1,44 @@
+.account-confirmation-page {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 1rem;
+}
+
+.account-confirmation-page .form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Full page center wrapper */
+.page-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9fafb; /* match your auth pages */
+}
+
+/* Spinner animation */
+.spinner {
+  width: 200px; /* bigger size */
+  height: 200px;
+  animation: spin 1s linear infinite;
+  color: #22c55e; /* success/primary color */
+  color: var(--primary-500);
+  display: block;
+  margin: 0 auto;
+}
+/* Rotation */
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

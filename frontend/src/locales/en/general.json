@@ -147,6 +147,9 @@
       "loading": "Confirming account...",
       "login_button": "Go to Login",
       "back_to_login": "Back to Login"
+    },
+    "home": {
+      "search_product_placeholder": "Search Products..."
     }
   },
   "sidebar": {
