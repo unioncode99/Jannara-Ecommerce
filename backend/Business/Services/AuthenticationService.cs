@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using System.Data.Common;
 using System.Transactions;
 
 namespace Jannara_Ecommerce.Business.Services
@@ -79,7 +80,7 @@ namespace Jannara_Ecommerce.Business.Services
             }
 
             var loginInfoResult = await _generateLoginInfo(userResult.Data, personResult.Data);
-            if (!loginInfoResult.IsSuccess) 
+            if (!loginInfoResult.IsSuccess)
                 return new Result<LoginResult>(false, loginInfoResult.Message, null, loginInfoResult.ErrorCode);
 
             var loginResult = new LoginResult(loginInfoResult.Data.LoginResponse, loginInfoResult.Data.RefreshToken);
@@ -119,17 +120,17 @@ namespace Jannara_Ecommerce.Business.Services
                 try
                 {
                     await connection.OpenAsync();
-                    transaction = connection.BeginTransaction();
+                    transaction = (SqlTransaction)await connection.BeginTransactionAsync();
                     Result<bool> resetPasswordResult = await _userService.ResetPasswordAsync(validatingTokenResult.Data, resetPasswordDTO.NewPassword, connection, transaction);
                     if (!resetPasswordResult.IsSuccess)
                     {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                         return new Result<bool>(false, resetPasswordResult.Message, false, resetPasswordResult.ErrorCode);
                     }
                     Result<bool> markAsUsed = await _confirmationTokenService.MarkAsUsedAsync(validatingTokenResult.Data, connection, transaction);
                     if (!markAsUsed.IsSuccess)
                     {
-                        transaction.Rollback();
+                        await transaction.RollbackAsync();
                         return new Result<bool>(false, markAsUsed.Message, false, markAsUsed.ErrorCode);
                     }
                     await transaction.CommitAsync();
@@ -137,11 +138,17 @@ namespace Jannara_Ecommerce.Business.Services
                 }
                 catch (Exception ex)
                 {
-                    {
-                        transaction.Rollback();
-                        _logger.LogError(ex.Message);
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
-                    }
+                    if (transaction != null)
+                        try
+                        {
+                            await transaction.RollbackAsync();
+                        }
+                        catch (Exception rollBackEx)
+                        {
+                            _logger.LogError(rollBackEx, "failed to roll back while  reset password for UserID {UserID}", validatingTokenResult.Data.);
+                        }
+                    _logger.LogError(ex, "Failed to reset password for UserId {UserID}", validatingTokenResult.Data);
+                    return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
                 }
 
             }
@@ -178,10 +185,10 @@ namespace Jannara_Ecommerce.Business.Services
             if (!loginInfoResult.IsSuccess)
                 return new Result<LoginResult>(false, loginInfoResult.Message, null, loginInfoResult.ErrorCode);
 
-            var loginRsult =  new LoginResult(loginInfoResult.Data.LoginResponse, loginInfoResult.Data.RefreshToken);
+            var loginRsult = new LoginResult(loginInfoResult.Data.LoginResponse, loginInfoResult.Data.RefreshToken);
             return new Result<LoginResult>(true, "verification_success", loginRsult);
 
-        } 
+        }
 
         public async Task<Result<bool>> ResendAccountConfirmationAsync(string email)
         {
@@ -208,7 +215,7 @@ namespace Jannara_Ecommerce.Business.Services
         {
             Result<ConfirmationTokenDTO> getCodeResult = await _confirmationTokenService.GetByCodeAsync(code);
             if (!getCodeResult.IsSuccess && getCodeResult.ErrorCode == 404)
-                return  new Result<VerifyCodeResposeDTO>(false, "invalid_or_expired_code", null, 401);
+                return new Result<VerifyCodeResposeDTO>(false, "invalid_or_expired_code", null, 401);
             if (!getCodeResult.IsSuccess)
                 return new Result<VerifyCodeResposeDTO>(false, getCodeResult.Message, null, getCodeResult.ErrorCode);
             if (getCodeResult.Data.ExpireAt < DateTime.Now || getCodeResult.Data.IsUsed)
