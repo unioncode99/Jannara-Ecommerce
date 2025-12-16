@@ -148,5 +148,27 @@
       "login_button": "Go to Login",
       "back_to_login": "Back to Login"
     }
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "shop_now": "Shop Now",
+    "favorites": "Favorites",
+    "cart": "My Cart",
+    "add_product": "Add Product",
+    "categories": "Categories",
+    "orders": "Orders",
+    "products": "Products",
+    "users": "Users",
+    "settings": "Settings",
+    "logout": "Logout",
+    "profile": {
+      "name_placeholder": "User Name",
+      "role": {
+        "customer": "Customer",
+        "seller": "Seller",
+        "admin": "Admin",
+        "superadmin": "Super Admin"
+      }
+    }
   }
 }

@@ -1,15 +1,21 @@
 import "./App.css";
-import Register from "./pages/Register";
+import Register from "./pages/Auth/Register";
 import { useLanguage } from "./hooks/useLanguage";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./pages/Auth/LoginPage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ToastContainer from "./components/ui/Toast";
 import NotFoundPage from "./pages/NotFoundPage";
 import AppSettings from "./components/AppSettings";
-import ForgetPasswordPage from "./pages/ForgetPasswordPage";
-import VerifyCodePage from "./pages/VerifyCodePage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
-import AccountConfirmationPage from "./pages/AccountConfirmationPage";
+import ForgetPasswordPage from "./pages/Auth/ForgetPasswordPage";
+import VerifyCodePage from "./pages/Auth/VerifyCodePage";
+import ResetPasswordPage from "./pages/Auth/ResetPasswordPage";
+import AccountConfirmationPage from "./pages/Auth/AccountConfirmationPage";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import CustomerDashboard from "./pages/Customer/CustomerDashboard";
+import SellerDashboard from "./pages/Seller/SellerDashboard";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import DashboardLayout from "./components/MainLayout";
+import MainLayout from "./components/MainLayout";
 
 function App() {
   const { language } = useLanguage();
@@ -18,11 +24,15 @@ function App() {
     // <div dir={language === "en" ? "ltr" : "rtl"}>
     <div>
       <ToastContainer />
-      <AppSettings isTopLeft={true} />
+      <AppSettings isTopLeft={true} className="auth" />
       <BrowserRouter>
         <Routes>
-          {/* <Route path="/" element={<h1>Home Page</h1>} /> */}
-          <Route path="*" element={<NotFoundPage />} />
+          <Route element={<MainLayout />}>
+            <Route path="customer-dashboard" element={<CustomerDashboard />} />
+            <Route path="seller-dashboard" element={<SellerDashboard />} />
+            <Route path="admin-dashboard" element={<AdminDashboard />} />
+          </Route>
+
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/forget-password" element={<ForgetPasswordPage />} />
@@ -32,6 +42,7 @@ function App() {
             path="/confirm-account"
             element={<AccountConfirmationPage />}
           />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </div>
