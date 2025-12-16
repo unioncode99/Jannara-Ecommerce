@@ -4,6 +4,7 @@ import "./Home.css";
 import ProductCategoriesDropdown from "../components/ProductCategoriesDropdown";
 import { useState } from "react";
 import { useLanguage } from "../hooks/useLanguage";
+import ProductList from "../components/ProductList";
 
 const Home = () => {
   const [searchText, setSearchText] = useState("");
@@ -21,21 +22,26 @@ const Home = () => {
   };
 
   return (
-    <div className="product-filter-container">
-      <Input
-        label="Product Search"
-        name="productSearch"
-        placeholder={translations.general.pages.home.search_product_placeholder}
-        icon={<Search />}
-        type="search"
-        value={searchText}
-        onChange={handleSearchInputChange}
-      />
-      <ProductCategoriesDropdown
-        value={selectProductCategoryId}
-        onChange={handleProductCategoryChange}
-      />
-    </div>
+    <>
+      <div className="product-filter-container">
+        <Input
+          label="Product Search"
+          name="productSearch"
+          placeholder={
+            translations.general.pages.home.search_product_placeholder
+          }
+          icon={<Search />}
+          type="search"
+          value={searchText}
+          onChange={handleSearchInputChange}
+        />
+        <ProductCategoriesDropdown
+          value={selectProductCategoryId}
+          onChange={handleProductCategoryChange}
+        />
+      </div>
+      <ProductList />
+    </>
   );
 };
 export default Home;
