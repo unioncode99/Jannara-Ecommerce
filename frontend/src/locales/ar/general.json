@@ -141,6 +141,9 @@
         "submit_button": "إعادة تعيين كلمة المرور",
         "back_to_login": "العودة لتسجيل الدخول"
       }
+    },
+    "home": {
+      "search_product_placeholder": "ابحث عن المنتجات..."
     }
   },
   "sidebar": {
