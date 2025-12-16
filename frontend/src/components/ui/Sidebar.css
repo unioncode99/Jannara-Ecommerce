@@ -2,6 +2,7 @@
   width: 240px;
   height: 100vh;
   left: 0;
+  top: 0;
   background: var(--card-background);
   color: var(--text-color);
   display: flex;
@@ -138,6 +139,10 @@ html[dir="rtl"] .sidebar.close {
   color: var(--text-color);
 }
 
+html[dir="rtl"] .profile-info {
+  text-align: right;
+}
+
 .profile-role {
   font-size: 12px;
   color: var(--grey-400);
@@ -162,6 +167,11 @@ html[dir="rtl"] .sidebar.close {
   padding: 0.5rem 1rem;
   background-color: transparent;
   font-weight: bold;
+}
+
+.logout-btn > span:nth-child(1) {
+  display: flex;
+  align-items: center;
 }
 
 .logo-text {

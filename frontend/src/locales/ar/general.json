@@ -142,5 +142,27 @@
         "back_to_login": "العودة لتسجيل الدخول"
       }
     }
+  },
+  "sidebar": {
+    "dashboard": "لوحة التحكم",
+    "shop_now": "تسوق الآن",
+    "favorites": "المفضلة",
+    "cart": "سلة التسوق",
+    "add_product": "إضافة منتج",
+    "categories": "التصنيفات",
+    "orders": "الطلبات",
+    "products": "المنتجات",
+    "users": "المستخدمون",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "profile": {
+      "name_placeholder": "اسم المستخدم",
+      "role": {
+        "customer": "عميل",
+        "seller": "بائع",
+        "admin": "مدير",
+        "superadmin": "مدير عام"
+      }
+    }
   }
 }

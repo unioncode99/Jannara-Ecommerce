@@ -145,7 +145,7 @@ namespace Jannara_Ecommerce.Business.Services
                         }
                         catch (Exception rollBackEx)
                         {
-                            _logger.LogError(rollBackEx, "failed to roll back while  reset password for UserID {UserID}", validatingTokenResult.Data.);
+                            _logger.LogError(rollBackEx, "failed to roll back while  reset password for UserID {UserID}", validatingTokenResult.Data);
                         }
                     _logger.LogError(ex, "Failed to reset password for UserId {UserID}", validatingTokenResult.Data);
                     return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);

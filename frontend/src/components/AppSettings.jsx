@@ -3,12 +3,15 @@ import { useLanguage } from "../hooks/useLanguage";
 import { useTheme } from "../hooks/useTheme";
 import "./AppSettings.css";
 
-function AppSettings({ isTopLeft }) {
+function AppSettings({ isTopLeft, className }) {
   const { language, toggleLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <div dir="ltr" className={`app-settings ${isTopLeft ? "top-left" : ""}`}>
+    <div
+      dir="ltr"
+      className={`app-settings ${className} ${isTopLeft ? "top-left" : ""}`}
+    >
       <button className="lang" onClick={toggleLanguage}>
         <Globe />
         <span>{language == "en" ? "AR" : "EN"}</span>
