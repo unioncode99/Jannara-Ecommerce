@@ -16,6 +16,7 @@ import SellerDashboard from "./pages/Seller/SellerDashboard";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import DashboardLayout from "./components/MainLayout";
 import MainLayout from "./components/MainLayout";
+import Home from "./pages/Home";
 
 function App() {
   const { language } = useLanguage();
@@ -28,9 +29,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route element={<MainLayout />}>
-            <Route path="customer-dashboard" element={<CustomerDashboard />} />
-            <Route path="seller-dashboard" element={<SellerDashboard />} />
-            <Route path="admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/customer-dashboard" element={<CustomerDashboard />} />
+            <Route path="/seller-dashboard" element={<SellerDashboard />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/" element={<Home />} />
           </Route>
 
           <Route path="/register" element={<Register />} />
