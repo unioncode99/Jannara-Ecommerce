@@ -1,4 +1,4 @@
-﻿
+﻿use Jannara
 
 INSERT INTO Roles (name_en, name_ar)
 VALUES
