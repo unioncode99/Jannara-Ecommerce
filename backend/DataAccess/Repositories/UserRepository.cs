@@ -392,15 +392,13 @@ where id = @id
                 string query = @"
 
 UPDATE Users
-   SET email = @email
-      ,username = @username
+   SET username = @username
       ,password  = @password
  WHERE Id = @id
 select @@ROWCOUNT";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
-                    command.Parameters.AddWithValue("@email", updatedUser.Email);
                     command.Parameters.AddWithValue("@username", updatedUser.Username);
                     command.Parameters.AddWithValue("@password", updatedUser.Password);
 
@@ -418,7 +416,7 @@ select @@ROWCOUNT";
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to update user with UserId {UserId} and Email {Email}", id, updatedUser.Email);
+                        _logger.LogError(ex, "Failed to update user with UserId {UserId}", id);
                         return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 

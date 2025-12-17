@@ -90,7 +90,7 @@ namespace Jannara_Ecommerce.Business.Services
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
 
-                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls.RelativeUrl,  connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls?.RelativeUrl,  connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
@@ -118,8 +118,8 @@ namespace Jannara_Ecommerce.Business.Services
                     {
                         _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
                     }
-                    Console.WriteLine(imageUrls.PhysicalUrl);
-                    await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrls.PhysicalUrl);
+                    if (newPerson.ProfileImage != null) 
+                        await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrls.PhysicalUrl);
                     return userResult;
                 }
                 catch (Exception ex)
@@ -164,14 +164,6 @@ namespace Jannara_Ecommerce.Business.Services
             if (!currentUserResult.IsSuccess)
                 return new Result<bool>(false, currentUserResult.Message, false, currentUserResult.ErrorCode);
 
-            if (!string.Equals(currentUserResult.Data.Email, updatedUser.Email, StringComparison.OrdinalIgnoreCase))
-            {
-                var existByEmailResult = await _repo.IsExistByEmail(updatedUser.Email);
-                if (!existByEmailResult.IsSuccess)
-                    return new Result<bool>(false, existByEmailResult.Message, false, existByEmailResult.ErrorCode);
-                if (existByEmailResult.Data)
-                    return new Result<bool>(false, "email_exists", false, 409);
-            }
             
             if (!string.Equals(currentUserResult.Data.Username, updatedUser.Username, StringComparison.OrdinalIgnoreCase))
             {
