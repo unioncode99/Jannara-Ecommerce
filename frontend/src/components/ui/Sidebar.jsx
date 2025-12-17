@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import "./Sidebar.css";
-import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useAuth } from "../../hooks/useAuth";
 import Button from "./Button";
@@ -58,9 +58,8 @@ const menus = {
 
 const Sidebar = (props) => {
   let { isSibebarOpen, onClose } = props;
-  const { translations, language } = useLanguage();
+  const { translations } = useLanguage();
   const { user, logout, person } = useAuth();
-  const location = useLocation();
   const navigate = useNavigate();
   console.log("translations -> ", translations.general.sidebar);
   console.log("person -> ", person);
@@ -98,6 +97,7 @@ const Sidebar = (props) => {
           {links.map((link) => (
             <li key={link.label}>
               <NavLink
+                onClick={onClose}
                 to={link.path}
                 className={({ isActive }) =>
                   `sidebar-link ${isActive ? "active" : ""}`

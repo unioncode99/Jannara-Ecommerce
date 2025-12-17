@@ -23,7 +23,7 @@ function App() {
 
   return (
     // <div dir={language === "en" ? "ltr" : "rtl"}>
-    <div>
+    <div className="container">
       <ToastContainer />
       <AppSettings isTopLeft={true} className="auth" />
       <BrowserRouter>
@@ -33,18 +33,17 @@ function App() {
             <Route path="/seller-dashboard" element={<SellerDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/forget-password" element={<ForgetPasswordPage />} />
+            <Route path="/verify-code" element={<VerifyCodePage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route
+              path="/confirm-account"
+              element={<AccountConfirmationPage />}
+            />
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
-
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/forget-password" element={<ForgetPasswordPage />} />
-          <Route path="/verify-code" element={<VerifyCodePage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route
-            path="/confirm-account"
-            element={<AccountConfirmationPage />}
-          />
-          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </div>

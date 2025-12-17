@@ -22,11 +22,11 @@ export default function MainLayout() {
     <div>
       <Navbar onBurgerClick={openSidebar} />
       <Sidebar isSibebarOpen={isSibebarOpen} onClose={closeSidebar} />
-      <div style={{ flex: 1 }}>
+      <main className="main">
         <div style={{ padding: "20px" }}>
           <Outlet /> {/* Nested pages */}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
