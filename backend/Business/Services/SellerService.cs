@@ -76,7 +76,7 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
-                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls.RelativeUrl, connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls?.RelativeUrl, connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();

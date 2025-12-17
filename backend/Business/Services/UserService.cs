@@ -2,6 +2,7 @@
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Enums;
@@ -90,7 +91,7 @@ namespace Jannara_Ecommerce.Business.Services
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
 
-                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls.RelativeUrl,  connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls?.RelativeUrl,  connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
@@ -118,8 +119,8 @@ namespace Jannara_Ecommerce.Business.Services
                     {
                         _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
                     }
-                    Console.WriteLine(imageUrls.PhysicalUrl);
-                    await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrls.PhysicalUrl);
+                    if (newPerson.ProfileImage != null)
+                        await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrls.PhysicalUrl);                    
                     return userResult;
                 }
                 catch (Exception ex)
