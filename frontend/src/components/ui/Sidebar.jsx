@@ -64,11 +64,15 @@ const Sidebar = (props) => {
   console.log("translations -> ", translations.general.sidebar);
   console.log("person -> ", person);
 
-  const handleLogout = async () => {
-    await logout();
+  const handleLogout = () => {
+    logout();
+    onClose();
     navigate("/login");
   };
-
+  const handleLogin = () => {
+    onClose();
+    navigate("/login");
+  };
   const getFullName = () => {
     return person?.firstName + " " + person?.lastName;
   };
@@ -146,10 +150,7 @@ const Sidebar = (props) => {
         </div>
       ) : (
         <div className="sidebar-bottom">
-          <Button
-            className="btn btn-primary btn-block"
-            onClick={() => navigate("/login")}
-          >
+          <Button className="btn btn-primary btn-block" onClick={handleLogin}>
             {translations.general.form.login_button}
           </Button>
         </div>
