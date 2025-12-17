@@ -208,8 +208,13 @@ input:-moz-autofill {
   background-color: var(--card-background);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-2);
-  padding: 2rem 2.5rem;
+  padding: 2rem 1rem;
   margin: 4rem auto;
+}
+@media (min-width: 480px) {
+  .form {
+    padding: 2rem 2.5rem;
+  }
 }
 
 small,
