@@ -44,22 +44,27 @@ builder.Services.AddAuthentication()
 
     });
 
+var allowedOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost",
-        builder => builder
-            .WithOrigins("http://localhost:5173")
-            .AllowAnyHeader()
-            .AllowAnyMethod());
+    options.AddPolicy("AllowCors", policy =>
+    {
+        policy.WithOrigins(allowedOrigins!)
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
+
 
 
 var app = builder.Build();
 
-// Use CORS
-app.UseCors("AllowLocalhost");
+app.UseCors("AllowCors");
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 app.UseStaticFiles();
