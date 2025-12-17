@@ -193,6 +193,7 @@ SELECT
     U.person_id,
     U.email,
     U.username,
+    U.is_confirmed,
     U.password,
     U.created_at ,
     U.updated_at ,
@@ -233,6 +234,7 @@ where email = @email
                                     reader.GetInt32(reader.GetOrdinal("person_id")),
                                     reader.GetString(reader.GetOrdinal("email")),
                                     reader.GetString(reader.GetOrdinal("username")),
+                                    reader.GetBoolean(reader.GetOrdinal("is_confirmed")),
                                     reader.GetString(reader.GetOrdinal("password")),
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at")),
@@ -263,6 +265,7 @@ SELECT
     U.person_id,
     U.email,
     U.username,
+    U.is_confirmed,
     U.password,
     U.created_at ,
     U.updated_at ,
@@ -303,6 +306,7 @@ where id = @id
                                     reader.GetInt32(reader.GetOrdinal("person_id")),
                                     reader.GetString(reader.GetOrdinal("email")),
                                     reader.GetString(reader.GetOrdinal("username")),
+                                    reader.GetBoolean(reader.GetOrdinal("is_confirmed")),
                                     reader.GetString(reader.GetOrdinal("password")),
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at")),
@@ -415,6 +419,106 @@ select @@ROWCOUNT";
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to update user with UserId {UserId} and Email {Email}", id, updatedUser.Email);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
+                    }
+
+                }
+            }
+        }
+
+        public async Task<Result<bool>> ResetPasswordAsync(int id, string newPassword, SqlConnection conn, SqlTransaction transaction)
+        {
+            string query = @"
+UPDATE Users
+SET 
+    password = @newPassword
+WHERE id = @id;
+select @@ROWCOUNT";
+            using (SqlCommand command = new SqlCommand(query, conn, transaction))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                command.Parameters.AddWithValue("@newPassword", newPassword);
+                object result = await command.ExecuteScalarAsync();
+                int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                if (rowAffected > 0)
+                {
+                    return new Result<bool>(true, "Password changed successfully.", true);
+                }
+                else
+                {
+                    return new Result<bool>(false, "Failed to  change password.", false);
+                }
+
+
+
+            }
+        }
+        public async Task<Result<bool>> ResetPasswordAsync(int id, string newPassword)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+UPDATE Users
+SET 
+    password = @newPassword
+WHERE id = @id;
+select @@ROWCOUNT";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    try
+                    {
+                        await connection.OpenAsync();
+                        command.Parameters.AddWithValue("@id", id);
+                        command.Parameters.AddWithValue("@newPassword", newPassword);
+                        object result = await command.ExecuteScalarAsync();
+                        int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                        if (rowAffected > 0)
+                        {
+                            return new Result<bool>(true, "Password changed successfully.", true);
+                        }
+                        else
+                        {
+                            return new Result<bool>(false, "Failed to  change password.", false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                    }
+                }
+            }
+        }
+
+        public async Task<Result<bool>> MarkEmailAsConfirmed(int id)
+        {
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+
+UPDATE Users
+   SET is_confirmed = 1
+ WHERE Id = @id
+select @@ROWCOUNT";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+
+
+                    try
+                    {
+                        await connection.OpenAsync();
+                        object? result = await command.ExecuteScalarAsync();
+                        int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                        if (rowAffected > 0)
+                        {
+                            return new Result<bool>(true, "user_confirmed_successfully", true);
+                        }
+                        return new Result<bool>(false, "failed_to_confrim_user", false);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to confirm user {ID}", id);
                         return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 

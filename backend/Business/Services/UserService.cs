@@ -2,11 +2,13 @@
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Mappers;
 using Jannara_Ecommerce.Utilities;
+using Jannara_Ecommerce.Utilities.WrapperClasses;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using System.Data.Common;
@@ -19,13 +21,15 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly string _connectionString;
         private readonly IPersonService _personService;
         private readonly IUserRoleService _userRoleService;
+        private readonly IConfirmationService _accountConfirmationService;
         private readonly IImageService _imageService;
         private readonly IOptions<ImageSettings> _imageSettings;
         private readonly ILogger<IUserService> _logger;
         public UserService(IUserRepository repo, IPasswordService passwordService,
             IOptions<DatabaseSettings> options, IPersonService personService, 
             IUserRoleService userRoleService, IImageService imageService,
-            IOptions<ImageSettings> imageSettings, ILogger<IUserService> logger)
+            IOptions<ImageSettings> imageSettings, ILogger<IUserService> logger, 
+            IConfirmationService accountConfirmationService)
         {
             _repo = repo;
             _passwordService = passwordService;
@@ -35,6 +39,7 @@ namespace Jannara_Ecommerce.Business.Services
             _imageService = imageService;
             _imageSettings = imageSettings;
             _logger = logger;
+            _accountConfirmationService = accountConfirmationService;
         }
 
 
@@ -57,20 +62,26 @@ namespace Jannara_Ecommerce.Business.Services
                 return new Result<UserPublicDTO>(false, "username_exists", null, 409);
 
             newUser.Password = _passwordService.HashPassword(newUser, newUser.Password);
-            return await _repo.AddNewAsync(personId, newUser, connection, transaction);
+            var userResult = await _repo.AddNewAsync(personId, newUser, connection, transaction);
+            if (!userResult.IsSuccess)
+            {
+                return new Result<UserPublicDTO>(false, "internal_server_error", null, 500);
+            }
+
+            return userResult;
         }
 
         public async Task<Result<UserPublicDTO>> CreateAsync(UserCreateRequestDTO  userCreateRequestDTO)
         {
             var newPerson = userCreateRequestDTO.GetPersonCreateDTO();
             var newUser = userCreateRequestDTO.GetUserCreateDTO();
-            string imageUrl = null;
+            GetImageUrlsResult imageUrls = null;
             if (newPerson.ProfileImage != null)
             {
-                var imageUrlResult = _imageService.GetImageUrl(newPerson.ProfileImage, _imageSettings.Value.ProfileFolder);
+                var imageUrlResult = _imageService.GetImageUrls(newPerson.ProfileImage, _imageSettings.Value.ProfileFolder);
                 if (!imageUrlResult.IsSuccess)
                     return new Result<UserPublicDTO>(false, imageUrlResult.Message, null, imageUrlResult.ErrorCode);
-                imageUrl = imageUrlResult.Data;
+                imageUrls = imageUrlResult.Data;
             }
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -80,7 +91,7 @@ namespace Jannara_Ecommerce.Business.Services
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
 
-                    var personResult = await _personService.AddNewAsync(newPerson, imageUrl,  connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls?.RelativeUrl,  connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
@@ -101,7 +112,15 @@ namespace Jannara_Ecommerce.Business.Services
                     }
                     userResult.Data.Roles.Add(new UserRoleInfoDTO(userRoleResult.Data.Id,Roles.Admin.ToString(), Roles.Admin.GetNameAr() , userRoleResult.Data.IsActive, userRoleResult.Data.CreatedAt, userRoleResult.Data.UpdatedAt));
                     await transaction.CommitAsync();
-                    await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrl);
+
+                    var accountConfirmationResult = await _accountConfirmationService.SendAccountConfirmationAsync(userResult.Data);
+
+                    if (!accountConfirmationResult.IsSuccess)
+                    {
+                        _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
+                    }
+                    if (newPerson.ProfileImage != null)
+                        await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrls.PhysicalUrl);                    
                     return userResult;
                 }
                 catch (Exception ex)
@@ -173,6 +192,26 @@ namespace Jannara_Ecommerce.Business.Services
             }
 
             return await _repo.UpdateAsync(id, updatedUser);
+        }
+
+
+        public async Task<Result<bool>> ResetPasswordAsync(int id, string newPassword, SqlConnection conn, SqlTransaction transaction)
+        {
+            Result<UserDTO> userResult = await _repo.GetByIdAsync(id);
+            if (!userResult.IsSuccess)
+            {
+                return new Result<bool>(false, userResult.Message, false, userResult.ErrorCode);
+            }
+
+
+            userResult.Data.Password = newPassword;
+
+            return await _repo.ResetPasswordAsync(id, _passwordService.HashPassword(userResult.Data, userResult.Data.Password), conn, transaction);
+        }
+
+        public async Task<Result<bool>> MarkEmailAsConfirmed(int id)
+        {
+            return await _repo.MarkEmailAsConfirmed(id);
         }
     }
 }

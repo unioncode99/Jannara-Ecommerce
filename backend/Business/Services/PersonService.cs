@@ -2,6 +2,7 @@
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.Utilities;
+using Jannara_Ecommerce.Utilities.WrapperClasses;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 
@@ -45,10 +46,10 @@ namespace Jannara_Ecommerce.Business.Services
             if (!findResult.IsSuccess)
                 return new Result<bool>(false, findResult.Message, false, findResult.ErrorCode);
 
-            string imageUrl = null;
+            GetImageUrlsResult imageUrl = null;
             if (updatedPerson.ProfileImage != null)
             {
-                var ImageUrlResult = _imageService.GetImageUrl(updatedPerson.ProfileImage, _imageOptions.Value.ProfileFolder);
+                var ImageUrlResult = _imageService.GetImageUrls(updatedPerson.ProfileImage, _imageOptions.Value.ProfileFolder);
                 if (!ImageUrlResult.IsSuccess)
                     return new Result<bool>(false, ImageUrlResult.Message, false, ImageUrlResult.ErrorCode);
                 imageUrl = ImageUrlResult.Data;
@@ -61,10 +62,10 @@ namespace Jannara_Ecommerce.Business.Services
                 imageUrl = null;
             }
             else
-                imageUrl = findResult.Data.ImageUrl;
+                imageUrl.RelativeUrl = findResult.Data.ImageUrl;
             if (imageUrl != null) 
-                await _imageService.ReplaceImageAsync(findResult.Data.ImageUrl,imageUrl, updatedPerson.ProfileImage);
-            return await _repo.UpdateAsync(id, updatedPerson, imageUrl);
+                await _imageService.ReplaceImageAsync(findResult.Data.ImageUrl,imageUrl.RelativeUrl, updatedPerson.ProfileImage);
+            return await _repo.UpdateAsync(id, updatedPerson, imageUrl.RelativeUrl);
         }
 
         

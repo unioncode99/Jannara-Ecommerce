@@ -175,6 +175,31 @@ button {
   font-family: inherit;
 }
 
+input {
+}
+
+/* Chrome / Edge / Brave */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--input-background) inset !important;
+  -webkit-text-fill-color: var(--input-text-color) !important;
+  caret-color: var(--input-text-color); /* لون المؤشر */
+  border-radius: inherit;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* عند التركيز */
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--input-background) inset !important;
+}
+
+/* Firefox */
+input:-moz-autofill {
+  box-shadow: 0 0 0 1000px var(--input-background) inset !important;
+  -moz-text-fill-color: var(--input-text-color) !important;
+}
+
 /* forms */
 .form {
   width: 90vw;

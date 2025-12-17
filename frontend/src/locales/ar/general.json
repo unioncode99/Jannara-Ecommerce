@@ -1,6 +1,12 @@
 {
   "form": {
     "register_title": "إنشاء حساب",
+    "login_title": "جنّارة",
+    "login_subtitle": "مرحبًا بعودتك! الرجاء تسجيل الدخول إلى حسابك.",
+    "login_button": "تسجيل الدخول",
+    "remember_me": "تذكرني",
+    "forgot_password": "هل نسيت كلمة المرور؟",
+    "no_account": "ليس لديك حساب؟  ",
     "create_account": "إنشاء حساب جديد",
     "seller_option": "بائع",
     "customer_option": "عميل",
@@ -24,7 +30,8 @@
       "weak_password": "يجب أن تكون كلمة المرور 8 أحرف على الأقل وتحتوي على رقم وحرف خاص",
       "invalid_phone": "الرجاء إدخال رقم هاتف صالح",
       "invalid_date": "الرجاء إدخال تاريخ صالح",
-      "general_error": "حدث خطأ ما. يرجى تصحيح الأخطاء."
+      "general_error": "حدث خطأ ما. يرجى تصحيح الأخطاء.",
+      "passwords_do_not_match": "كلمات المرور غير متطابقة"
     },
     "messages": {
       "general_error": "حدث خطأ ما. يرجى تصحيح الأخطاء.",
@@ -99,5 +106,63 @@
     "image_url_generated_successfully": "تم إنشاء رابط الصورة بنجاح",
     "invalid_pagination_parameters": "يجب أن يكون pageSize و pageNumber أكبر من الصفر",
     "invalid_data": "البيانات المقدمة غير صالحة"
+  },
+  "pages": {
+    "Not_Found": {
+      "title": "الصفحة غير موجودة",
+      "subtitle": "الصفحة التي تبحث عنها غير موجودة.",
+      "home_button": "الذهاب إلى الصفحة الرئيسية"
+    },
+    "forget_password": {
+      "title": "نسيت كلمة المرور",
+      "subtitle": "أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور",
+      "form": {
+        "submit_button": "إرسال",
+        "back_to_login": "العودة لتسجيل الدخول"
+      }
+    },
+    "verify_code": {
+      "title": "أدخل رمز التحقق",
+      "message_prefix": "تم إرسال رمز التحقق إلى بريدك الإلكتروني",
+      "message_suffix": "الرجاء إدخال الرمز أدناه للمتابعة.",
+      "form": {
+        "input_placeholder": "أدخل رمز التحقق",
+        "submit_button": "تحقق",
+        "resend_code": "إعادة إرسال الرمز"
+      },
+      "back_to_login": "العودة لتسجيل الدخول"
+    },
+    "reset_password": {
+      "form": {
+        "title": "إعادة تعيين كلمة المرور",
+        "subtitle": "أدخل كلمة مرور جديدة لحسابك",
+        "input_placeholder_password": "كلمة المرور الجديدة",
+        "input_placeholder_confirm_password": "تأكيد كلمة المرور الجديدة",
+        "submit_button": "إعادة تعيين كلمة المرور",
+        "back_to_login": "العودة لتسجيل الدخول"
+      }
+    }
+  },
+  "sidebar": {
+    "dashboard": "لوحة التحكم",
+    "shop_now": "تسوق الآن",
+    "favorites": "المفضلة",
+    "cart": "سلة التسوق",
+    "add_product": "إضافة منتج",
+    "categories": "التصنيفات",
+    "orders": "الطلبات",
+    "products": "المنتجات",
+    "users": "المستخدمون",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "profile": {
+      "name_placeholder": "اسم المستخدم",
+      "role": {
+        "customer": "عميل",
+        "seller": "بائع",
+        "admin": "مدير",
+        "superadmin": "مدير عام"
+      }
+    }
   }
 }
