@@ -7,6 +7,7 @@ using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Mappers;
 using Jannara_Ecommerce.Utilities;
+using Jannara_Ecommerce.Utilities.WrapperClasses;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using System.Data.Common;
@@ -20,13 +21,14 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IPersonService _personService;
         private readonly IUserService _userService;
         private readonly IUserRoleService _userRoleService;
+        private readonly IConfirmationService _confirmationService;
         private readonly IOptions<ImageSettings> _imageSettings;
         private readonly IImageService _imageService;
         private readonly ILogger<ISellerService> _logger;
         public SellerService(ISellerRepository repo, IPersonService PersonService, 
             IUserService UserService, IOptions<DatabaseSettings> options,
             IUserRoleService userRoleService ,IOptions<ImageSettings> imageSettings, IImageService imageService,
-            ILogger<ISellerService> logger)
+            ILogger<ISellerService> logger, IConfirmationService confirmationService)
         {
             _repo  = repo;
             _connectionString = options.Value.DefaultConnection;
@@ -36,6 +38,7 @@ namespace Jannara_Ecommerce.Business.Services
             _imageSettings = imageSettings;
             _imageService = imageService;
             _logger = logger;
+            _confirmationService = confirmationService;
         }
         public async Task<Result<SellerDTO>> AddNewAsync(int userId, SellerCreateDTO newSeller, SqlConnection connection, SqlTransaction transaction)
         {
@@ -57,13 +60,13 @@ namespace Jannara_Ecommerce.Business.Services
             var newUser = sellerCreateRequestDTO.GetUserCreateDTO();
             var newSeller = sellerCreateRequestDTO.GetSellerCreateDTO();
 
-            string imageUrl = null;
+            GetImageUrlsResult imageUrls = null;
             if (newPerson.ProfileImage != null)
             {
-                var imageUrlResult = _imageService.GetImageUrl(newPerson.ProfileImage, _imageSettings.Value.ProfileFolder);
+                var imageUrlResult = _imageService.GetImageUrls(newPerson.ProfileImage, _imageSettings.Value.ProfileFolder);
                 if (!imageUrlResult.IsSuccess)
                     return new Result<SellerDTO>(false, imageUrlResult.Message, null, imageUrlResult.ErrorCode);
-                imageUrl = imageUrlResult.Data;
+                imageUrls = imageUrlResult.Data;
             }
 
             using (var connection = new SqlConnection(_connectionString))
@@ -73,7 +76,7 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
-                    var personResult = await _personService.AddNewAsync(newPerson, imageUrl?.Split("wwwroot/")[1], connection,(SqlTransaction) transaction);
+                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls?.RelativeUrl, connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
@@ -99,8 +102,16 @@ namespace Jannara_Ecommerce.Business.Services
                         return new Result<SellerDTO>(false, sellerResult.Message, null, sellerResult.ErrorCode);
                     }
                     await transaction.CommitAsync();
+
+                    var accountConfirmationResult = await _confirmationService.SendAccountConfirmationAsync(userResult.Data);
+
+                    if (!accountConfirmationResult.IsSuccess)
+                    {
+                        _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
+                    }
+
                     if (sellerCreateRequestDTO.ProfileImage != null)
-                        await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrl);
+                        await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrls.PhysicalUrl);
                     return sellerResult;
                 }
                 catch (Exception ex)
