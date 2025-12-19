@@ -26,6 +26,7 @@ namespace Jannara_Ecommerce.Business
             services.AddScoped<IEmailSenderService, EmailSenderService>();
             services.AddScoped<IConfirmationService, ConfirmationService>();
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
+            services.AddScoped<IProductService, ProductService>();
             return services;
         }
     }
