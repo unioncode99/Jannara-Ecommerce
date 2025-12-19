@@ -2,7 +2,7 @@
 {
     public class ProductResponseDTO
     {
-        public ProductResponseDTO(int id, string defaultImageUrl, string nameEn, string nameAr, decimal? minPrice, bool? isFavorite)
+        public ProductResponseDTO(int id, string defaultImageUrl, string nameEn, string nameAr, decimal? minPrice, bool? isFavorite, double? averageRating, int? ratingCount)
         {
             Id = id;
             DefaultImageUrl = defaultImageUrl;
@@ -10,6 +10,8 @@
             NameAr = nameAr;
             MinPrice = minPrice;
             IsFavorite = isFavorite;
+            AverageRating = averageRating;
+            RatingCount = ratingCount;
         }
 
         public int Id { get; set; }
@@ -18,5 +20,7 @@
         public string NameAr { get; set; }
         public decimal? MinPrice { get; set; }
         public bool? IsFavorite { get; set; } = false;
+        public double? AverageRating { get; set; }
+        public int? RatingCount { get; set; }
     }
 }

@@ -143,7 +143,10 @@
       }
     },
     "home": {
-      "search_product_placeholder": "ابحث عن المنتجات..."
+      "search_product_placeholder": "ابحث عن المنتجات...",
+      "price_start_from": "يبدأ من",
+      "soming_soon": "قريباً",
+      "no_ratings_yet": "لا توجد تقييمات حتى الآن"
     }
   },
   "sidebar": {
