@@ -20,13 +20,13 @@ namespace Jannara_Ecommerce.Controllers
             _productService = productService;
         }
 
-        public async Task<ActionResult<PagedResponseDTO<ProductResponseDTO>>> GetAll([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] int customerId)
+        public async Task<ActionResult<PagedResponseDTO<ProductResponseDTO>>> GetAll([FromQuery] FilterProductDTO filter)
         {
-            if (pageNumber <= 0 || pageSize <= 0)
+            if (filter.PageNumber <= 0 || filter.PageSize <= 0)
             {
                 return BadRequest(new ResponseMessage("invalid_pagination_parameters"));
             }
-            var result = await _productService.GetAllAsync(pageNumber, pageSize, customerId);
+            var result = await _productService.GetAllAsync(filter);
             if (result.IsSuccess)
             {
                 return Ok(result);

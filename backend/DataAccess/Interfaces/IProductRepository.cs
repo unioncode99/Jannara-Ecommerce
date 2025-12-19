@@ -7,6 +7,6 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
 {
     public interface IProductRepository
     {
-        public Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20, int customerId = -1);
+        public Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(FilterProductDTO filter);
     }
 }

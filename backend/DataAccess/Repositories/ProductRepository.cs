@@ -5,8 +5,10 @@ using Jannara_Ecommerce.DTOs.Product;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using System.Data;
+using System.Diagnostics.Metrics;
 
 namespace Jannara_Ecommerce.DataAccess.Repositories
 {
@@ -20,7 +22,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
             _logger = logger;
         }
 
-        public async Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20, int customerId = -1)
+        public async Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(FilterProductDTO filter)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -79,13 +81,58 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
 //    p.id
 //OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
 
-                string query = @"select count(*) as total from products;
+//                string query = @"select count(*) as total from products;
+
+//SELECT
+//    p.id,
+//    p.name_ar,
+//    p.name_en,
+//    p.default_image_url,
+//    MIN(sp.price) AS min_price,
+//    CAST(
+//    CASE WHEN cw.product_id IS NULL THEN 0 ELSE 1 END
+//    AS BIT
+//	) AS is_favorite,
+//    AVG(pr.rating * 1.0) AS  average_rating, 
+//    COUNT(pr.rating) AS rating_count    
+//FROM Products p
+//LEFT JOIN ProductItems pi
+//    ON pi.product_id = p.id
+//LEFT JOIN SellerProducts sp
+//    ON sp.product_item_id = pi.id
+//LEFT JOIN CustomerWishlist cw
+//    ON cw.product_id = p.id
+//    AND cw.customer_id = @customerId
+//LEFT JOIN ProductRatings pr
+//    ON pr.product_id = p.id
+//GROUP BY
+//    p.id,
+//    p.name_ar,
+//    p.name_en,
+//    p.default_image_url,
+//    cw.product_id
+//ORDER BY
+//    p.id
+//OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
+
+                string query = @"select count(*) as total from products p WHERE
+    (@CategoryId IS NULL OR p.category_id = @CategoryId)
+and
+(
+    @SearchTerm IS NULL
+    OR @SearchTerm = ''
+    OR p.name_en LIKE '%' + @SearchTerm + '%'
+    OR p.name_ar LIKE '%' + @SearchTerm + '%'
+    OR p.description_en LIKE '%' + @SearchTerm + '%'
+    OR p.description_ar LIKE '%' + @SearchTerm + '%'
+);
 
 SELECT
     p.id,
     p.name_ar,
     p.name_en,
     p.default_image_url,
+    p.created_at,
     MIN(sp.price) AS min_price,
     CAST(
     CASE WHEN cw.product_id IS NULL THEN 0 ELSE 1 END
@@ -103,22 +150,54 @@ LEFT JOIN CustomerWishlist cw
     AND cw.customer_id = @customerId
 LEFT JOIN ProductRatings pr
     ON pr.product_id = p.id
+WHERE
+    (@CategoryId IS NULL OR p.category_id = @CategoryId)
+and
+(
+    @SearchTerm IS NULL
+    OR @SearchTerm = ''
+    OR p.name_en LIKE '%' + @SearchTerm + '%'
+    OR p.name_ar LIKE '%' + @SearchTerm + '%'
+    OR p.description_en LIKE '%' + @SearchTerm + '%'
+    OR p.description_ar LIKE '%' + @SearchTerm + '%'
+)
+
 GROUP BY
     p.id,
     p.name_ar,
     p.name_en,
     p.default_image_url,
+    p.created_at,
     cw.product_id
 ORDER BY
+    CASE 
+        WHEN @SortBy = 'price_asc' AND MIN(sp.price) IS NULL THEN 1
+        ELSE 0
+    END,
+    CASE 
+        WHEN @SortBy = 'price_asc' THEN MIN(sp.price)
+    END ASC,
+    CASE 
+        WHEN @SortBy = 'price_desc' AND MIN(sp.price) IS NULL THEN 1
+        ELSE 0
+    END,
+    CASE 
+        WHEN @SortBy = 'price_desc' THEN MIN(sp.price)
+    END DESC,
+    CASE WHEN @SortBy = 'newest' THEN p.id END DESC,
+    CASE WHEN @SortBy = 'oldest' THEN p.id END ASC,
     p.id
-OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
+OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
 
                 using (var command = new SqlCommand(query, connection))
                 {
-                    int offset = (pageNumber - 1) * pageSize;
+                    int offset = (filter.PageNumber - 1) * filter.PageSize;
                     command.Parameters.AddWithValue("@offset", offset);
-                    command.Parameters.AddWithValue("@pageSize", pageSize);
-                    command.Parameters.AddWithValue("@customerId", customerId);
+                    command.Parameters.AddWithValue("@pageSize", filter.PageSize);
+                    command.Parameters.AddWithValue("@customerId", filter.CustomerId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@SortBy", filter.SortBy ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@CategoryId", filter.CategoryId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@SearchTerm", filter.SearchTerm ?? (object)DBNull.Value);
                     try
                     {
                         await connection.OpenAsync();
@@ -160,13 +239,13 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
                             {
                                 return new Result<PagedResponseDTO<ProductResponseDTO>>(false, "products_not_found", null, 404);
                             }
-                            var response = new PagedResponseDTO<ProductResponseDTO>(total, pageNumber, pageSize, products);
+                            var response = new PagedResponseDTO<ProductResponseDTO>(total, filter.PageNumber, filter.PageSize, products);
                             return new Result<PagedResponseDTO<ProductResponseDTO>>(true, "products_retrieved_successfully", response, 200);
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to retrieve products for page {PageNumber} with page size {PageSize}", pageNumber, pageSize);
+                        _logger.LogError(ex, "Failed to retrieve products for page {PageNumber} with page size {PageSize}", filter.PageNumber, filter.PageSize);
                         return new Result<PagedResponseDTO<ProductResponseDTO>>(false, "internal_server_error", null, 500);
                     }
                 }
