@@ -200,6 +200,16 @@ input:-moz-autofill {
   -moz-text-fill-color: var(--input-text-color) !important;
 }
 
+/* Only hide scrollbars on elements with overflow */
+.scrollable::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollable {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
 /* forms */
 .form {
   width: 90vw;
