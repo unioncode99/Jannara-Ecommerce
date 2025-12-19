@@ -5,10 +5,12 @@ import ProductCategoriesDropdown from "../components/ProductCategoriesDropdown";
 import { useState } from "react";
 import { useLanguage } from "../hooks/useLanguage";
 import ProductList from "../components/ProductList";
+import ProductSortingFiltersDropdown from "../components/ProductSortingFiltersDropdown";
 
 const Home = () => {
   const [searchText, setSearchText] = useState("");
   const [selectProductCategoryId, setSelectProductCategoryId] = useState(-1);
+  const [sortingTerm, setSortingTerm] = useState("");
   const { translations } = useLanguage();
 
   const handleSearchInputChange = (e) => {
@@ -19,6 +21,11 @@ const Home = () => {
   const handleProductCategoryChange = (e) => {
     console.log("category -> ", e.target.value);
     setSelectProductCategoryId(e.target.value);
+  };
+
+  const handleSortingTermChange = (e) => {
+    console.log("Sorting Term -> ", e.target.value);
+    setSortingTerm(e.target.value);
   };
 
   return (
@@ -38,6 +45,10 @@ const Home = () => {
         <ProductCategoriesDropdown
           value={selectProductCategoryId}
           onChange={handleProductCategoryChange}
+        />
+        <ProductSortingFiltersDropdown
+          value={sortingTerm}
+          onChange={handleSortingTermChange}
         />
       </div>
       <ProductList />
