@@ -149,7 +149,10 @@
       "back_to_login": "Back to Login"
     },
     "home": {
-      "search_product_placeholder": "Search Products..."
+      "search_product_placeholder": "Search Products...",
+      "price_start_from": "Start From",
+      "soming_soon": "Coming soon",
+      "no_ratings_yet": "No ratings yet"
     }
   },
   "sidebar": {

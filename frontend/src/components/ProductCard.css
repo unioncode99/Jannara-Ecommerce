@@ -84,9 +84,11 @@
   justify-content: space-between;
 }
 
-.product-price {
+.product-price-container {
   display: block;
   margin-top: 0.25rem;
+}
+.product-price {
   color: var(--primary-500);
   font-weight: 700;
 }

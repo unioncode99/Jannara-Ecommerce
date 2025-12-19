@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import "./ProductCard.css";
 import { Heart, ShoppingCart, Star } from "lucide-react";
+import { useLanguage } from "../hooks/useLanguage";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({ product, onToggleFavorite }) => {
   const [isFavorite, setIsFavorite] = useState(product.isFavorite || false);
-
+  const { translations } = useLanguage();
+  const navigate = useNavigate();
   useEffect(() => {
     setIsFavorite(product.isFavorite);
   }, [product.isFavorite]);
@@ -20,10 +23,14 @@ const ProductCard = ({ product, onToggleFavorite }) => {
     onToggleFavorite?.(product.id, newValue);
   };
 
+  const goToProductPage = () => {
+    navigate("/product");
+  };
+
   return (
-    <div className="product-card">
+    <div onClick={() => goToProductPage()} className="product-card">
       <div className="product-image-wrapper">
-        <img src={product.image} alt={product.name} />
+        <img src={product.defaultImageUrl} alt={product.name} />
 
         <button
           className={`favorite-btn ${isFavorite ? "active" : ""}`}
@@ -36,11 +43,35 @@ const ProductCard = ({ product, onToggleFavorite }) => {
       <div className="product-info">
         <h3 className="product-name">{product.name}</h3>
         <div className="product-rating">
-          <Star />
-          <span>4.8 (124)</span>
+          {!product.averageRating || !product.ratingCount ? (
+            <span>{translations.general.pages.home.no_ratings_yet}</span>
+          ) : (
+            <>
+              <Star />
+              {/* <span>4.8 (124)</span> */}
+              <span>
+                {product.averageRating} ({product.ratingCount})
+              </span>
+            </>
+          )}
         </div>
         <div>
-          <span className="product-price">${product.price}</span>
+          <span className="product-price-container">
+            {product.minPrice ? (
+              <>
+                <span className="text-small">
+                  {translations.general.pages.home.price_start_from}{" "}
+                </span>
+                <span className="product-price" dir="ltr">
+                  ${product.minPrice}
+                </span>
+              </>
+            ) : (
+              <span className="product-price">
+                {translations.general.pages.home.soming_soon}
+              </span>
+            )}
+          </span>
           <button>
             <ShoppingCart />
           </button>

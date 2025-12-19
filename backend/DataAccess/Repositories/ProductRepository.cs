@@ -50,18 +50,50 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
 //    p.id
 //OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
                 
+//                string query = @"select count(*) as total from products;
+//SELECT
+//    p.id,
+//    p.name_ar,
+//    p.name_en,
+//    p.default_image_url,
+//    MIN(sp.price) AS min_price,
+//    CASE 
+//        WHEN cw.product_id IS NULL THEN 0 
+//        ELSE 1 
+//    END AS is_favorite
+//FROM products p
+//LEFT JOIN ProductItems pi
+//    ON pi.product_id = p.id
+//LEFT JOIN SellerProducts sp
+//    ON sp.product_item_id = pi.id
+//LEFT JOIN CustomerWishlist cw
+//    ON cw.product_id = p.id
+//    AND cw.customer_id = @customerId
+//GROUP BY
+//    p.id,
+//    p.name_ar,
+//    p.name_en,
+//    p.default_image_url,
+//    cw.product_id
+//ORDER BY
+//    p.id
+//OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
+
                 string query = @"select count(*) as total from products;
+
 SELECT
     p.id,
     p.name_ar,
     p.name_en,
     p.default_image_url,
     MIN(sp.price) AS min_price,
-    CASE 
-        WHEN cw.product_id IS NULL THEN 0 
-        ELSE 1 
-    END AS is_favorite
-FROM products p
+    CAST(
+    CASE WHEN cw.product_id IS NULL THEN 0 ELSE 1 END
+    AS BIT
+	) AS is_favorite,
+    AVG(pr.rating * 1.0) AS  average_rating, 
+    COUNT(pr.rating) AS rating_count    
+FROM Products p
 LEFT JOIN ProductItems pi
     ON pi.product_id = p.id
 LEFT JOIN SellerProducts sp
@@ -69,6 +101,8 @@ LEFT JOIN SellerProducts sp
 LEFT JOIN CustomerWishlist cw
     ON cw.product_id = p.id
     AND cw.customer_id = @customerId
+LEFT JOIN ProductRatings pr
+    ON pr.product_id = p.id
 GROUP BY
     p.id,
     p.name_ar,
@@ -117,7 +151,9 @@ OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
                                     reader.GetString(reader.GetOrdinal("name_en")),
                                     reader.GetString(reader.GetOrdinal("name_ar")),
                                     reader.IsDBNull(reader.GetOrdinal("min_price")) ? null : reader.GetDecimal(reader.GetOrdinal("min_price")),
-                                    false
+                                    reader.GetBoolean(reader.GetOrdinal("is_favorite")),
+                                    reader.IsDBNull(reader.GetOrdinal("average_rating")) ? null : reader.GetDouble(reader.GetOrdinal("average_rating")),
+                                    reader.GetInt32(reader.GetOrdinal("rating_count"))
                                 ));
                             }
                             if (products.Count() < 1)
