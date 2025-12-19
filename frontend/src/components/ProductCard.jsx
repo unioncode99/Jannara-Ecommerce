@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({ product, onToggleFavorite }) => {
   const [isFavorite, setIsFavorite] = useState(product.isFavorite || false);
-  const { translations } = useLanguage();
+  const { translations, language } = useLanguage();
   const navigate = useNavigate();
   useEffect(() => {
     setIsFavorite(product.isFavorite);
@@ -41,7 +41,9 @@ const ProductCard = ({ product, onToggleFavorite }) => {
       </div>
 
       <div className="product-info">
-        <h3 className="product-name">{product.name}</h3>
+        <h3 className="product-name">
+          {language == "en" ? product.nameEn : product.nameAr}
+        </h3>
         <div className="product-rating">
           {!product.averageRating || !product.ratingCount ? (
             <span>{translations.general.pages.home.no_ratings_yet}</span>
