@@ -10,5 +10,6 @@
         public string? SortBy { get; set; }
         // allowed values:
         // price_asc | price_desc | newest | oldest
+        public bool? IsFavoritesOnly { get; set; } = false;
     }
 }

@@ -115,6 +115,80 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
 //    p.id
 //OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
 
+//                string query = @"select count(*) as total from products p WHERE
+//    (@CategoryId IS NULL OR p.category_id = @CategoryId)
+//and
+//(
+//    @SearchTerm IS NULL
+//    OR @SearchTerm = ''
+//    OR p.name_en LIKE '%' + @SearchTerm + '%'
+//    OR p.name_ar LIKE '%' + @SearchTerm + '%'
+//    OR p.description_en LIKE '%' + @SearchTerm + '%'
+//    OR p.description_ar LIKE '%' + @SearchTerm + '%'
+//);
+
+//SELECT
+//    p.id,
+//    p.name_ar,
+//    p.name_en,
+//    p.default_image_url,
+//    p.created_at,
+//    MIN(sp.price) AS min_price,
+//    CAST(
+//    CASE WHEN cw.product_id IS NULL THEN 0 ELSE 1 END
+//    AS BIT
+//	) AS is_favorite,
+//    AVG(pr.rating * 1.0) AS  average_rating, 
+//    COUNT(pr.rating) AS rating_count    
+//FROM Products p
+//LEFT JOIN ProductItems pi
+//    ON pi.product_id = p.id
+//LEFT JOIN SellerProducts sp
+//    ON sp.product_item_id = pi.id
+//LEFT JOIN CustomerWishlist cw
+//    ON cw.product_id = p.id
+//    AND cw.customer_id = @customerId
+//LEFT JOIN ProductRatings pr
+//    ON pr.product_id = p.id
+//WHERE
+//    (@CategoryId IS NULL OR p.category_id = @CategoryId)
+//and
+//(
+//    @SearchTerm IS NULL
+//    OR @SearchTerm = ''
+//    OR p.name_en LIKE '%' + @SearchTerm + '%'
+//    OR p.name_ar LIKE '%' + @SearchTerm + '%'
+//    OR p.description_en LIKE '%' + @SearchTerm + '%'
+//    OR p.description_ar LIKE '%' + @SearchTerm + '%'
+//)
+
+//GROUP BY
+//    p.id,
+//    p.name_ar,
+//    p.name_en,
+//    p.default_image_url,
+//    p.created_at,
+//    cw.product_id
+//ORDER BY
+//    CASE 
+//        WHEN @SortBy = 'price_asc' AND MIN(sp.price) IS NULL THEN 1
+//        ELSE 0
+//    END,
+//    CASE 
+//        WHEN @SortBy = 'price_asc' THEN MIN(sp.price)
+//    END ASC,
+//    CASE 
+//        WHEN @SortBy = 'price_desc' AND MIN(sp.price) IS NULL THEN 1
+//        ELSE 0
+//    END,
+//    CASE 
+//        WHEN @SortBy = 'price_desc' THEN MIN(sp.price)
+//    END DESC,
+//    CASE WHEN @SortBy = 'newest' THEN p.id END DESC,
+//    CASE WHEN @SortBy = 'oldest' THEN p.id END ASC,
+//    p.id
+//OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
+
                 string query = @"select count(*) as total from products p WHERE
     (@CategoryId IS NULL OR p.category_id = @CategoryId)
 and
@@ -145,9 +219,7 @@ LEFT JOIN ProductItems pi
     ON pi.product_id = p.id
 LEFT JOIN SellerProducts sp
     ON sp.product_item_id = pi.id
-LEFT JOIN CustomerWishlist cw
-    ON cw.product_id = p.id
-    AND cw.customer_id = @customerId
+{WISHLIST_JOIN}
 LEFT JOIN ProductRatings pr
     ON pr.product_id = p.id
 WHERE
@@ -188,6 +260,14 @@ ORDER BY
     CASE WHEN @SortBy = 'oldest' THEN p.id END ASC,
     p.id
 OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
+
+                string wishlistJoin = filter.IsFavoritesOnly == true
+        ? "INNER JOIN CustomerWishlist cw ON cw.product_id = p.id AND cw.customer_id = @customerId"
+        : "LEFT JOIN CustomerWishlist cw ON cw.product_id = p.id AND cw.customer_id = @customerId";
+
+
+                query = query.Replace("{WISHLIST_JOIN}", wishlistJoin);
+
 
                 using (var command = new SqlCommand(query, connection))
                 {
