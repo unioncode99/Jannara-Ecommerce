@@ -20,6 +20,7 @@ namespace Jannara_Ecommerce.Controllers
             _productService = productService;
         }
 
+        [HttpGet]
         public async Task<ActionResult<PagedResponseDTO<ProductResponseDTO>>> GetAll([FromQuery] FilterProductDTO filter)
         {
             if (filter.PageNumber <= 0 || filter.PageSize <= 0)
@@ -33,5 +34,17 @@ namespace Jannara_Ecommerce.Controllers
             }
             return StatusCode(result.ErrorCode, result.Message);
         }
+
+        [HttpGet("{publicId}", Name = "GetProductByPublicId")]
+        public async Task<ActionResult<ProductDetailDTO>> GetProductByPublicId([FromRoute] Guid publicId)
+        {
+            var result = await _productService.FindAsync(publicId);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+    
     }
 }

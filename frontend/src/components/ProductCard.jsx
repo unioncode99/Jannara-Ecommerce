@@ -24,7 +24,7 @@ const ProductCard = ({
   };
 
   const goToProductPage = () => {
-    navigate("/product");
+    navigate(`product/${product.publicId}`);
   };
 
   return (

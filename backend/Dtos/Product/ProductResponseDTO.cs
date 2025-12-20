@@ -2,9 +2,10 @@
 {
     public class ProductResponseDTO
     {
-        public ProductResponseDTO(int id, string defaultImageUrl, string nameEn, string nameAr, decimal? minPrice, bool? isFavorite, double? averageRating, int? ratingCount)
+        public ProductResponseDTO(int id, Guid publicId, string defaultImageUrl, string nameEn, string nameAr, decimal? minPrice, bool? isFavorite, double? averageRating, int? ratingCount)
         {
             Id = id;
+            PublicId = publicId;
             DefaultImageUrl = defaultImageUrl;
             NameEn = nameEn;
             NameAr = nameAr;
@@ -15,6 +16,7 @@
         }
 
         public int Id { get; set; }
+        public Guid PublicId { get; set; }
         public string DefaultImageUrl { get; set; }
         public string NameEn { get; set; }
         public string NameAr { get; set; }
