@@ -147,6 +147,9 @@
       "price_start_from": "يبدأ من",
       "soming_soon": "قريباً",
       "no_ratings_yet": "لا توجد تقييمات حتى الآن"
+    },
+    "favorites": {
+      "favorites_title": "المفضلة"
     }
   },
   "sidebar": {
