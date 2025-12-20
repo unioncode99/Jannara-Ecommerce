@@ -18,6 +18,8 @@ import DashboardLayout from "./components/MainLayout";
 import MainLayout from "./components/MainLayout";
 import Home from "./pages/Home";
 import ProductPage from "./pages/ProductPage";
+import WishListPage from "./pages/FavoritesPage";
+import FavoritesPage from "./pages/FavoritesPage";
 
 function App() {
   const { language } = useLanguage();
@@ -34,6 +36,7 @@ function App() {
             <Route path="/seller-dashboard" element={<SellerDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/product" element={<ProductPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<LoginPage />} />

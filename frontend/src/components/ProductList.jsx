@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import "./ProductList.css";
-import { read } from "../api/apiWrapper";
+import { create, read, remove } from "../api/apiWrapper";
 import SpinnerLoader from "./ui/SpinnerLoader";
-import { AnimatePresence, motion } from "framer-motion";
 import Pagination from "./ui/Pagination";
 
 const ProductList = ({
@@ -70,21 +69,23 @@ const ProductList = ({
 
   const handleToggleFavorite = async (productId, isFavorite) => {
     console.log("Favorite changed:", productId, isFavorite);
-    // 1 Optimistic UI update
     setProducts((prev) =>
       prev.map((p) => (p.id === productId ? { ...p, isFavorite } : p))
     );
     try {
-      // 2️ Call API
-      // if (isFavorite) {
-      //   await addToFavorites(productId);
-      // } else {
-      //   await removeFromFavorites(productId);
-      // }
+      if (isFavorite) {
+        await create("customer-wish-list", {
+          customerId: 5,
+          productId: productId,
+        });
+      } else {
+        await remove("customer-wish-list", {
+          customerId: 5,
+          productId: productId,
+        });
+      }
     } catch (error) {
       console.error("Favorite error:", error);
-
-      // 3️ Rollback if API fails
       setProducts((prev) =>
         prev.map((p) =>
           p.id === productId ? { ...p, isFavorite: !isFavorite } : p
@@ -98,7 +99,7 @@ const ProductList = ({
       <div>
         <Pagination
           currentPage={currentPage}
-          totalItems={500}
+          totalItems={totalProducts}
           onPageChange={handlePageChange}
           pageSize={pageSize}
         />
@@ -109,32 +110,19 @@ const ProductList = ({
         </div>
       ) : (
         <div className="product-grid">
-          {/* {products?.map((product) => (
+          {products?.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
               onToggleFavorite={handleToggleFavorite}
             />
-          ))} */}
-          <AnimatePresence>
-            {products.map((product) => (
-              <motion.div
-                key={product.id}
-                initial={{ y: 50, opacity: 0 }} // start below
-                animate={{ y: 0, opacity: 1 }} // move to final position
-                exit={{ y: 50, opacity: 0 }} // when removed
-                transition={{ duration: 0.8, ease: "easeOut" }} // smooth animation
-              >
-                <ProductCard product={product} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          ))}
         </div>
       )}
       <div>
         <Pagination
           currentPage={currentPage}
-          totalItems={500}
+          totalItems={totalProducts}
           onPageChange={handlePageChange}
           pageSize={pageSize}
         />
