@@ -5,7 +5,17 @@ import arGeneral from "../locales/ar/general.json";
 export const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguage] = useState("en");
+  const [language, setLanguage] = useState(() => {
+    return localStorage.getItem("jannara-language") || "en";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("jannara-language", language);
+    document.documentElement.setAttribute(
+      "dir",
+      language === "ar" ? "rtl" : "ltr"
+    );
+  }, [language]);
 
   const translations =
     language === "en" ? { general: enGeneral } : { general: arGeneral };
@@ -13,13 +23,6 @@ export const LanguageProvider = ({ children }) => {
   const toggleLanguage = () => {
     setLanguage((prev) => (prev === "en" ? "ar" : "en"));
   };
-
-  useEffect(() => {
-    document.documentElement.setAttribute(
-      "dir",
-      language === "ar" ? "rtl" : "ltr"
-    );
-  }, [language]);
 
   return (
     <LanguageContext.Provider
