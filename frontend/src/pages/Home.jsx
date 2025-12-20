@@ -22,7 +22,8 @@ const Home = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // Items per page
-  const customerId = -1;
+  // for test
+  const customerId = 5;
 
   const handleSearchInputChange = (e) => {
     console.log("search -> ", e.target.value);
@@ -61,6 +62,7 @@ const Home = () => {
         if (customerId) {
           queryParams.append("customerId", customerId);
         }
+        // queryParams.append("isFavoritesOnly", false);
         // Final URL
         const url = `products?${queryParams.toString()}`;
         const data = await read(url);
@@ -110,12 +112,12 @@ const Home = () => {
     try {
       if (isFavorite) {
         await create("customer-wish-list", {
-          customerId: 5,
+          customerId: 5, // for test
           productId: productId,
         });
       } else {
         await remove("customer-wish-list", {
-          customerId: 5,
+          customerId: 5, // for test
           productId: productId,
         });
       }
@@ -174,6 +176,7 @@ const Home = () => {
             pageSize={pageSize}
             onPageChange={handlePageChange}
             onToggleFavorite={handleToggleFavorite}
+            favoriteActionType="toggleFavorite"
           />
           <div>
             <Pagination

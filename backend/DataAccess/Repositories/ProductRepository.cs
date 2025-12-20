@@ -189,17 +189,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
 //    p.id
 //OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
 
-                string query = @"select count(*) as total from products p WHERE
-    (@CategoryId IS NULL OR p.category_id = @CategoryId)
-and
-(
-    @SearchTerm IS NULL
-    OR @SearchTerm = ''
-    OR p.name_en LIKE '%' + @SearchTerm + '%'
-    OR p.name_ar LIKE '%' + @SearchTerm + '%'
-    OR p.description_en LIKE '%' + @SearchTerm + '%'
-    OR p.description_ar LIKE '%' + @SearchTerm + '%'
-);
+                string query = @"
 
 SELECT
     p.id,
@@ -208,10 +198,7 @@ SELECT
     p.default_image_url,
     p.created_at,
     MIN(sp.price) AS min_price,
-    CAST(
-    CASE WHEN cw.product_id IS NULL THEN 0 ELSE 1 END
-    AS BIT
-	) AS is_favorite,
+    CAST(CASE WHEN MAX(cw.product_id) IS NULL THEN 0 ELSE 1 END AS BIT) AS is_favorite,
     AVG(pr.rating * 1.0) AS  average_rating, 
     COUNT(pr.rating) AS rating_count    
 FROM Products p
@@ -239,8 +226,7 @@ GROUP BY
     p.name_ar,
     p.name_en,
     p.default_image_url,
-    p.created_at,
-    cw.product_id
+    p.created_at
 ORDER BY
     CASE 
         WHEN @SortBy = 'price_asc' AND MIN(sp.price) IS NULL THEN 1
@@ -265,8 +251,29 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
         ? "INNER JOIN CustomerWishlist cw ON cw.product_id = p.id AND cw.customer_id = @customerId"
         : "LEFT JOIN CustomerWishlist cw ON cw.product_id = p.id AND cw.customer_id = @customerId";
 
+                string countQuery = filter.IsFavoritesOnly == true
+    ? @"SELECT COUNT(DISTINCT p.id) as total
+        FROM Products p
+        INNER JOIN CustomerWishlist cw ON cw.product_id = p.id AND cw.customer_id = @customerId
+        WHERE (@CategoryId IS NULL OR p.category_id = @CategoryId)
+        AND (@SearchTerm IS NULL OR @SearchTerm = ''
+            OR p.name_en LIKE '%' + @SearchTerm + '%'
+            OR p.name_ar LIKE '%' + @SearchTerm + '%'
+            OR p.description_en LIKE '%' + @SearchTerm + '%'
+            OR p.description_ar LIKE '%' + @SearchTerm + '%');"
+    : @"SELECT COUNT(*) as total
+        FROM products p
+        WHERE (@CategoryId IS NULL OR p.category_id = @CategoryId)
+        AND (@SearchTerm IS NULL OR @SearchTerm = ''
+            OR p.name_en LIKE '%' + @SearchTerm + '%'
+            OR p.name_ar LIKE '%' + @SearchTerm + '%'
+            OR p.description_en LIKE '%' + @SearchTerm + '%'
+            OR p.description_ar LIKE '%' + @SearchTerm + '%');";
+
 
                 query = query.Replace("{WISHLIST_JOIN}", wishlistJoin);
+
+                query = countQuery + query;
 
 
                 using (var command = new SqlCommand(query, connection))
@@ -288,7 +295,15 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
                             {
                                 total = reader.GetInt32(reader.GetOrdinal("total"));
                             }
-                            await reader.NextResultAsync();
+                            //await reader.NextResultAsync();
+                            if (!await reader.NextResultAsync())
+                            {
+                                return new Result<PagedResponseDTO<ProductResponseDTO>>(false, "products_not_found", null, 404);
+                            }
+                            if (!reader.HasRows)
+                            {
+                                return new Result<PagedResponseDTO<ProductResponseDTO>>(false, "products_not_found", null, 404);
+                            }
                             var products = new List<ProductResponseDTO>();
                             while (await reader.ReadAsync())
                             {

@@ -153,6 +153,9 @@
       "price_start_from": "Start From",
       "soming_soon": "Coming soon",
       "no_ratings_yet": "No ratings yet"
+    },
+    "favorites": {
+      "favorites_title": "Favorites"
     }
   },
   "sidebar": {

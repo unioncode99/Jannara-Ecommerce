@@ -9,7 +9,12 @@ import Pagination from "./ui/Pagination";
 //   CustomerId = -1,
 //   sortingTerm,
 // }) => {
-const ProductList = ({ products, isLoading, onToggleFavorite }) => {
+const ProductList = ({
+  products,
+  isLoading,
+  onToggleFavorite,
+  favoriteActionType,
+}) => {
   // Calculate the total number of pages
 
   return (
@@ -25,6 +30,7 @@ const ProductList = ({ products, isLoading, onToggleFavorite }) => {
               key={product.id}
               product={product}
               onToggleFavorite={onToggleFavorite}
+              actionType={favoriteActionType}
             />
           ))}
         </div>

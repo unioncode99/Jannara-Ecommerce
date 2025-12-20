@@ -1,26 +1,26 @@
 import { useEffect, useState } from "react";
 import "./ProductCard.css";
-import { Heart, ShoppingCart, Star } from "lucide-react";
+import { Heart, ShoppingCart, Star, Trash2 } from "lucide-react";
 import { useLanguage } from "../hooks/useLanguage";
 import { useNavigate } from "react-router-dom";
 
-const ProductCard = ({ product, onToggleFavorite }) => {
+const ProductCard = ({
+  product,
+  onToggleFavorite,
+  actionType = "toggleFavorite",
+}) => {
   const [isFavorite, setIsFavorite] = useState(product.isFavorite || false);
   const { translations, language } = useLanguage();
   const navigate = useNavigate();
-  useEffect(() => {
-    setIsFavorite(product.isFavorite);
-  }, [product.isFavorite]);
-
-  const handleFavorite = (e) => {
+  const handleAction = (e) => {
     e.stopPropagation();
-    const newValue = !isFavorite;
-    setIsFavorite(newValue);
-    // if (onToggleFavorite) {
-    //   onToggleFavorite(product.id, newValue);
-    // }
-    // Call the function only if it exists
-    onToggleFavorite?.(product.id, newValue);
+    if (actionType === "toggleFavorite") {
+      const newValue = !isFavorite;
+      setIsFavorite(newValue);
+      onToggleFavorite?.(product.id, newValue);
+    } else if (actionType === "delete") {
+      onToggleFavorite?.(product.id);
+    }
   };
 
   const goToProductPage = () => {
@@ -34,9 +34,13 @@ const ProductCard = ({ product, onToggleFavorite }) => {
 
         <button
           className={`favorite-btn ${isFavorite ? "active" : ""}`}
-          onClick={handleFavorite}
+          onClick={handleAction}
         >
-          <Heart fill={isFavorite ? "red" : "none"} />
+          {actionType == "toggleFavorite" ? (
+            <Heart fill={isFavorite ? "red" : "none"} />
+          ) : (
+            <Trash2 color="red" />
+          )}
         </button>
       </div>
 
