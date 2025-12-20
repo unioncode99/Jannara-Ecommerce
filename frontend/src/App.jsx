@@ -35,7 +35,7 @@ function App() {
             <Route path="/customer-dashboard" element={<CustomerDashboard />} />
             <Route path="/seller-dashboard" element={<SellerDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/product" element={<ProductPage />} />
+            <Route path="/product/:publicId" element={<ProductPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />

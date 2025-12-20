@@ -4,9 +4,10 @@ namespace Jannara_Ecommerce.DTOs.Product
 {
     public class ProductDTO
     {
-        public ProductDTO(int id, int brandId, string defaultImageUrl, string nameEn, string nameAr, string? descriptionEn, string? descriptionAr, DateTime createdAt, DateTime updatedAt)
+        public ProductDTO(int id, Guid publicId, int brandId, string defaultImageUrl, string nameEn, string nameAr, string? descriptionEn, string? descriptionAr, DateTime createdAt, DateTime updatedAt)
         {
             Id = id;
+            PublicId = publicId;
             BrandId = brandId;
             DefaultImageUrl = defaultImageUrl;
             NameEn = nameEn;
@@ -18,6 +19,7 @@ namespace Jannara_Ecommerce.DTOs.Product
         }
 
         public int Id { get; set; }
+        public Guid PublicId { get; set; }
         public int BrandId { get; set; }
         public string DefaultImageUrl { get; set; }
         public string NameEn {  get; set; }

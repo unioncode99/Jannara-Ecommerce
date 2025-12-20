@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using System.Data;
 using System.Diagnostics.Metrics;
+using System.Text.Json;
 
 namespace Jannara_Ecommerce.DataAccess.Repositories
 {
@@ -193,6 +194,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
 
 SELECT
     p.id,
+    p.public_id,
     p.name_ar,
     p.name_en,
     p.default_image_url,
@@ -223,6 +225,7 @@ and
 
 GROUP BY
     p.id,
+    p.public_id,
     p.name_ar,
     p.name_en,
     p.default_image_url,
@@ -321,6 +324,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
                                 products.Add(new ProductResponseDTO
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
+                                    reader.GetGuid(reader.GetOrdinal("public_id")),
                                     reader.GetString(reader.GetOrdinal("default_image_url")),
                                     reader.GetString(reader.GetOrdinal("name_en")),
                                     reader.GetString(reader.GetOrdinal("name_ar")),
@@ -347,5 +351,152 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
             }
         }
 
+        public async Task<Result<ProductDetailDTO>> GetByPublicIdAsync(Guid publicId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+DECLARE @json NVARCHAR(MAX);
+
+SELECT @json = (
+    SELECT
+        p.id AS ProductId,
+        p.public_id AS PublicId,
+        p.brand_id AS BrandId,
+        p.default_image_url AS DefaultImageUrl,
+        p.name_en AS NameEn,
+        p.name_ar AS NameAr,
+        p.description_en AS DescriptionEn,
+        p.description_ar AS DescriptionAr,
+        p.created_at AS CreatedAt,
+        p.updated_at AS UpdatedAt,
+        (
+            SELECT
+                v.id AS VariationId,
+                v.name_en AS NameEn,
+                v.name_ar AS NameAr,
+                v.created_at AS CreatedAt,
+                v.updated_at AS UpdatedAt,
+                (
+                    SELECT
+                        vo.id AS VariationOptionId,
+                        vo.value_en AS ValueEn,
+                        vo.value_ar AS ValueAr,
+                        vo.created_at AS CreatedAt,
+                        vo.updated_at AS UpdatedAt
+                    FROM VariationOptions vo
+                    WHERE vo.variation_id = v.id
+                    FOR JSON PATH
+                ) AS Options
+            FROM Variations v
+            WHERE v.product_id = p.id
+            FOR JSON PATH
+        ) AS Variations,
+        (
+            SELECT
+                pi.id AS ProductItemId,
+                pi.sku AS Sku,
+                pi.created_at AS CreatedAt,
+                pi.updated_at AS UpdatedAt,
+                (
+                    SELECT
+                        pivo.id AS Id,
+                        pivo.variation_option_id AS variationOptionId,
+                        pivo.created_at AS CreatedAt,
+                        pivo.updated_at AS UpdatedAt
+                    FROM ProductItemVariationOptions pivo
+                    WHERE pivo.product_item_id = pi.id
+                    FOR JSON PATH
+                ) AS ProductItemVariationOptions,
+                (
+                    SELECT
+                        pii.id AS ProductItemImageId,
+                        pii.image_url AS ImageUrl,
+                        pii.is_primary AS IsPrimary,
+                        pii.created_at AS CreatedAt,
+                        pii.updated_at AS UpdatedAt
+                    FROM ProductItemImages pii
+                    WHERE pii.product_item_id = pi.id
+                    FOR JSON PATH
+                ) AS ProductItemImages,
+                (
+                    SELECT
+                        sp.id AS SellerProductId,
+                        sp.seller_id AS SellerId,
+                        sp.price AS Price,
+                        sp.stock_quantity AS StockQuantity,
+                        sp.is_active AS IsActive,
+                        sp.created_at AS CreatedAt,
+                        sp.updated_at AS UpdatedAt,
+                        (
+                            SELECT
+                                spi.id AS SellerProductImageId,
+                                spi.image_url AS ImageUrl,
+                                spi.created_at AS CreatedAt,
+                                spi.updated_at AS UpdatedAt
+                            FROM SellerProductImages spi
+                            WHERE spi.seller_product_id = sp.id
+                            FOR JSON PATH
+                        ) AS SellerProductImages
+                    FROM SellerProducts sp
+                    WHERE sp.product_item_id = pi.id
+                    FOR JSON PATH
+                ) AS SellerProducts
+            FROM ProductItems pi
+            WHERE pi.product_id = p.id
+            FOR JSON PATH
+        ) AS ProductItems
+    FROM Products p
+    WHERE p.public_id = @publicId
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+);
+
+SELECT @json AS FullJson;
+";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@publicId", publicId);
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+                        {
+                            if (!await reader.ReadAsync())
+                                return new Result<ProductDetailDTO>(false, "Product not found", null, 404);
+
+                            // Read the entire JSON as a string first
+                            string json = await reader.GetFieldValueAsync<string>(0);
+
+                            // Log the length to check if it's being truncated
+                            _logger.LogInformation($"JSON length: {json.Length}");
+                            Console.WriteLine($"JSON length: {json.Length}");
+
+                            // Also check first and last 100 characters
+                            if (json.Length > 200)
+                            {
+                                _logger.LogInformation($"First 100 chars: {json.Substring(0, 100)}");
+                                _logger.LogInformation($"Last 100 chars: {json.Substring(json.Length - 100)}");
+                            }
+
+                            var product = JsonSerializer.Deserialize<ProductDetailDTO>(
+                                json,
+                                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                            );
+
+                            Console.WriteLine(JsonSerializer.Serialize(product, new JsonSerializerOptions { WriteIndented = true }));
+
+                            return new Result<ProductDetailDTO>(true, "Product fetched successfully", product, 200);
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error fetching product by id {publicId}: {ex.Message}");
+                        return new Result<ProductDetailDTO>(false, "Error fetching product", null, 500);
+                    }
+                }
+            }
+        }
     }
 }
