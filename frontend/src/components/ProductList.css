@@ -5,9 +5,3 @@
   gap: 1rem;
   transition: all 0.3s ease-in-out;
 }
-
-.loader-container {
-  display: grid;
-  place-items: center;
-  height: 60vh;
-}
