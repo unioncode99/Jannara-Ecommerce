@@ -212,21 +212,25 @@ INSERT INTO [dbo].[ProductItemVariationOptions]
     [product_item_id]
 )
 VALUES
--- Black 128 GB
+-- Black 128 GB -- Small
 (1, 1), -- Black
 (4, 1), -- 128 GB
+(7, 1), -- Small
 
--- Black 256 GB
-(1, 2),
-(5, 2),
+-- Black 256 GB -- Small
+(1, 2),	-- Black
+(5, 2), -- 256 GB
+(7, 2), -- Small
 
--- White 128 GB
-(2, 3),
-(4, 3),
+-- White 128 GB -- Small
+(2, 3), -- White
+(4, 3), -- 128 GB
+(7, 3), -- Small
 
--- Blue 256 GB
-(3, 4),
-(5, 4);
+-- Blue 256 GB -- Small
+(3, 4), -- Blue
+(5, 4),  -- 256 GB
+(5, 4); -- -- Small
 GO
 
 -- ProductItemImages
@@ -270,6 +274,14 @@ VALUES
 (1, 'mohammedalfatih606@gmail.com', 'mohammed_store', 1, 'hashed_password_123'),
 (2, 'mohammedalfatih620@gmail.com',  'muzamil_store',  1, 'hashed_password_456');
 GO
+
+-- User Rolse
+INSERT INTO UserRoles(user_id, role_id)
+VALUES
+(1, 4),
+(2, 4);
+GO
+
 -- Sellers
 INSERT INTO [dbo].[Sellers]
 (
