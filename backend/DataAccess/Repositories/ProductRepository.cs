@@ -27,118 +27,18 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-//                string query = @"select count(*) as total from products;
-//select * from products
-//order by id
-//OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY ";
 
-//                string query = @"select count(*) as total from products;
-//SELECT
-//    p.id,
-//    p.name_ar,
-//	p.name_en,
-//	p.default_image_url,
-//    MIN(sp.price) AS min_price
-//FROM products p
-//LEFT JOIN ProductItems pi
-//    ON pi.product_id = p.id
-//LEFT JOIN SellerProducts sp
-//    ON sp.product_item_id = pi.id
-//GROUP BY
-//    p.id,
-//    p.name_ar,
-//	p.name_en,
-//	p.default_image_url
-//ORDER BY
-//    p.id
-//OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
-                
-//                string query = @"select count(*) as total from products;
-//SELECT
-//    p.id,
-//    p.name_ar,
-//    p.name_en,
-//    p.default_image_url,
-//    MIN(sp.price) AS min_price,
-//    CASE 
-//        WHEN cw.product_id IS NULL THEN 0 
-//        ELSE 1 
-//    END AS is_favorite
-//FROM products p
-//LEFT JOIN ProductItems pi
-//    ON pi.product_id = p.id
-//LEFT JOIN SellerProducts sp
-//    ON sp.product_item_id = pi.id
-//LEFT JOIN CustomerWishlist cw
-//    ON cw.product_id = p.id
-//    AND cw.customer_id = @customerId
-//GROUP BY
-//    p.id,
-//    p.name_ar,
-//    p.name_en,
-//    p.default_image_url,
-//    cw.product_id
-//ORDER BY
-//    p.id
-//OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
-
-//                string query = @"select count(*) as total from products;
+//                string query = @"
 
 //SELECT
 //    p.id,
-//    p.name_ar,
-//    p.name_en,
-//    p.default_image_url,
-//    MIN(sp.price) AS min_price,
-//    CAST(
-//    CASE WHEN cw.product_id IS NULL THEN 0 ELSE 1 END
-//    AS BIT
-//	) AS is_favorite,
-//    AVG(pr.rating * 1.0) AS  average_rating, 
-//    COUNT(pr.rating) AS rating_count    
-//FROM Products p
-//LEFT JOIN ProductItems pi
-//    ON pi.product_id = p.id
-//LEFT JOIN SellerProducts sp
-//    ON sp.product_item_id = pi.id
-//LEFT JOIN CustomerWishlist cw
-//    ON cw.product_id = p.id
-//    AND cw.customer_id = @customerId
-//LEFT JOIN ProductRatings pr
-//    ON pr.product_id = p.id
-//GROUP BY
-//    p.id,
-//    p.name_ar,
-//    p.name_en,
-//    p.default_image_url,
-//    cw.product_id
-//ORDER BY
-//    p.id
-//OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY;";
-
-//                string query = @"select count(*) as total from products p WHERE
-//    (@CategoryId IS NULL OR p.category_id = @CategoryId)
-//and
-//(
-//    @SearchTerm IS NULL
-//    OR @SearchTerm = ''
-//    OR p.name_en LIKE '%' + @SearchTerm + '%'
-//    OR p.name_ar LIKE '%' + @SearchTerm + '%'
-//    OR p.description_en LIKE '%' + @SearchTerm + '%'
-//    OR p.description_ar LIKE '%' + @SearchTerm + '%'
-//);
-
-//SELECT
-//    p.id,
+//    p.public_id,
 //    p.name_ar,
 //    p.name_en,
 //    p.default_image_url,
 //    p.created_at,
 //    MIN(sp.price) AS min_price,
-//    CAST(
-//    CASE WHEN cw.product_id IS NULL THEN 0 ELSE 1 END
-//    AS BIT
-//	) AS is_favorite,
+//    CAST(CASE WHEN MAX(cw.product_id) IS NULL THEN 0 ELSE 1 END AS BIT) AS is_favorite,
 //    AVG(pr.rating * 1.0) AS  average_rating, 
 //    COUNT(pr.rating) AS rating_count    
 //FROM Products p
@@ -146,9 +46,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
 //    ON pi.product_id = p.id
 //LEFT JOIN SellerProducts sp
 //    ON sp.product_item_id = pi.id
-//LEFT JOIN CustomerWishlist cw
-//    ON cw.product_id = p.id
-//    AND cw.customer_id = @customerId
+//{WISHLIST_JOIN}
 //LEFT JOIN ProductRatings pr
 //    ON pr.product_id = p.id
 //WHERE
@@ -165,11 +63,11 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
 
 //GROUP BY
 //    p.id,
+//    p.public_id,
 //    p.name_ar,
 //    p.name_en,
 //    p.default_image_url,
-//    p.created_at,
-//    cw.product_id
+//    p.created_at
 //ORDER BY
 //    CASE 
 //        WHEN @SortBy = 'price_asc' AND MIN(sp.price) IS NULL THEN 1
@@ -201,16 +99,22 @@ SELECT
     p.created_at,
     MIN(sp.price) AS min_price,
     CAST(CASE WHEN MAX(cw.product_id) IS NULL THEN 0 ELSE 1 END AS BIT) AS is_favorite,
-    AVG(pr.rating * 1.0) AS  average_rating, 
-    COUNT(pr.rating) AS rating_count    
+    ISNULL(MAX(pr.average_rating), 0) AS average_rating,
+    ISNULL(MAX(pr.rating_count), 0) AS rating_count
 FROM Products p
 LEFT JOIN ProductItems pi
     ON pi.product_id = p.id
 LEFT JOIN SellerProducts sp
     ON sp.product_item_id = pi.id
 {WISHLIST_JOIN}
-LEFT JOIN ProductRatings pr
-    ON pr.product_id = p.id
+LEFT JOIN (
+    SELECT
+        product_id,
+        COUNT(*) AS rating_count,
+        AVG(rating * 1.0) AS average_rating
+    FROM ProductRatings
+    GROUP BY product_id
+) pr ON pr.product_id = p.id
 WHERE
     (@CategoryId IS NULL OR p.category_id = @CategoryId)
 and
@@ -330,7 +234,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
                                     reader.GetString(reader.GetOrdinal("name_ar")),
                                     reader.IsDBNull(reader.GetOrdinal("min_price")) ? null : reader.GetDecimal(reader.GetOrdinal("min_price")),
                                     reader.GetBoolean(reader.GetOrdinal("is_favorite")),
-                                    reader.IsDBNull(reader.GetOrdinal("average_rating")) ? null : reader.GetDouble(reader.GetOrdinal("average_rating")),
+                                    reader.IsDBNull(reader.GetOrdinal("average_rating")) ? null : reader.GetDecimal(reader.GetOrdinal("average_rating")),
                                     reader.GetInt32(reader.GetOrdinal("rating_count"))
                                 ));
                             }
@@ -351,7 +255,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
             }
         }
 
-        public async Task<Result<ProductDetailDTO>> GetByPublicIdAsync(Guid publicId)
+        public async Task<Result<ProductDetailDTO>> GetByPublicIdAsync(Guid publicId, int? customerId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -362,14 +266,60 @@ SELECT @json = (
     SELECT
         p.id AS ProductId,
         p.public_id AS PublicId,
-        p.brand_id AS BrandId,
         p.default_image_url AS DefaultImageUrl,
         p.name_en AS NameEn,
         p.name_ar AS NameAr,
         p.description_en AS DescriptionEn,
         p.description_ar AS DescriptionAr,
+
         p.created_at AS CreatedAt,
         p.updated_at AS UpdatedAt,
+
+		-- MinPrice
+(
+    SELECT MIN(sp.price)
+    FROM ProductItems pi2
+    JOIN SellerProducts sp ON sp.product_item_id = pi2.id
+    WHERE pi2.product_id = p.id
+      AND sp.is_active = 1
+) AS MinPrice,
+
+		-- IsFavorite
+				        CASE WHEN EXISTS (
+            SELECT 1 
+            FROM CustomerWishlist cw 
+            WHERE cw.product_id = p.id AND cw.customer_id = @customerId
+        ) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END AS IsFavorite,
+        -- AverageRating
+        (SELECT AVG(CAST(r.rating AS FLOAT)) 
+         FROM ProductRatings r 
+         WHERE r.product_id = p.id) AS AverageRating,
+
+		 -- RatingCount
+         
+        (SELECT COUNT(*) 
+         FROM ProductRatings r 
+         WHERE r.product_id = p.id) AS RatingCount,
+
+		 -- Brand
+JSON_QUERY(
+(
+    SELECT 
+        b.id AS BrandId,
+        b.name_en AS NameEn,
+        b.name_ar AS NameAr,
+        b.logo_url AS LogoUrl,
+        b.website_url AS WebsiteUrl,
+        b.description_en AS DescriptionEn,
+        b.description_ar AS DescriptionAr,
+        b.created_at AS CreatedAt,
+        b.updated_at AS UpdatedAt
+    FROM Brands b
+    WHERE b.id = p.brand_id
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+)
+) AS Brand,
+		 
         (
             SELECT
                 v.id AS VariationId,
@@ -457,6 +407,7 @@ SELECT @json AS FullJson;
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@publicId", publicId);
+                    command.Parameters.AddWithValue("@customerId", customerId ?? (object)DBNull.Value);
                     try
                     {
                         await connection.OpenAsync();
@@ -492,7 +443,7 @@ SELECT @json AS FullJson;
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"Error fetching product by id {publicId}: {ex.Message}");
+                        _logger.LogError($"Error fetching product by id {publicId}: {ex}");
                         return new Result<ProductDetailDTO>(false, "Error fetching product", null, 500);
                     }
                 }

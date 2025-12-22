@@ -12,7 +12,7 @@ const FavoritesPage = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // Items per page
-  const customerId = 5; // for test
+  const customerId = 1; // for test
   const { translations } = useLanguage();
 
   const getFavoritesProducts = async () => {

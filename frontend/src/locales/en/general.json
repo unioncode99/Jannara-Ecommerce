@@ -156,6 +156,28 @@
     },
     "favorites": {
       "favorites_title": "Favorites"
+    },
+    "product_details": {
+      "back_to_products": "Back To Products",
+      "start_from": "Start From",
+      "coming_soon": "Coming soon",
+      "available_sellers": "Available Sellers",
+      "no_seller_selected": "No seller selected",
+      "seller": "Seller",
+      "price": "Price",
+      "stock": "Stock",
+      "selected_seller": "Selected Seller",
+      "quantity": "Quantity",
+      "available": "available",
+      "out_of_stock": "Out of stock",
+      "add_to_cart": "Add To Cart",
+      "free_shipping": "Free Shipping",
+      "secure_payment": "Secure Payment",
+      "thirty_day_returns": "30-Day Returns",
+      "no_options_available": "No options available",
+      "no_sellers_available": "No sellers available",
+      "reviews": "reviews",
+      "product_not_found": "Product not found"
     }
   },
   "sidebar": {

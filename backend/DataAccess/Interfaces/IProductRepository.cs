@@ -9,6 +9,6 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
     public interface IProductRepository
     {
         public Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(FilterProductDTO filter);
-        public Task<Result<ProductDetailDTO>> GetByPublicIdAsync(Guid publicId);
+        public Task<Result<ProductDetailDTO>> GetByPublicIdAsync(Guid publicId, int? customerId);
     }
 }

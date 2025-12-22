@@ -3,6 +3,7 @@ import "./ProductCard.css";
 import { Heart, ShoppingCart, Star, Trash2 } from "lucide-react";
 import { useLanguage } from "../hooks/useLanguage";
 import { useNavigate } from "react-router-dom";
+import { formatMoney } from "../utils/utils";
 
 const ProductCard = ({
   product,
@@ -24,7 +25,7 @@ const ProductCard = ({
   };
 
   const goToProductPage = () => {
-    navigate(`product/${product.publicId}`);
+    navigate(`/product/${product?.publicId}`);
   };
 
   return (
@@ -69,7 +70,7 @@ const ProductCard = ({
                   {translations.general.pages.home.price_start_from}{" "}
                 </span>
                 <span className="product-price" dir="ltr">
-                  ${product.minPrice}
+                  {formatMoney(product.minPrice)}
                 </span>
               </>
             ) : (

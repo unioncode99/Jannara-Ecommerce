@@ -9,6 +9,6 @@ namespace Jannara_Ecommerce.Business.Interfaces
     public interface IProductService
     {
         public Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(FilterProductDTO filter);
-        public Task<Result<ProductDetailDTO>> FindAsync(Guid publicId);
+        public Task<Result<ProductDetailDTO>> FindAsync(Guid publicId, int? customerId);
     }
 }
