@@ -15,9 +15,9 @@ namespace Jannara_Ecommerce.Business.Services
             _productRepository = productRepository;
         }
 
-        public async Task<Result<ProductDetailDTO>> FindAsync(Guid publicId)
+        public async Task<Result<ProductDetailDTO>> FindAsync(Guid publicId, int? customerId)
         {
-            return await _productRepository.GetByPublicIdAsync(publicId);
+            return await _productRepository.GetByPublicIdAsync(publicId, customerId);
         }
 
         public async Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(FilterProductDTO filter)

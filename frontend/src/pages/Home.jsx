@@ -23,7 +23,7 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // Items per page
   // for test
-  const customerId = 5;
+  const customerId = 1;
 
   const handleSearchInputChange = (e) => {
     console.log("search -> ", e.target.value);
@@ -112,12 +112,12 @@ const Home = () => {
     try {
       if (isFavorite) {
         await create("customer-wish-list", {
-          customerId: 5, // for test
+          customerId: customerId, // for test
           productId: productId,
         });
       } else {
         await remove("customer-wish-list", {
-          customerId: 5, // for test
+          customerId: customerId, // for test
           productId: productId,
         });
       }

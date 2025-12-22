@@ -150,6 +150,28 @@
     },
     "favorites": {
       "favorites_title": "المفضلة"
+    },
+    "product_details": {
+      "back_to_products": "العودة إلى المنتجات",
+      "start_from": "السعر يبدأ من",
+      "coming_soon": "قريباً",
+      "available_sellers": "البائعون المتاحون",
+      "no_seller_selected": "لم يتم اختيار بائع",
+      "seller": "البائع",
+      "price": "السعر",
+      "stock": "المخزون",
+      "selected_seller": "البائع المختار",
+      "quantity": "الكمية",
+      "available": "متوفر",
+      "out_of_stock": "نفدت الكمية",
+      "add_to_cart": "أضف إلى السلة",
+      "free_shipping": "شحن مجاني",
+      "secure_payment": "دفع آمن",
+      "thirty_day_returns": "استرجاع خلال 30 يوم",
+      "no_options_available": "لا توجد خيارات متاحة",
+      "no_sellers_available": "لا يوجد بائعون حالياً",
+      "reviews": "تقييمات",
+      "product_not_found": "المنتج غير موجود"
     }
   },
   "sidebar": {

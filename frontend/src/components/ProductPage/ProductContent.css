@@ -1,0 +1,11 @@
+.product-content > * {
+  margin-bottom: 0.5rem;
+}
+
+.product-description {
+  text-align: start;
+}
+
+.product-sku {
+  text-align: center;
+}
