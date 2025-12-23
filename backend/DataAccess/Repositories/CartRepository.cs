@@ -73,8 +73,45 @@ SELECT @json = (
                 ci.price_at_add_time AS PriceAtAddTime,
                 ci.quantity * ci.price_at_add_time AS SubTotal,
                 ci.created_at AS CreatedAt,
-                ci.updated_at AS UpdatedAt
+                ci.updated_at AS UpdatedAt,
+
+                -- Product
+                p.name_en AS ProductNameEn,
+                p.name_ar AS ProductNameAr,
+                p.default_image_url AS DefaultProductImage,
+
+                -- Category
+                cat.name_en AS CategoryNameEn,
+                cat.name_ar AS CategoryNameAr,
+
+                -- Brand
+                b.name_en AS BrandNameEn,
+                b.name_ar AS BrandNameAr,
+
+                -- SKU
+                pi.sku AS Sku,
+
+                -- Stock
+                sp.stock_quantity AS AvailableStock,
+
+                -- Selected options
+                (
+                    SELECT
+                        vo.value_en AS ValueEn,
+                        vo.value_ar AS ValueAr
+                    FROM ProductItemVariationOptions pivo
+                    INNER JOIN VariationOptions vo 
+                        ON vo.id = pivo.variation_option_id
+                    WHERE pivo.product_item_id = pi.id
+                    FOR JSON PATH
+                ) AS SelectedOptions
+
             FROM CartItems ci
+            INNER JOIN SellerProducts sp ON sp.id = ci.seller_product_id
+            INNER JOIN ProductItems pi ON pi.id = sp.product_item_id
+            INNER JOIN Products p ON p.id = pi.product_id
+            INNER JOIN ProductCategories cat ON cat.id = p.category_id
+            INNER JOIN Brands b ON b.id = p.brand_id
             WHERE ci.cart_id = c.id
             FOR JSON PATH
         ) AS CartItems
