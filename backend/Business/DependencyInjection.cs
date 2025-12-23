@@ -28,6 +28,8 @@ namespace Jannara_Ecommerce.Business
             services.AddScoped<IProductCategoryService, ProductCategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICustomerWishlistService, CustomerWishlistService>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped<ICartItemService, CartItemService>();
             return services;
         }
     }
