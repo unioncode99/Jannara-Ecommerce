@@ -11,7 +11,6 @@ namespace Jannara_Ecommerce.DTOs.Cart
         public DateTime UpdatedAt { get; set; }
         public int ItemsCount { get; set; }  
         public decimal TotalPrice { get; set; }
-
         public IEnumerable<CartItemResponseDTO> CartItems { get; set; }
     }
 }
