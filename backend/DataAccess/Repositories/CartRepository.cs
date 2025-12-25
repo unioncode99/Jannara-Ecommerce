@@ -63,8 +63,30 @@ SELECT @json = (
         c.is_active AS IsActive,
         c.created_at AS CreatedAt,
         c.updated_at AS UpdatedAt,
-        (SELECT COUNT(*) FROM CartItems ci WHERE ci.cart_id = c.id) AS ItemsCount,
-        (SELECT SUM(ci.quantity * ci.price_at_add_time) FROM CartItems ci WHERE ci.cart_id = c.id) AS TotalPrice,
+        -- Totals
+        totals.ItemsCount,
+        totals.LineCount,
+        totals.SubTotal,
+
+        -- Tax (15%)
+        CAST(totals.SubTotal * 0.15 AS DECIMAL(10,2)) AS TaxPrice,
+
+        -- Shipping rule
+        CASE
+            WHEN totals.SubTotal >= 100 THEN 0
+            ELSE 10.00
+        END AS ShippingPrice,
+
+        -- Grand Total
+        CAST(
+            totals.SubTotal
+            + (totals.SubTotal * 0.15)
+            + CASE
+                WHEN totals.SubTotal >= 100 THEN 0
+                ELSE 10.00
+              END
+        AS DECIMAL(10,2)) AS GrandTotal,
+
         (
             SELECT
                 ci.id AS Id,
@@ -116,6 +138,14 @@ SELECT @json = (
             FOR JSON PATH
         ) AS CartItems
     FROM Carts c
+ OUTER APPLY (
+        SELECT
+            COUNT(*) AS LineCount,
+            SUM(ci.quantity) AS ItemsCount,
+            SUM(ci.quantity * ci.price_at_add_time) AS SubTotal
+        FROM CartItems ci
+        WHERE ci.cart_id = c.id
+    ) totals
     WHERE c.customer_id = @customerId AND c.is_active = 1
     FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
 );

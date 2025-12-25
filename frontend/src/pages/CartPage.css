@@ -1,0 +1,111 @@
+.cart-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.cart-header-container > div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cart-header-container .clear-cart-btn {
+  color: var(--grey-500);
+  border: none;
+  background-color: transparent;
+  padding: 0.25rem 0.5rem;
+  font-size: var(--small-text);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.cart-header-container .clear-cart-btn:hover {
+  color: rgb(239 68 68);
+}
+
+.cart-header-container > div > span {
+  background-color: var(--grey-200);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  font-size: var(--small-text);
+}
+
+.empty-cart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+.shopping-bag-svg {
+  width: 4rem;
+  height: 4rem;
+  color: var(--grey-500);
+}
+.empty-cart p {
+  margin-bottom: 1rem;
+  color: var(--grey-500);
+}
+.start-shopping-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.cart-content-container {
+  display: flex;
+  gap: 1rem;
+}
+@media (max-width: 1024px) {
+  .cart-content-container {
+    flex-direction: column;
+  }
+}
+
+.cart-items-container {
+  flex: 1;
+}
+.order-summary-container {
+  border-radius: var(--border-radius);
+  background-color: var(--card-background);
+  box-shadow: var(--shadow-1);
+  padding: 1rem;
+  align-self: flex-start;
+  min-width: 340px;
+  position: sticky;
+  top: 130px;
+}
+
+@media (max-width: 1024px) {
+  .order-summary-container {
+    position: relative;
+    width: 100%;
+    top: 0;
+  }
+}
+
+.order-summary-container > div > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--grey-500);
+  margin-top: 0.5rem;
+}
+
+.order-summary-container > div > div:last-child {
+  border-top: 1px solid var(--grey-300);
+  font-weight: bold;
+  color: var(--text-color);
+}
+.checkout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.free {
+  color: hsl(142, 76%, 36%);
+}
