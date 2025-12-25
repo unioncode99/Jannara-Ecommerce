@@ -1,0 +1,25 @@
+.review-order-container {
+  width: 90vw;
+  max-width: var(--fixed-width);
+  margin: 0 auto;
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-2);
+  padding: 2rem 1rem;
+  margin: 4rem auto;
+}
+.review-order-container h2 {
+  text-align: center;
+}
+
+.review-order-container p {
+  text-align: start;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.review-order-container p span {
+  color: var(--grey-500);
+}
