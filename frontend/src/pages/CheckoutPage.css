@@ -51,10 +51,10 @@
   justify-content: flex-end;
 }
 
-.radio-input-form input[type="radio"] {
+.radio-inputs-container input[type="radio"] {
   display: none;
 }
-.radio-input-form label {
+.radio-inputs-container label {
   display: block;
   margin-bottom: 0.5rem;
   padding: 1rem 2rem;
@@ -64,7 +64,7 @@
   cursor: pointer;
   transition: var(--transition);
 }
-.radio-input-form input:checked + label {
+.radio-inputs-container input:checked + label {
   background-color: var(--primary-100);
   border-color: var(--primary-500);
 }
