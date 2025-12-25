@@ -66,35 +66,34 @@ const PaymentForm = ({ onNext, onBack, checkoutData }) => {
   // );
 
   return (
-    <form
-      className="form payment-from radio-input-form"
-      onSubmit={handleSubmit}
-    >
+    <form className="form payment-from" onSubmit={handleSubmit}>
       <h2>Payment Method</h2>
-      <input
-        type="radio"
-        id="creditCard"
-        name="paymentMethod"
-        value="Credit Card"
-        checked={method === "Credit Card"}
-        onChange={() => setMethod("Credit Card")}
-      />
-      <label htmlFor="creditCard">
-        <span>Credit Card</span>
-        <small>Visa, Mastercard</small>
-      </label>
-      <input
-        type="radio"
-        id="cod"
-        name="paymentMethod"
-        value="COD"
-        checked={method === "COD"}
-        onChange={() => setMethod("COD")}
-      />
-      <label htmlFor="cod">
-        <span>COD</span>
-        <small>Pay on delivery</small>
-      </label>
+      <div className="radio-inputs-container">
+        <input
+          type="radio"
+          id="creditCard"
+          name="paymentMethod"
+          value="Credit Card"
+          checked={method === "Credit Card"}
+          onChange={() => setMethod("Credit Card")}
+        />
+        <label htmlFor="creditCard">
+          <span>Credit Card</span>
+          <small>Visa, Mastercard</small>
+        </label>
+        <input
+          type="radio"
+          id="cod"
+          name="paymentMethod"
+          value="COD"
+          checked={method === "COD"}
+          onChange={() => setMethod("COD")}
+        />
+        <label htmlFor="cod">
+          <span>COD</span>
+          <small>Pay on delivery</small>
+        </label>
+      </div>
 
       <div className="checkout-navigate-buttons-container">
         <Button className="btn btn-primary" onClick={onBack}>
