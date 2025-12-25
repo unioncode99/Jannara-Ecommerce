@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./ProductCard.css";
 import { Heart, ShoppingCart, Star, Trash2 } from "lucide-react";
 import { useLanguage } from "../hooks/useLanguage";
@@ -57,7 +57,8 @@ const ProductCard = ({
               <Star />
               {/* <span>4.8 (124)</span> */}
               <span>
-                {product.averageRating} ({product.ratingCount})
+                {Number(product.averageRating).toFixed(1)} (
+                {product.ratingCount})
               </span>
             </>
           )}

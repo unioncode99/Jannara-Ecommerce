@@ -10,7 +10,11 @@ namespace Jannara_Ecommerce.DTOs.Cart
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public int ItemsCount { get; set; }  
-        public decimal TotalPrice { get; set; }
+        public int LineCount { get; set; }  
+        public decimal SubTotal { get; set; }
+        public decimal TaxPrice { get; set; }
+        public decimal ShippingPrice { get; set; }
+        public decimal GrandTotal { get; set; }
         public IEnumerable<CartItemResponseDTO> CartItems { get; set; }
     }
 }

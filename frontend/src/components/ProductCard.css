@@ -91,6 +91,7 @@
 .product-price {
   color: var(--primary-500);
   font-weight: 700;
+  font-size: 1.125rem;
 }
 
 .product-info > div:last-child > button {

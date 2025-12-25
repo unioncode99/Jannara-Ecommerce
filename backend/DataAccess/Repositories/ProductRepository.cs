@@ -419,23 +419,10 @@ SELECT @json AS FullJson;
                             // Read the entire JSON as a string first
                             string json = await reader.GetFieldValueAsync<string>(0);
 
-                            // Log the length to check if it's being truncated
-                            _logger.LogInformation($"JSON length: {json.Length}");
-                            Console.WriteLine($"JSON length: {json.Length}");
-
-                            // Also check first and last 100 characters
-                            if (json.Length > 200)
-                            {
-                                _logger.LogInformation($"First 100 chars: {json.Substring(0, 100)}");
-                                _logger.LogInformation($"Last 100 chars: {json.Substring(json.Length - 100)}");
-                            }
-
                             var product = JsonSerializer.Deserialize<ProductDetailDTO>(
                                 json,
                                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
                             );
-
-                            Console.WriteLine(JsonSerializer.Serialize(product, new JsonSerializerOptions { WriteIndented = true }));
 
                             return new Result<ProductDetailDTO>(true, "Product fetched successfully", product, 200);
 

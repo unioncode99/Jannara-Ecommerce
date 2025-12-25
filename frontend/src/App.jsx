@@ -20,6 +20,8 @@ import Home from "./pages/Home";
 import ProductPage from "./pages/ProductPage";
 import WishListPage from "./pages/FavoritesPage";
 import FavoritesPage from "./pages/FavoritesPage";
+import CartPage from "./pages/CartPage";
+import { CartProvider } from "./contexts/CartContext";
 
 function App() {
   const { language } = useLanguage();
@@ -35,8 +37,23 @@ function App() {
             <Route path="/customer-dashboard" element={<CustomerDashboard />} />
             <Route path="/seller-dashboard" element={<SellerDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/product/:publicId" element={<ProductPage />} />
+            <Route
+              path="/product/:publicId"
+              element={
+                <CartProvider customerId={1}>
+                  <ProductPage />
+                </CartProvider>
+              }
+            />
             <Route path="/favorites" element={<FavoritesPage />} />
+            <Route
+              path="/cart"
+              element={
+                <CartProvider customerId={1}>
+                  <CartPage />
+                </CartProvider>
+              }
+            />
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<LoginPage />} />

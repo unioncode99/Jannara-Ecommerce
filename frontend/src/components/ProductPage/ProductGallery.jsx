@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import "./ProductGallery.css";
 
-function ProductGallery({ selectedItem, selectedSellerId }) {
+function ProductGallery({ selectedItem, selectedSellerProductId }) {
   // State for main image
   const [mainImage, setMainImage] = useState("");
 
@@ -19,7 +19,7 @@ function ProductGallery({ selectedItem, selectedSellerId }) {
     // Seller product images
     const sellerImages =
       selectedItem.sellerProducts
-        ?.find((s) => s.sellerProductId === selectedSellerId)
+        ?.find((s) => s.sellerProductId === selectedSellerProductId)
         ?.sellerProductImages.map((img) => ({
           id: `seller-${img.sellerProductImageId}`,
           imageUrl: img.imageUrl,
@@ -32,7 +32,7 @@ function ProductGallery({ selectedItem, selectedSellerId }) {
     );
 
     return [...uniqueImagesMap.values()];
-  }, [selectedItem, selectedSellerId]);
+  }, [selectedItem, selectedSellerProductId]);
 
   // Set main image to default when selectedItem changes
   useEffect(() => {

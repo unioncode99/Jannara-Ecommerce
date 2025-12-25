@@ -15,7 +15,7 @@ export default function ProductRating({ averageRating, ratingCount }) {
           />
         ))}
       </div>
-      <span>{averageRating}</span>
+      <span>{Number(averageRating).toFixed(1)}</span>
       <span>
         ({ratingCount} {reviews})
       </span>

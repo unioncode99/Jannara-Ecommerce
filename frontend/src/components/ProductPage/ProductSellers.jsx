@@ -4,8 +4,8 @@ import { formatMoney } from "../../utils/utils";
 
 function ProductSellers({
   selectedItem,
-  selectedSellerId,
-  setSelectedSellerId,
+  selectedSellerProductId,
+  setSelectedSellerProductId,
 }) {
   const { translations } = useLanguage();
   const {
@@ -19,7 +19,7 @@ function ProductSellers({
   } = translations.general.pages.product_details;
 
   const selectedSeller = selectedItem?.sellerProducts?.find(
-    (s) => s.sellerProductId === selectedSellerId
+    (s) => s.sellerProductId === selectedSellerProductId
   );
 
   return (
@@ -31,12 +31,15 @@ function ProductSellers({
           <h3>{available_sellers}</h3>
           <div className="seller-list-container">
             {selectedItem.sellerProducts.map((seller) => {
-              const isSelected = seller.sellerProductId === selectedSellerId;
+              const isSelected =
+                seller.sellerProductId === selectedSellerProductId;
               return (
                 <p
                   key={seller.sellerProductId}
                   className={`seller-list-item ${isSelected ? "active" : ""}`}
-                  onClick={() => setSelectedSellerId(seller.sellerProductId)}
+                  onClick={() =>
+                    setSelectedSellerProductId(seller.sellerProductId)
+                  }
                 >
                   {seller_text} #{seller.sellerId} | {price_text}:{" "}
                   {formatMoney(seller.price)} | {stock_text}:{" "}

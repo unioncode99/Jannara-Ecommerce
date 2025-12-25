@@ -170,14 +170,33 @@
       "quantity": "Quantity",
       "available": "available",
       "out_of_stock": "Out of stock",
-      "add_to_cart": "Add To Cart",
+      "add_to_cart": "Add to Cart",
+      "added_to_cart": "Added to Cart",
       "free_shipping": "Free Shipping",
       "secure_payment": "Secure Payment",
       "thirty_day_returns": "30-Day Returns",
       "no_options_available": "No options available",
       "no_sellers_available": "No sellers available",
       "reviews": "reviews",
-      "product_not_found": "Product not found"
+      "product_not_found": "Product not found",
+      "seller_not_selected": "Please select a seller to continue",
+      "already_in_cart": "This item is already in your cart",
+      "quantity_not_selected": "Please select a quantity to continue"
+    },
+    "cart": {
+      "title": "Shopping Cart",
+      "items": "items",
+      "clear_cart": "Clear Cart",
+      "order_summary": "Order Summary",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "tax": "Tax",
+      "total": "Total",
+      "free": "Free",
+      "checkout": "Proceed to Checkout",
+      "empty_title": "Your cart is empty",
+      "empty_desc": "Looks like you haven't added anything to your cart yet.",
+      "start_shopping": "Start Shopping"
     }
   },
   "sidebar": {

@@ -16,7 +16,7 @@ const ProductPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedSellerId, setSelectedSellerId] = useState(null);
+  const [selectedSellerProductId, setSelectedSellerProductId] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const customerId = 1;
 
@@ -25,8 +25,12 @@ const ProductPage = () => {
 
   // Find selected seller
   const selectedSeller = selectedItem?.sellerProducts?.find(
-    (s) => s.sellerProductId === selectedSellerId
+    (s) => s.sellerProductId === selectedSellerProductId
   );
+
+  useEffect(() => {
+    setQuantity(0);
+  }, [selectedSellerProductId]);
 
   // Fetch product details
   const fetchProduct = async () => {
@@ -61,6 +65,7 @@ const ProductPage = () => {
       }
     });
 
+    setQuantity(0);
     setSelectedOptions(defaults);
   }, [product]);
 
@@ -72,16 +77,17 @@ const ProductPage = () => {
         Object.values(selectedOptions).includes(opt.variationOptionId)
       )
     );
+    setSelectedSellerProductId(0);
     setSelectedItem(item || null);
+    setQuantity(0);
   }, [selectedOptions, product]);
 
   // Handle option selection
   const handleSelect = (variationId, optionId) => {
     setSelectedOptions((prev) => ({ ...prev, [variationId]: optionId }));
+    setQuantity(0);
+    setSelectedSellerProductId(0);
   };
-
-  // Add to cart
-  const addToCart = () => console.log("addToCart");
 
   // Toggle favorite
   const handleToggleFavorite = async () => {
@@ -124,19 +130,18 @@ const ProductPage = () => {
         <div className="product-page-container">
           <ProductGallery
             selectedItem={selectedItem}
-            selectedSellerId={selectedSellerId}
+            selectedSellerProductId={selectedSellerProductId}
           />
           <ProductContent
             product={product}
             selectedItem={selectedItem}
-            selectedSellerId={selectedSellerId}
-            setSelectedSellerId={setSelectedSellerId}
+            selectedSellerProductId={selectedSellerProductId}
+            setSelectedSellerProductId={setSelectedSellerProductId}
             selectedOptions={selectedOptions}
             handleSelect={handleSelect}
             quantity={quantity}
             setQuantity={setQuantity}
             selectedSeller={selectedSeller}
-            addToCart={addToCart}
             handleToggleFavorite={handleToggleFavorite}
             minPrice={minPrice}
           />

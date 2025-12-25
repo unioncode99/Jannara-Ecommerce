@@ -165,13 +165,32 @@
       "available": "متوفر",
       "out_of_stock": "نفدت الكمية",
       "add_to_cart": "أضف إلى السلة",
+      "added_to_cart": "تمت الإضافة إلى السلة",
       "free_shipping": "شحن مجاني",
       "secure_payment": "دفع آمن",
       "thirty_day_returns": "استرجاع خلال 30 يوم",
       "no_options_available": "لا توجد خيارات متاحة",
       "no_sellers_available": "لا يوجد بائعون حالياً",
       "reviews": "تقييمات",
-      "product_not_found": "المنتج غير موجود"
+      "product_not_found": "المنتج غير موجود",
+      "seller_not_selected": "يرجى اختيار البائع للمتابعة",
+      "already_in_cart": "هذا المنتج موجود بالفعل في سلة التسوق",
+      "quantity_not_selected": "يرجى اختيار الكمية للمتابعة"
+    },
+    "cart": {
+      "title": "سلة التسوق",
+      "items": "عناصر",
+      "clear_cart": "تفريغ السلة",
+      "order_summary": "ملخص الطلب",
+      "subtotal": "المجموع الفرعي",
+      "shipping": "الشحن",
+      "tax": "الضريبة",
+      "total": "الإجمالي",
+      "free": "مجاني",
+      "checkout": "المتابعة للدفع",
+      "empty_title": "سلة التسوق فارغة",
+      "empty_desc": "يبدو أنك لم تضف أي عناصر إلى سلة التسوق بعد.",
+      "start_shopping": "ابدأ التسوق"
     }
   },
   "sidebar": {
