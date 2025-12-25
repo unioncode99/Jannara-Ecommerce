@@ -1,5 +1,5 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.Address;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
@@ -15,7 +15,7 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
             _connectionString = options.Value.DefaultConnection;
             _logger = logger;
         }
-        public async Task<Result<AddressDTO>> AddNewAsync(AddressDTO newAddress)
+        public async Task<Result<AddressDTO>> AddNewAsync(AddressCreateDTO addressCreateDTO)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -23,25 +23,34 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
 INSERT INTO Addresses
 (
 person_id,
-street,
+state,
 city,
-state
+locality,
+street,
+building_number,
+phone
 )
 OUTPUT inserted.*
 VALUES
 (
 @person_id,
-@street,
+@state,
 @city,
-@state
+@locality,
+@street,
+@building_number,
+@phone
 );
 ";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@person_id", newAddress.PersonId);
-                    command.Parameters.AddWithValue("@street", newAddress.Street);
-                    command.Parameters.AddWithValue("@city", newAddress.City);
-                    command.Parameters.AddWithValue("@state", newAddress.State ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@person_id", addressCreateDTO.PersonId);
+                    command.Parameters.AddWithValue("@state", addressCreateDTO.State);
+                    command.Parameters.AddWithValue("@city", addressCreateDTO.City);
+                    command.Parameters.AddWithValue("@locality", addressCreateDTO.Locality);
+                    command.Parameters.AddWithValue("@street", addressCreateDTO.Street);
+                    command.Parameters.AddWithValue("@building_number", addressCreateDTO.BuildingNumber);
+                    command.Parameters.AddWithValue("@phone", addressCreateDTO.Phone ?? (object)DBNull.Value);
                     try
                     {
                         await connection.OpenAsync();
@@ -53,9 +62,12 @@ VALUES
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
                                     reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("street")),
+                                    reader.GetString(reader.GetOrdinal("state")),
                                     reader.GetString(reader.GetOrdinal("city")),
-                                    reader.IsDBNull(reader.GetOrdinal("state")) ? null : reader.GetString(reader.GetOrdinal("state")),
+                                    reader.GetString(reader.GetOrdinal("locality")),
+                                    reader.GetString(reader.GetOrdinal("street")),
+                                    reader.GetString(reader.GetOrdinal("building_number")),
+                                    reader.IsDBNull(reader.GetOrdinal("phone")) ? null : reader.GetString(reader.GetOrdinal("phone")),
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
@@ -84,8 +96,7 @@ VALUES
                     try
                     {
                         await connection.OpenAsync();
-                        object? result = await command.ExecuteScalarAsync();
-                        int rowsAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
                         if (rowsAffected > 0)
                         {
                             return new Result<bool>(true, "address_deleted_successfully", true);
@@ -121,9 +132,12 @@ VALUES
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
                                     reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("street")),
+                                    reader.GetString(reader.GetOrdinal("state")),
                                     reader.GetString(reader.GetOrdinal("city")),
-                                    reader.IsDBNull(reader.GetOrdinal("state")) ? null : reader.GetString(reader.GetOrdinal("state")),
+                                    reader.GetString(reader.GetOrdinal("locality")),
+                                    reader.GetString(reader.GetOrdinal("street")),
+                                    reader.GetString(reader.GetOrdinal("building_number")),
+                                    reader.IsDBNull(reader.GetOrdinal("phone")) ? null : reader.GetString(reader.GetOrdinal("phone")),
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 ));
@@ -163,9 +177,12 @@ VALUES
                                 (
                                     reader.GetInt32(reader.GetOrdinal("id")),
                                     reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("street")),
+                                    reader.GetString(reader.GetOrdinal("state")),
                                     reader.GetString(reader.GetOrdinal("city")),
-                                    reader.IsDBNull(reader.GetOrdinal("state")) ? null : reader.GetString(reader.GetOrdinal("state")),
+                                    reader.GetString(reader.GetOrdinal("locality")),
+                                    reader.GetString(reader.GetOrdinal("street")),
+                                    reader.GetString(reader.GetOrdinal("building_number")),
+                                    reader.IsDBNull(reader.GetOrdinal("phone")) ? null : reader.GetString(reader.GetOrdinal("phone")),
                                     reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     reader.GetDateTime(reader.GetOrdinal("updated_at"))
                                 );
@@ -183,24 +200,31 @@ VALUES
             }
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, AddressDTO updatedAddress)
+        public async Task<Result<bool>> UpdateAsync(int id, AddressUpdateDTO addressUpdateDTO)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE Addresses
 SET 
-    street = @street,
+    state = @state,
     city = @city,
-    state = @state
+    locality = @locality,
+    street = @street,
+    building_number = @building_number,
+    phone = @phone
 WHERE id = @id;
 select @@ROWCOUNT
 ";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@street", updatedAddress.Street);
-                    command.Parameters.AddWithValue("@city", updatedAddress.City);
-                    command.Parameters.AddWithValue("@state", updatedAddress.State ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@state", addressUpdateDTO.State);
+                    command.Parameters.AddWithValue("@city", addressUpdateDTO.City);
+                    command.Parameters.AddWithValue("@locality", addressUpdateDTO.Locality);
+                    command.Parameters.AddWithValue("@street", addressUpdateDTO.Street);
+                    command.Parameters.AddWithValue("@building_number", addressUpdateDTO.BuildingNumber);
+                    command.Parameters.AddWithValue("@phone", addressUpdateDTO.City ?? (object)DBNull.Value);
                     try
                     {
                         await connection.OpenAsync();

@@ -1,6 +1,6 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.Address;
 using Jannara_Ecommerce.Utilities;
 
 namespace Jannara_Ecommerce.Business.Services
@@ -13,9 +13,9 @@ namespace Jannara_Ecommerce.Business.Services
             _addressRepository = addressRepository;
         }
 
-        public async Task<Result<AddressDTO>> AddNewAsync(AddressDTO newAddress)
+        public async Task<Result<AddressDTO>> AddNewAsync(AddressCreateDTO addressCreateDTO)
         {
-            return await _addressRepository.AddNewAsync(newAddress);
+            return await _addressRepository.AddNewAsync(addressCreateDTO);
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)
@@ -28,9 +28,14 @@ namespace Jannara_Ecommerce.Business.Services
             return await _addressRepository.GetByIdAsync(id);
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, AddressDTO updatedAddress)
+        public async Task<Result<IEnumerable<AddressDTO>>> GetAllAsync(int personId)
         {
-            return await _addressRepository.UpdateAsync(id, updatedAddress);
+           return await _addressRepository.GetAllAsync(personId);
+        }
+
+        public async Task<Result<bool>> UpdateAsync(int id, AddressUpdateDTO addressUpdateDTO)
+        {
+            return await _addressRepository.UpdateAsync(id, addressUpdateDTO);
         }
     }
 }
