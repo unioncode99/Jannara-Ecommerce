@@ -1,0 +1,60 @@
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  /* margin: 20px 0; */
+  gap: 1rem;
+  margin: 2rem auto;
+  overflow-x: scroll;
+}
+
+.pagination button {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.pagination-button {
+  background-color: var(--card-background);
+  color: var(--text-color);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  margin: 0 0.3rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.pagination-button:hover {
+  /* background-color: #f0f0f0; */
+  background-color: var(--grey-100);
+}
+
+.pagination-button.active {
+  background-color: var(--primary-500);
+  color: var(--white);
+  transition: var(--transition);
+  transition: var(--transition);
+}
+.pagination-button.active:hover {
+  background-color: var(--primary-700);
+}
+
+.pagination-button:disabled {
+  background-color: var(--card-background);
+  background-color: var(--grey-300);
+  cursor: not-allowed;
+}
+
+.pagination-button:focus {
+  outline: none;
+}
+
+/* Phone */
+.pagination {
+  /* gap: 0.3rem; */
+}
+.pagination-button {
+  /* font-size: 0.5rem; */
+}

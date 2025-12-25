@@ -1,0 +1,35 @@
+.product-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.product-header > div:first-child p {
+  text-align: start;
+  line-height: 0.5;
+  color: var(--primary-500);
+}
+.product-header > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.product-header > div:last-child > button {
+  cursor: pointer;
+  border-color: transparent;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--border-radius);
+  color: inherit;
+}
+.product-header > div:last-child > button:hover {
+  background-color: var(--primary-200);
+}
+.fav-btn.active > svg {
+  fill: red;
+  color: red;
+}

@@ -165,14 +165,6 @@ namespace Jannara_Ecommerce.Business.Services
             if (!currentUserResult.IsSuccess)
                 return new Result<bool>(false, currentUserResult.Message, false, currentUserResult.ErrorCode);
 
-            if (!string.Equals(currentUserResult.Data.Email, updatedUser.Email, StringComparison.OrdinalIgnoreCase))
-            {
-                var existByEmailResult = await _repo.IsExistByEmail(updatedUser.Email);
-                if (!existByEmailResult.IsSuccess)
-                    return new Result<bool>(false, existByEmailResult.Message, false, existByEmailResult.ErrorCode);
-                if (existByEmailResult.Data)
-                    return new Result<bool>(false, "email_exists", false, 409);
-            }
             
             if (!string.Equals(currentUserResult.Data.Username, updatedUser.Username, StringComparison.OrdinalIgnoreCase))
             {

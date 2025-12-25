@@ -15,6 +15,7 @@
   display: flex;
   align-items: center;
   width: 100%;
+  overflow: hidden;
 }
 .form-input.error {
   border-color: var(--alert-color);

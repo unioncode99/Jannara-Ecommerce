@@ -200,6 +200,16 @@ input:-moz-autofill {
   -moz-text-fill-color: var(--input-text-color) !important;
 }
 
+/* Only hide scrollbars on elements with overflow */
+.scrollable::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollable {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
 /* forms */
 .form {
   width: 90vw;
@@ -208,8 +218,13 @@ input:-moz-autofill {
   background-color: var(--card-background);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-2);
-  padding: 2rem 2.5rem;
+  padding: 2rem 1rem;
   margin: 4rem auto;
+}
+@media (min-width: 480px) {
+  .form {
+    padding: 2rem 2.5rem;
+  }
 }
 
 small,

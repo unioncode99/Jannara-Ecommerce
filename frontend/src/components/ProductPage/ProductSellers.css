@@ -1,0 +1,18 @@
+.seller-list-container {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.seller-list-item {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  border: 2px solid var(--border-color);
+  padding: 1rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+.seller-list-item.active {
+  border: 2px solid var(--primary-500);
+}
+.select-seller {
+  text-align: start;
+}

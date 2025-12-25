@@ -1,0 +1,29 @@
+.product-content > * {
+  margin-bottom: 0.5rem;
+}
+
+.product-description {
+  text-align: start;
+}
+
+.product-sku {
+  text-align: center;
+}
+
+.add-to-cart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: bold;
+  font-size: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  box-shadow: var(--shadow-2);
+}
+.added {
+  background-color: #16a34a;
+}
+.added:hover {
+  background-color: #15803d;
+}

@@ -141,6 +141,56 @@
         "submit_button": "إعادة تعيين كلمة المرور",
         "back_to_login": "العودة لتسجيل الدخول"
       }
+    },
+    "home": {
+      "search_product_placeholder": "ابحث عن المنتجات...",
+      "price_start_from": "يبدأ من",
+      "soming_soon": "قريباً",
+      "no_ratings_yet": "لا توجد تقييمات حتى الآن"
+    },
+    "favorites": {
+      "favorites_title": "المفضلة"
+    },
+    "product_details": {
+      "back_to_products": "العودة إلى المنتجات",
+      "start_from": "السعر يبدأ من",
+      "coming_soon": "قريباً",
+      "available_sellers": "البائعون المتاحون",
+      "no_seller_selected": "لم يتم اختيار بائع",
+      "seller": "البائع",
+      "price": "السعر",
+      "stock": "المخزون",
+      "selected_seller": "البائع المختار",
+      "quantity": "الكمية",
+      "available": "متوفر",
+      "out_of_stock": "نفدت الكمية",
+      "add_to_cart": "أضف إلى السلة",
+      "added_to_cart": "تمت الإضافة إلى السلة",
+      "free_shipping": "شحن مجاني",
+      "secure_payment": "دفع آمن",
+      "thirty_day_returns": "استرجاع خلال 30 يوم",
+      "no_options_available": "لا توجد خيارات متاحة",
+      "no_sellers_available": "لا يوجد بائعون حالياً",
+      "reviews": "تقييمات",
+      "product_not_found": "المنتج غير موجود",
+      "seller_not_selected": "يرجى اختيار البائع للمتابعة",
+      "already_in_cart": "هذا المنتج موجود بالفعل في سلة التسوق",
+      "quantity_not_selected": "يرجى اختيار الكمية للمتابعة"
+    },
+    "cart": {
+      "title": "سلة التسوق",
+      "items": "عناصر",
+      "clear_cart": "تفريغ السلة",
+      "order_summary": "ملخص الطلب",
+      "subtotal": "المجموع الفرعي",
+      "shipping": "الشحن",
+      "tax": "الضريبة",
+      "total": "الإجمالي",
+      "free": "مجاني",
+      "checkout": "المتابعة للدفع",
+      "empty_title": "سلة التسوق فارغة",
+      "empty_desc": "يبدو أنك لم تضف أي عناصر إلى سلة التسوق بعد.",
+      "start_shopping": "ابدأ التسوق"
     }
   },
   "sidebar": {
