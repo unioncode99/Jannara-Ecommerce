@@ -33,6 +33,11 @@
   outline: none;
 }
 
+select:focus {
+  outline: none;
+  outline-color: var(--primary-500);
+}
+
 .form-input:focus-within {
   border-color: var(--border-color-focus);
 }

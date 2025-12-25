@@ -25,6 +25,11 @@ namespace Jannara_Ecommerce.Business
             services.AddScoped<IConfirmationTokenService, ConfirmationTokenService>();
             services.AddScoped<IEmailSenderService, EmailSenderService>();
             services.AddScoped<IConfirmationService, ConfirmationService>();
+            services.AddScoped<IProductCategoryService, ProductCategoryService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICustomerWishlistService, CustomerWishlistService>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped<ICartItemService, CartItemService>();
             return services;
         }
     }

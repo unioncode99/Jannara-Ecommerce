@@ -1,0 +1,13 @@
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.product-rating > div {
+  display: flex;
+  align-items: center;
+}
+.product-rating .active {
+  color: rgb(250 204 21);
+  fill: rgb(250 204 21);
+}

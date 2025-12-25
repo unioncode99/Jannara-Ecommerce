@@ -10,9 +10,7 @@ const NotFoundPage = () => {
       <h2>{translations.general.pages.Not_Found.title}</h2>
       <p>{translations.general.pages.Not_Found.subtitle}</p>
       {/* <Link to="/">{translations.general.pages.Not_Found.home_button}</Link> */}
-      <Link to="/dashboard">
-        {translations.general.pages.Not_Found.home_button}
-      </Link>
+      <Link to="/">{translations.general.pages.Not_Found.home_button}</Link>
     </div>
   );
 };

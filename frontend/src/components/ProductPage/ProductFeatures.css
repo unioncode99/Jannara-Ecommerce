@@ -1,0 +1,17 @@
+.our-features {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1124px) {
+  .our-features {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.our-features > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.our-features svg {
+  color: var(--primary-500);
+}
