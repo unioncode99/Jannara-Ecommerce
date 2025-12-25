@@ -1,0 +1,8 @@
+.payment-from > label {
+  display: flex;
+  flex-direction: column;
+  /* gap: 0.5rem; */
+}
+.payment-from > label > small {
+  color: var(--grey-500);
+}

@@ -22,6 +22,7 @@ import WishListPage from "./pages/FavoritesPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import CartPage from "./pages/CartPage";
 import { CartProvider } from "./contexts/CartContext";
+import CheckoutPage from "./pages/CheckoutPage";
 
 function App() {
   const { language } = useLanguage();
@@ -51,6 +52,14 @@ function App() {
               element={
                 <CartProvider customerId={1}>
                   <CartPage />
+                </CartProvider>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={
+                <CartProvider customerId={1}>
+                  <CheckoutPage />
                 </CartProvider>
               }
             />

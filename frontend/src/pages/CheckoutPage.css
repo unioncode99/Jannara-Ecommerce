@@ -1,0 +1,70 @@
+.steps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 90vw;
+  max-width: var(--fixed-width);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.step-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.active-step-container {
+  color: var(--primary-500);
+}
+
+.step-container > span {
+  font-weight: bold;
+}
+
+.step-container > span:first-child {
+  background-color: var(--grey-300);
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.active-step-container > span:first-child {
+  background-color: var(--primary-500);
+  color: var(--white);
+}
+
+.checkout-navigate-buttons-container {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.next-btn-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.radio-input-form input[type="radio"] {
+  display: none;
+}
+.radio-input-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  padding: 1rem 2rem;
+  width: 100%;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.radio-input-form input:checked + label {
+  background-color: var(--primary-100);
+  border-color: var(--primary-500);
+}
