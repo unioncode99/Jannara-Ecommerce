@@ -1,0 +1,10 @@
+.shipping-address-form .radio-inputs-container > label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.shipping-address-form .radio-inputs-container > label svg {
+  cursor: pointer;
+}

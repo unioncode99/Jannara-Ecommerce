@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
-import { create, read } from "../../api/apiWrapper";
-import NewAddressForm from "./NewAddressForm";
+import { create, read, update } from "../../api/apiWrapper";
+import AddUpdateAddressForm from "./AddUpdateAddressForm";
+import { SquarePen } from "lucide-react";
+import "./AddressForm.css";
+import { useLanguage } from "../../hooks/useLanguage";
+import { toast } from "../ui/Toast";
 
 const AddressForm = ({ onNext }) => {
   const [addresses, setAddresses] = useState([]);
+  const [states, setStates] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const { translations } = useLanguage();
   const [form, setForm] = useState({
     personId: 1, // for test
-    state: "",
+    stateId: states[0]?.id || undefined, // for test
     city: "",
     locality: "",
     street: "",
@@ -19,13 +25,17 @@ const AddressForm = ({ onNext }) => {
   });
   // const personId = 1; // for test
   const [personId, setPersonId] = useState(1);
+  const [isUpdateMode, setIsUpdateMode] = useState(false);
+  const [errors, setErrors] = useState({});
 
   async function fetchPersonAddress(personId) {
     try {
       const data = await read(`addresses?personId=${personId}`);
-      setAddresses(data?.data);
+      setAddresses(data?.data?.addresses);
+      setStates(data?.data?.states);
       console.log("data -> ", data);
       console.log("addresses -> ", addresses);
+      console.log("states -> ", states);
     } catch (err) {
       console.error("Failed to load addresses", err);
       // setError("Failed to load addresses", err);
@@ -48,16 +58,28 @@ const AddressForm = ({ onNext }) => {
     });
   };
 
-  const submitNewAddress = async () => {
-    const address = await create(`addresses`, form);
-    console.log("New address created:", address);
+  const handleAddUpdateAddress = async () => {
+    if (!validateFormData()) {
+      toast.show(translations.general.form.messages.general_error, "error");
+      return;
+    }
+
+    let address;
+    if (isUpdateMode) {
+      await update(`addresses/${selectedAddressId}`, form);
+      console.log("Address updated:", form);
+    } else {
+      address = await create(`addresses`, form);
+      console.log("New address created:", address);
+    }
     // setAddresses((prev) => [...prev, address]);
     await fetchPersonAddress(personId);
-    setSelectedAddressId(address.id);
+    setSelectedAddressId(address?.id);
     setShowForm(false);
+    setIsUpdateMode(false);
     setForm({
       personId: 1, // for test
-      state: "",
+      stateId: states[0]?.id || undefined,
       city: "",
       locality: "",
       street: "",
@@ -66,8 +88,57 @@ const AddressForm = ({ onNext }) => {
     });
   };
 
+  function handleEditAddress(address) {
+    setIsUpdateMode(true);
+    setForm(address);
+    setShowForm(true);
+  }
+
+  function handleAddAddress() {
+    setIsUpdateMode(false);
+    setShowForm(true);
+    setForm({
+      personId: 1, // for test
+      stateId: states[0]?.id || undefined, // for test
+      city: "",
+      locality: "",
+      street: "",
+      buildingNumber: "",
+      phone: "",
+    });
+  }
+
+  const validateFormData = () => {
+    let temp = {};
+    const msgs = translations.general.form.errors;
+
+    if (!form.stateId) {
+      temp.stateId = msgs.required;
+    }
+    if (!form.city.trim()) {
+      temp.city = msgs.required;
+    }
+    if (!form.locality.trim()) {
+      temp.locality = msgs.required;
+    }
+    if (!form.street.trim()) {
+      temp.street = msgs.required;
+    }
+    if (!form.buildingNumber.trim()) {
+      temp.buildingNumber = msgs.required;
+    }
+
+    if (!form.phone.trim() || form.phone.length < 10) {
+      temp.phone = msgs.invalid_phone;
+    }
+
+    setErrors(temp);
+
+    return Object.keys(temp).length === 0; // true = valid
+  };
+
   return (
-    <form className="form" onSubmit={handleSubmit}>
+    <form className="form shipping-address-form" onSubmit={handleSubmit}>
       <h2>Shipping Address</h2>
 
       <div className="radio-inputs-container">
@@ -82,23 +153,28 @@ const AddressForm = ({ onNext }) => {
               onChange={() => setSelectedAddressId(address.id)}
             />
             <label htmlFor={`address-${address.id}`}>
-              {address.street}, {address.city}, {address.state}
+              <span>
+                {address.street}, {address.city}, {address.state}
+              </span>{" "}
+              <SquarePen onClick={() => handleEditAddress(address)} />
             </label>
           </>
         ))}
       </div>
 
-      {addresses.length < 5 && (
-        <Button className="btn btn-primary" onClick={() => setShowForm(true)}>
+      {(addresses?.length < 5 || !addresses) && (
+        <Button className="btn btn-primary" onClick={handleAddAddress}>
           Add New Address
         </Button>
       )}
 
       {showForm && (
-        <NewAddressForm
+        <AddUpdateAddressForm
+          states={states}
           form={form}
           setForm={setForm}
-          submitNewAddress={submitNewAddress}
+          errors={errors}
+          onSubmit={handleAddUpdateAddress}
         />
       )}
       <div className="next-btn-container">
