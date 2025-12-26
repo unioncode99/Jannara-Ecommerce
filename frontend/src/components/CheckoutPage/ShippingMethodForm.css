@@ -1,0 +1,114 @@
+.shipping-method-form .cart-summary {
+  margin-bottom: 1rem;
+}
+
+.shipping-method-form .cart-summary p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.shipping-method-form .cart-summary span {
+  color: var(--grey-500);
+}
+
+/* deep seek */
+/* ShippingMethodForm.css */
+.cart-summary {
+  background-color: var(--grey-200);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+}
+
+.cart-summary p {
+  margin: 0.3rem 0;
+}
+
+.shipping-methods-container {
+  /* display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px; */
+}
+
+.method-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.method-name {
+  font-weight: bold;
+}
+
+.method-price {
+  font-weight: bold;
+  color: var(--primary-500);
+}
+
+.free {
+  color: hsl(142, 76%, 36%);
+}
+
+.method-details {
+  margin-left: 0.3rem;
+}
+
+.method-description {
+  text-align: start;
+  color: var(--grey-500);
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.method-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--grey-500);
+}
+
+.delivery-time {
+  color: var(--primary-500);
+}
+
+.free-shipping-note {
+  color: hsl(142, 76%, 36%);
+  font-style: italic;
+}
+
+.price-breakdown {
+  color: var(--grey-500);
+  font-size: 0.8rem;
+}
+
+.selected-summary {
+  background-color: var(--grey-200);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  text-align: start;
+}
+
+.selected-summary p {
+  text-align: start;
+}
+
+.summary-details {
+  color: var(--grey-500);
+}
+
+.total-cost {
+  /* font-weight: 700; */
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--primary-500);
+}
+
+.checkout-navigate-buttons-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}

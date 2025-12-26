@@ -1,3 +1,7 @@
+.checkout-wizard h2 {
+  margin-bottom: 1rem;
+}
+
 .steps-indicator {
   display: flex;
   align-items: center;

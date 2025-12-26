@@ -51,10 +51,19 @@ const AddressForm = ({ onNext }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const selectedAddress = addresses.find(
+      (addr) => addr.id === selectedAddressId
+    );
+    const selectedState = states.find(
+      (state) => state.id === selectedAddress.stateId
+    );
+
     // onNext(form);
     onNext({
       shippingAddressId: selectedAddressId,
-      ...addresses.find((addr) => addr.id === selectedAddressId),
+      ...selectedAddress,
+      ...selectedState,
     });
   };
 
@@ -137,6 +146,20 @@ const AddressForm = ({ onNext }) => {
     return Object.keys(temp).length === 0; // true = valid
   };
 
+  function handelCancel() {
+    setIsUpdateMode(false);
+    setShowForm(false);
+    setForm({
+      personId: 1, // for test
+      stateId: states[0]?.id || undefined, // for test
+      city: "",
+      locality: "",
+      street: "",
+      buildingNumber: "",
+      phone: "",
+    });
+  }
+
   return (
     <form className="form shipping-address-form" onSubmit={handleSubmit}>
       <h2>Shipping Address</h2>
@@ -174,6 +197,7 @@ const AddressForm = ({ onNext }) => {
           form={form}
           setForm={setForm}
           errors={errors}
+          cancel={handelCancel}
           onSubmit={handleAddUpdateAddress}
         />
       )}

@@ -46,6 +46,8 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
                                     reader.GetString(reader.GetOrdinal("code")),
                                     reader.GetString(reader.GetOrdinal("name_en")),
                                     reader.GetString(reader.GetOrdinal("name_ar")),
+                                    reader.GetString(reader.GetOrdinal("description_en")),
+                                    reader.GetString(reader.GetOrdinal("description_ar")),
                                     reader.GetDecimal(reader.GetOrdinal("base_price")),
                                     reader.GetDecimal(reader.GetOrdinal("price_per_kg")),
                                     reader.GetDecimal(reader.GetOrdinal("free_over")),

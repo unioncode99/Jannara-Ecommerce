@@ -198,6 +198,23 @@
       "empty_desc": "Looks like you haven't added anything to your cart yet.",
       "start_shopping": "Start Shopping",
       "calculated_at_checkout": "Calculated at checkout"
+    },
+    "shipping_method": {
+      "shipping_method_title": "Shipping Method",
+      "cart_weight": "Cart Weight",
+      "cart_total": "Cart Total",
+      "free": "FREE",
+      "base_price": "base",
+      "per_kg": "per kg",
+      "free_shipping_over": "Free shipping on orders over",
+      "same_day_delivery": "Same day delivery",
+      "delivery_days": "days",
+      "selected_shipping": "Selected Shipping",
+      "shipping_cost": "Shipping Cost",
+      "back": "Back",
+      "next": "Next",
+      "weight_unit": "kg",
+      "delivery_label": "Delivery"
     }
   },
   "sidebar": {
