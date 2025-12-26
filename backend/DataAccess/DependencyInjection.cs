@@ -24,6 +24,7 @@ namespace Jannara_Ecommerce.DataAccess
             services.AddScoped<ICartItemRepository, CartItemRepository>();
             services.AddScoped<IStateRepository, StateRepository>();
             services.AddScoped<IShippingMethodRepository, ShippingMethodRepository>();
+            services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
             return services;
         }
     }

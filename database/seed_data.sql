@@ -445,8 +445,6 @@ DEALLOCATE customer_cursor;
 GO
 
 -- ShippingMethods
-USE [Jannara];
-GO
 
 INSERT INTO [dbo].[ShippingMethods]
 (
@@ -520,11 +518,7 @@ VALUES
 GO
 
 
-
- -- Sudan States
-USE [Jannara];
-GO
-
+-- Suand States
 INSERT INTO [dbo].[States]
 (
     [code],
@@ -551,6 +545,53 @@ VALUES
 ('DW', N'West Darfur',     N'غرب دارفور',     45.00),
 ('DC', N'Central Darfur',  N'وسط دارفور',     45.00),
 ('DE', N'East Darfur',     N'شرق دارفور',     45.00);
+GO
+
+-- [PaymentMethods]
+INSERT INTO [dbo].[PaymentMethods]
+           ([name_en]
+           ,[name_ar]
+           ,[description_en]
+           ,[description_ar]
+           ,[is_active]
+           ,[created_at]
+           ,[updated_at])
+VALUES
+-- Cash on Delivery
+('Cash on Delivery', 
+ N'الدفع عند الاستلام', 
+ 'Pay in cash when the order is delivered', 
+ N'الدفع نقداً عند استلام الطلب', 
+ 1, 
+ SYSUTCDATETIME(), 
+ SYSUTCDATETIME()),
+
+-- Credit / Debit Card
+('Credit / Debit Card', 
+ N'بطاقة ائتمان / خصم', 
+ 'Pay using your credit or debit card', 
+ N'الدفع باستخدام بطاقة الائتمان أو الخصم', 
+ 1, 
+ SYSUTCDATETIME(), 
+ SYSUTCDATETIME()),
+
+-- Bank Transfer
+('Bank Transfer', 
+ N'التحويل المصرفي', 
+ 'Transfer the amount directly to our bank account', 
+ N'قم بتحويل المبلغ مباشرة إلى حسابنا المصرفي', 
+ 0, 
+ SYSUTCDATETIME(), 
+ SYSUTCDATETIME()),
+
+-- Mobile Payment
+('Mobile Payment', 
+ N'الدفع عبر الهاتف المحمول', 
+ 'Pay securely via mobile payment services', 
+ N'الدفع بأمان عبر خدمات الدفع عبر الهاتف المحمول', 
+ 0, 
+ SYSUTCDATETIME(), 
+ SYSUTCDATETIME());
 GO
 
 
