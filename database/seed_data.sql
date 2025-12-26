@@ -164,6 +164,8 @@ VALUES
 (8,6,'https://picsum.photos/400?random=352','Tripod Stand',N'حامل ترايبود','Lightweight tripod stand.',N'حامل ترايبود خفيف.');
 
 GO
+update Products set weight_kg = 1;
+GO
 
 -- =============================================
 -- 4. Variations (Color, Size, Material)
@@ -445,77 +447,21 @@ DEALLOCATE customer_cursor;
 GO
 
 -- ShippingMethods
-
-INSERT INTO [dbo].[ShippingMethods]
-(
-    [code],
-    [name_en],
-    [name_ar],
-    [base_price],
-    [price_per_kg],
-    [free_over],
-    [days_min],
-    [days_max],
-    [is_active],
-    [sort_order]
-)
-VALUES
--- Standard Shipping
-(
-    'standard-shipping',
-    N'Standard Shipping',
-    N'شحن عادي',
-    35.00,
-    5.00,
-    200.00,
-    3,
-    5,
-    1,
-    1
-),
-
--- Express Shipping
-(
-    'express-shipping',
-    N'Express Shipping',
-    N'شحن سريع',
-    60.00,
-    8.00,
-    300.00,
-    1,
-    2,
-    1,
-    2
-),
-
--- Same Day Delivery
-(
-    'same-day-delivery',
-    N'Same Day Delivery',
-    N'توصيل في نفس اليوم',
-    100.00,
-    10.00,
-    400.00,
-    0,
-    0,
-    1,
-    3
-),
-
--- Store Pickup
-(
-    'store-pickup',
-    N'Store Pickup',
-    N'الاستلام من المتجر',
-    0.00,
-    0.00,
-    0,
-    0,
-    0,
-    1,
-    4
-);
 GO
+
+INSERT INTO [dbo].[ShippingMethods] ([code],[name_en],[name_ar],[description_en],[description_ar],[base_price],[price_per_kg],[free_over],[days_min],[days_max],[is_active],[sort_order])
+VALUES ('standard-shipping',N'Standard Shipping',N'شحن عادي',N'Delivery within 3 to 5 business days',N'التوصيل خلال 3 إلى 5 أيام عمل',35.00,5.00,200.00,3,5,1,1);
+
+INSERT INTO [dbo].[ShippingMethods] ([code],[name_en],[name_ar],[description_en],[description_ar],[base_price],[price_per_kg],[free_over],[days_min],[days_max],[is_active],[sort_order])
+VALUES ('express-shipping',N'Express Shipping',N'شحن سريع',N'Fast delivery within 1 to 2 business days',N'توصيل سريع خلال يوم إلى يومين',60.00,8.00,300.00,1,2,1,2);
+
+INSERT INTO [dbo].[ShippingMethods] ([code],[name_en],[name_ar],[description_en],[description_ar],[base_price],[price_per_kg],[free_over],[days_min],[days_max],[is_active],[sort_order])
+VALUES ('same-day-delivery',N'Same Day Delivery',N'توصيل في نفس اليوم',N'Delivery on the same day for eligible locations',N'التوصيل في نفس اليوم للمناطق المؤهلة',100.00,10.00,400.00,0,0,1,3);
+
+INSERT INTO [dbo].[ShippingMethods] ([code],[name_en],[name_ar],[description_en],[description_ar],[base_price],[price_per_kg],[free_over],[days_min],[days_max],[is_active],[sort_order])
+VALUES ('store-pickup',N'Store Pickup',N'الاستلام من المتجر',N'Pick up your order directly from the store',N'استلام الطلب مباشرة من المتجر',0.00,0.00,0.00,0,0,1,4);
+GO
+
 
 
 -- Suand States

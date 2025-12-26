@@ -40,7 +40,11 @@ const CheckoutPage = () => {
       </div>
       {step === 1 && <AddressForm onNext={handleNextStep} />}
       {step === 2 && (
-        <ShippingMethodForm onNext={handleNextStep} onBack={handlePrevStep} />
+        <ShippingMethodForm
+          checkoutData={checkoutData}
+          onNext={handleNextStep}
+          onBack={handlePrevStep}
+        />
       )}
       {step === 3 && (
         <PaymentForm

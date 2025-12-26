@@ -192,6 +192,23 @@
       "empty_desc": "يبدو أنك لم تضف أي عناصر إلى سلة التسوق بعد.",
       "start_shopping": "ابدأ التسوق",
       "calculated_at_checkout": "يتم الحساب عند إتمام الشراء"
+    },
+    "shipping_method": {
+      "shipping_method_title": "طريقة الشحن",
+      "cart_weight": "وزن السلة",
+      "cart_total": "إجمالي السلة",
+      "free": "مجاني",
+      "base_price": "أساسي",
+      "per_kg": "لكل كجم",
+      "free_shipping_over": "شحن مجاني للطلبات التي تزيد عن",
+      "same_day_delivery": "توصيل في نفس اليوم",
+      "delivery_days": "أيام",
+      "selected_shipping": "الشحن المختار",
+      "shipping_cost": "تكلفة الشحن",
+      "back": "رجوع",
+      "next": "التالي",
+      "weight_unit": "كجم",
+      "delivery_label": "مدة التوصيل"
     }
   },
   "sidebar": {

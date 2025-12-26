@@ -4,7 +4,14 @@ import { useLanguage } from "../../hooks/useLanguage";
 import { useEffect, useState } from "react";
 import Select from "../ui/Select";
 
-const AddUpdateAddressForm = ({ form, setForm, onSubmit, states, errors }) => {
+const AddUpdateAddressForm = ({
+  form,
+  setForm,
+  onSubmit,
+  states,
+  errors,
+  cancel,
+}) => {
   console.log("states", states);
   console.log("form", form);
 
@@ -81,6 +88,13 @@ const AddUpdateAddressForm = ({ form, setForm, onSubmit, states, errors }) => {
         onClick={onSubmit}
       >
         Save Address
+      </Button>
+      <Button
+        style={{ marginBottom: "0.5rem" }}
+        className="btn btn-primary btn-block"
+        onClick={cancel}
+      >
+        Cancel
       </Button>
     </div>
   );
