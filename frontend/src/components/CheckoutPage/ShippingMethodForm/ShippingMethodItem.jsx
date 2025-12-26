@@ -18,7 +18,7 @@ const ShippingMethodItem = ({
     same_day_delivery,
     delivery_days,
     weight_unit,
-  } = translations.general.pages.shipping_method;
+  } = translations.general.pages.checkout;
 
   return (
     <div>
