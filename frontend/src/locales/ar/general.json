@@ -193,7 +193,7 @@
       "start_shopping": "ابدأ التسوق",
       "calculated_at_checkout": "يتم الحساب عند إتمام الشراء"
     },
-    "shipping_method": {
+    "checkout": {
       "shipping_method_title": "طريقة الشحن",
       "cart_weight": "وزن السلة",
       "cart_total": "إجمالي السلة",
@@ -208,7 +208,8 @@
       "back": "رجوع",
       "next": "التالي",
       "weight_unit": "كجم",
-      "delivery_label": "مدة التوصيل"
+      "delivery_label": "مدة التوصيل",
+      "place_order": "تأكيد الطلب"
     }
   },
   "sidebar": {

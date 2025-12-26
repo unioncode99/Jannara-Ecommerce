@@ -6,7 +6,7 @@ const ShippingCartSummary = ({ cartSubTotal, cartTotalWeight }) => {
   if (!cartTotalWeight) return null;
 
   const { cart_weight, cart_total, weight_unit } =
-    translations.general.pages.shipping_method;
+    translations.general.pages.checkout;
 
   return (
     <div className="cart-summary">

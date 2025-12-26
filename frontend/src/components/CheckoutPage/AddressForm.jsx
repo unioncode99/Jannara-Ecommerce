@@ -7,6 +7,7 @@ import { SquarePen } from "lucide-react";
 import "./AddressForm.css";
 import { useLanguage } from "../../hooks/useLanguage";
 import { toast } from "../ui/Toast";
+import CheckoutNavigationButtons from "./CheckoutNavigationButtons";
 
 const AddressForm = ({ onNext }) => {
   const [addresses, setAddresses] = useState([]);
@@ -27,6 +28,7 @@ const AddressForm = ({ onNext }) => {
   const [personId, setPersonId] = useState(1);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [errors, setErrors] = useState({});
+  const { next } = translations.general.pages.checkout;
 
   async function fetchPersonAddress(personId) {
     try {
@@ -201,7 +203,14 @@ const AddressForm = ({ onNext }) => {
           onSubmit={handleAddUpdateAddress}
         />
       )}
-      <div className="next-btn-container">
+
+      <CheckoutNavigationButtons
+        onNext={handleSubmit}
+        nextLabel={next}
+        nextDisabled={!selectedAddressId}
+      />
+
+      {/* <div className="next-btn-container">
         <Button
           disabled={!selectedAddressId}
           className="btn btn-primary"
@@ -209,7 +218,7 @@ const AddressForm = ({ onNext }) => {
         >
           Next
         </Button>
-      </div>
+      </div> */}
     </form>
   );
 };

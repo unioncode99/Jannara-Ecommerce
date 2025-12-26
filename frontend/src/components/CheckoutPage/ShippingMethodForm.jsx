@@ -8,7 +8,7 @@ import { useLanguage } from "../../hooks/useLanguage.jsx";
 import ShippingCartSummary from "./ShippingMethodForm/ShippingCartSummary.jsx";
 import SelectedShippingSummary from "./ShippingMethodForm/SelectedShippingSummary.jsx";
 import ShippingMethodList from "./ShippingMethodForm/ShippingMethodList.jsx";
-
+import CheckoutNavigationButtons from "../CheckoutPage/CheckoutNavigationButtons.jsx";
 const ShippingMethodForm = ({ onNext, onBack, checkoutData }) => {
   const [shippingMethods, setShippingMethods] = useState([]);
   const [selectedShippingMethodId, setSelectedShippingMethodId] =
@@ -16,7 +16,7 @@ const ShippingMethodForm = ({ onNext, onBack, checkoutData }) => {
   const { cart } = useCart();
   const { translations } = useLanguage();
   const { shipping_method_title, back, next } =
-    translations.general.pages.shipping_method;
+    translations.general.pages.checkout;
 
   console.log("cart", cart);
   console.log("checkoutData", checkoutData);
@@ -107,7 +107,15 @@ const ShippingMethodForm = ({ onNext, onBack, checkoutData }) => {
         />
       )}
 
-      <div className="checkout-navigate-buttons-container">
+      <CheckoutNavigationButtons
+        onBack={onBack}
+        onNext={handleSubmit}
+        backLabel={back}
+        nextLabel={next}
+        nextDisabled={!selectedShippingMethodId}
+      />
+
+      {/* <div className="checkout-navigate-buttons-container">
         <Button className="btn btn-primary" onClick={onBack}>
           {back}
         </Button>
@@ -118,7 +126,7 @@ const ShippingMethodForm = ({ onNext, onBack, checkoutData }) => {
         >
           {next}
         </Button>
-      </div>
+      </div> */}
     </form>
   );
 };

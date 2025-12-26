@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Button from "../ui/Button";
 import "./PaymentForm.css";
+import CheckoutNavigationButtons from "./CheckoutNavigationButtons";
+import { useLanguage } from "../../hooks/useLanguage";
 // import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 const PaymentForm = ({ onNext, onBack, checkoutData }) => {
@@ -43,6 +45,8 @@ const PaymentForm = ({ onNext, onBack, checkoutData }) => {
   // };
 
   const [method, setMethod] = useState("Credit Card");
+  const { translations } = useLanguage();
+  const { back, next } = translations.general.pages.checkout;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -95,14 +99,13 @@ const PaymentForm = ({ onNext, onBack, checkoutData }) => {
         </label>
       </div>
 
-      <div className="checkout-navigate-buttons-container">
-        <Button className="btn btn-primary" onClick={onBack}>
-          Back
-        </Button>
-        <Button className="btn btn-primary" type="submit">
-          Next
-        </Button>
-      </div>
+      <CheckoutNavigationButtons
+        onBack={onBack}
+        onNext={handleSubmit}
+        backLabel={back}
+        nextLabel={next}
+        nextDisabled={!method}
+      />
     </form>
   );
 };

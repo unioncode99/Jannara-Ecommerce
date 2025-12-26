@@ -12,7 +12,7 @@ const SelectedShippingSummary = ({ method, cost }) => {
     delivery_label,
     delivery_days,
     same_day_delivery,
-  } = translations.general.pages.shipping_method;
+  } = translations.general.pages.checkout;
 
   return (
     <div className="selected-summary">

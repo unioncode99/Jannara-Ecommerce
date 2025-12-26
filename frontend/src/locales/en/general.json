@@ -199,7 +199,7 @@
       "start_shopping": "Start Shopping",
       "calculated_at_checkout": "Calculated at checkout"
     },
-    "shipping_method": {
+    "checkout": {
       "shipping_method_title": "Shipping Method",
       "cart_weight": "Cart Weight",
       "cart_total": "Cart Total",
@@ -214,7 +214,8 @@
       "back": "Back",
       "next": "Next",
       "weight_unit": "kg",
-      "delivery_label": "Delivery"
+      "delivery_label": "Delivery",
+      "place_order": "Place Order"
     }
   },
   "sidebar": {

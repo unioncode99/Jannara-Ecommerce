@@ -3,11 +3,19 @@ import { useCart } from "../../contexts/CartContext";
 import { formatMoney } from "../../utils/utils";
 import "./ReviewOrder.css";
 import Button from "../ui/Button";
+import { useLanguage } from "../../hooks/useLanguage";
+import CheckoutNavigationButtons from "../CheckoutPage/CheckoutNavigationButtons";
 
 const ReviewOrder = ({ checkoutData, onBack }) => {
   const { cart } = useCart();
   console.log("checoutdat -> ", checkoutData);
   console.log("cart -> ", cart);
+  const { translations } = useLanguage();
+  const { back, place_order } = translations.general.pages.checkout;
+
+  const handleSubmit = () => {
+    console.log("Order Placed! 🎉");
+  };
 
   return (
     <div className="review-order-container">
@@ -43,14 +51,14 @@ const ReviewOrder = ({ checkoutData, onBack }) => {
         <strong>Grand Total:</strong>{" "}
         <span>{formatMoney(cart?.grandTotal)}</span>
       </p>
-      <div className="checkout-navigate-buttons-container">
-        <Button className="btn btn-primary" onClick={onBack}>
-          Back
-        </Button>
-        <Button className="btn btn-primary" type="submit">
-          Place Order
-        </Button>
-      </div>
+
+      <CheckoutNavigationButtons
+        onBack={onBack}
+        onNext={handleSubmit}
+        backLabel={back}
+        nextLabel={place_order}
+        nextDisabled={!checkoutData}
+      />
 
       {/* <button onClick={() => alert("Order Placed! 🎉")}>Place Order</button> */}
     </div>
