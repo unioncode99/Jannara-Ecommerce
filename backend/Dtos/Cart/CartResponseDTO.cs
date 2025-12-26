@@ -12,6 +12,7 @@ namespace Jannara_Ecommerce.DTOs.Cart
         public int ItemsCount { get; set; }  
         public int LineCount { get; set; }  
         public decimal SubTotal { get; set; }
+        public decimal TotalWeight { get; set; }
         public decimal TaxPrice { get; set; }
         public decimal ShippingPrice { get; set; }
         public decimal GrandTotal { get; set; }

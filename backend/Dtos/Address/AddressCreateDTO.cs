@@ -3,7 +3,7 @@
     public class AddressCreateDTO
     {
         public int PersonId { get; set; }
-        public string State { get; set; }
+        public int StateId { get; set; }
         public string City { get; set; }
         public string Locality { get; set; }
         public string Street { get; set; }

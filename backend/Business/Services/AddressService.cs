@@ -28,7 +28,7 @@ namespace Jannara_Ecommerce.Business.Services
             return await _addressRepository.GetByIdAsync(id);
         }
 
-        public async Task<Result<IEnumerable<AddressDTO>>> GetAllAsync(int personId)
+        public async Task<Result<AddressResponseDTO>> GetAllAsync(int personId)
         {
            return await _addressRepository.GetAllAsync(personId);
         }

@@ -24,6 +24,7 @@ const CartPage = () => {
     empty_title,
     empty_desc,
     start_shopping,
+    calculated_at_checkout,
   } = translations.general.pages.cart;
 
   return (
@@ -63,29 +64,20 @@ const CartPage = () => {
                 </div>
                 <div>
                   <span>{shipping}</span>
-                  {cart.shippingPrice === 0 ? (
-                    <span className="free">{free}</span>
-                  ) : (
-                    <span>{formatMoney(cart.shippingPrice)}</span>
-                  )}
+                  <span className="estimated">{calculated_at_checkout}</span>
                 </div>
                 <div>
                   <span>{tax}</span>
-
-                  {cart.taxPrice === 0 ? (
-                    <span className="free">{free}</span>
-                  ) : (
-                    <span>{formatMoney(cart.taxPrice)}</span>
-                  )}
+                  <span className="estimated">{calculated_at_checkout}</span>
                 </div>
-                <div>
+                {/* <div>
                   <span>{total}</span>
                   {cart.grandTotal === 0 ? (
                     <span className="free">{free}</span>
                   ) : (
                     <span>{formatMoney(cart.grandTotal)}</span>
                   )}
-                </div>
+                </div> */}
               </div>
               <Link
                 to="/checkout"

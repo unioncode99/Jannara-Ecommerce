@@ -4,7 +4,7 @@ namespace Jannara_Ecommerce.DTOs.Product
 {
     public class ProductDTO
     {
-        public ProductDTO(int id, Guid publicId, int brandId, string defaultImageUrl, string nameEn, string nameAr, string? descriptionEn, string? descriptionAr, DateTime createdAt, DateTime updatedAt)
+        public ProductDTO(int id, Guid publicId, int brandId, string defaultImageUrl, string nameEn, string nameAr, string? descriptionEn, string? descriptionAr, decimal weightKg, DateTime createdAt, DateTime updatedAt)
         {
             Id = id;
             PublicId = publicId;
@@ -14,6 +14,7 @@ namespace Jannara_Ecommerce.DTOs.Product
             NameAr = nameAr;
             DescriptionEn = descriptionEn;
             DescriptionAr = descriptionAr;
+            WeightKg = weightKg;
             CreatedAt = createdAt;
             UpdatedAt = updatedAt;
         }
@@ -26,6 +27,7 @@ namespace Jannara_Ecommerce.DTOs.Product
         public string NameAr { get; set; }
         public string? DescriptionEn { get; set; }
         public string? DescriptionAr { get; set; }
+        public decimal WeightKg { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 

@@ -13,6 +13,7 @@ namespace Jannara_Ecommerce.DTOs.Product
         public string NameAr { get; set; }
         public string? DescriptionEn { get; set; }
         public string? DescriptionAr { get; set; }
+        public decimal WeightKg { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public decimal MinPrice { get; set; }

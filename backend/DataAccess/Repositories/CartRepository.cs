@@ -67,9 +67,13 @@ SELECT @json = (
         totals.ItemsCount,
         totals.LineCount,
         totals.SubTotal,
+        -- Total Weight
+        totals.TotalWeight,
 
         -- Tax (15%)
         CAST(totals.SubTotal * 0.15 AS DECIMAL(10,2)) AS TaxPrice,
+
+
 
         -- Shipping rule
         CASE
@@ -138,12 +142,16 @@ SELECT @json = (
             FOR JSON PATH
         ) AS CartItems
     FROM Carts c
- OUTER APPLY (
+  OUTER APPLY (
         SELECT
             COUNT(*) AS LineCount,
             SUM(ci.quantity) AS ItemsCount,
-            SUM(ci.quantity * ci.price_at_add_time) AS SubTotal
+            SUM(ci.quantity * ci.price_at_add_time) AS SubTotal,
+            SUM(ci.quantity * p.weight_kg) AS TotalWeight  -- <--- total weight from Products.weight_kg
         FROM CartItems ci
+        INNER JOIN SellerProducts sp ON sp.id = ci.seller_product_id
+        INNER JOIN ProductItems pi ON pi.id = sp.product_item_id
+        INNER JOIN Products p ON p.id = pi.product_id
         WHERE ci.cart_id = c.id
     ) totals
     WHERE c.customer_id = @customerId AND c.is_active = 1
