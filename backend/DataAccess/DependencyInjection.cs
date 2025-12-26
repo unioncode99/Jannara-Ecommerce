@@ -22,6 +22,8 @@ namespace Jannara_Ecommerce.DataAccess
             services.AddScoped<ICustomerWishlistRepository, CustomerWishlistRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<ICartItemRepository, CartItemRepository>();
+            services.AddScoped<IStateRepository, StateRepository>();
+            services.AddScoped<IShippingMethodRepository, ShippingMethodRepository>();
             return services;
         }
     }

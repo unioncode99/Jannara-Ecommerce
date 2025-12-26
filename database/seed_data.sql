@@ -444,6 +444,115 @@ CLOSE customer_cursor;
 DEALLOCATE customer_cursor;
 GO
 
+-- ShippingMethods
+USE [Jannara];
+GO
+
+INSERT INTO [dbo].[ShippingMethods]
+(
+    [code],
+    [name_en],
+    [name_ar],
+    [base_price],
+    [price_per_kg],
+    [free_over],
+    [days_min],
+    [days_max],
+    [is_active],
+    [sort_order]
+)
+VALUES
+-- Standard Shipping
+(
+    'standard-shipping',
+    N'Standard Shipping',
+    N'شحن عادي',
+    35.00,
+    5.00,
+    200.00,
+    3,
+    5,
+    1,
+    1
+),
+
+-- Express Shipping
+(
+    'express-shipping',
+    N'Express Shipping',
+    N'شحن سريع',
+    60.00,
+    8.00,
+    300.00,
+    1,
+    2,
+    1,
+    2
+),
+
+-- Same Day Delivery
+(
+    'same-day-delivery',
+    N'Same Day Delivery',
+    N'توصيل في نفس اليوم',
+    100.00,
+    10.00,
+    400.00,
+    0,
+    0,
+    1,
+    3
+),
+
+-- Store Pickup
+(
+    'store-pickup',
+    N'Store Pickup',
+    N'الاستلام من المتجر',
+    0.00,
+    0.00,
+    0,
+    0,
+    0,
+    1,
+    4
+);
+GO
+
+
+
+ -- Sudan States
+USE [Jannara];
+GO
+
+INSERT INTO [dbo].[States]
+(
+    [code],
+    [name_en],
+    [name_ar],
+    [extra_fee_for_shipping]
+)
+VALUES
+('KH', N'Khartoum',        N'الخرطوم',        0.00),
+('GZ', N'Al Jazirah',      N'الجزيرة',        10.00),
+('GD', N'Gedaref',         N'القضارف',        20.00),
+('KA', N'Kassala',         N'كسلا',            25.00),
+('RS', N'Red Sea',         N'البحر الأحمر',   30.00),
+('NR', N'River Nile',      N'نهر النيل',      15.00),
+('NO', N'Northern',        N'الشمالية',       30.00),
+('SN', N'Sennar',          N'سنار',           20.00),
+('NW', N'White Nile',      N'النيل الأبيض',   20.00),
+('NB', N'Blue Nile',       N'النيل الأزرق',   30.00),
+('KN', N'North Kordofan',  N'شمال كردفان',    35.00),
+('KS', N'South Kordofan',  N'جنوب كردفان',    40.00),
+('KW', N'West Kordofan',   N'غرب كردفان',     40.00),
+('DN', N'North Darfur',    N'شمال دارفور',    45.00),
+('DS', N'South Darfur',    N'جنوب دارفور',    45.00),
+('DW', N'West Darfur',     N'غرب دارفور',     45.00),
+('DC', N'Central Darfur',  N'وسط دارفور',     45.00),
+('DE', N'East Darfur',     N'شرق دارفور',     45.00);
+GO
+
 
 
 

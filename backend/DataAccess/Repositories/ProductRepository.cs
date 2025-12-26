@@ -271,6 +271,7 @@ SELECT @json = (
         p.name_ar AS NameAr,
         p.description_en AS DescriptionEn,
         p.description_ar AS DescriptionAr,
+        p.weight_kg AS WeightKg,
 
         p.created_at AS CreatedAt,
         p.updated_at AS UpdatedAt,

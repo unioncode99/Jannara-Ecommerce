@@ -196,7 +196,8 @@
       "checkout": "Proceed to Checkout",
       "empty_title": "Your cart is empty",
       "empty_desc": "Looks like you haven't added anything to your cart yet.",
-      "start_shopping": "Start Shopping"
+      "start_shopping": "Start Shopping",
+      "calculated_at_checkout": "Calculated at checkout"
     }
   },
   "sidebar": {

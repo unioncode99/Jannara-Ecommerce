@@ -4,11 +4,11 @@ namespace Jannara_Ecommerce.DTOs.Address
 {
     public class AddressDTO
     {
-        public AddressDTO(int id, int personId, string state, string city, string locality, string street, string buildingNumber, string? phone, DateTime createdAt, DateTime updatedAt)
+        public AddressDTO(int id, int personId, int stateId, string city, string locality, string street, string buildingNumber, string? phone, DateTime createdAt, DateTime updatedAt)
         {
             Id = id;
             PersonId = personId;
-            State = state;
+            StateId = stateId;
             City = city;
             Locality = locality;
             Street = street;
@@ -20,7 +20,7 @@ namespace Jannara_Ecommerce.DTOs.Address
 
         public int Id { get; set; }
         public int PersonId { get; set; }
-        public string State { get; set; }
+        public int StateId { get; set; }
         public string City { get; set; }
         public string Locality {  get; set; }
         public string Street {  get; set; }

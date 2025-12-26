@@ -190,7 +190,8 @@
       "checkout": "المتابعة للدفع",
       "empty_title": "سلة التسوق فارغة",
       "empty_desc": "يبدو أنك لم تضف أي عناصر إلى سلة التسوق بعد.",
-      "start_shopping": "ابدأ التسوق"
+      "start_shopping": "ابدأ التسوق",
+      "calculated_at_checkout": "يتم الحساب عند إتمام الشراء"
     }
   },
   "sidebar": {

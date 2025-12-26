@@ -9,6 +9,6 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
         public Task<Result<bool>> UpdateAsync(int id, AddressUpdateDTO addressUpdateDTO);
         public Task<Result<bool>> DeleteAsync(int id);
         public Task<Result<AddressDTO>> GetByIdAsync(int id);
-        public Task<Result<IEnumerable<AddressDTO>>> GetAllAsync(int personId);
+        public Task<Result<AddressResponseDTO>> GetAllAsync(int personId);
     }
 }
