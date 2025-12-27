@@ -215,7 +215,18 @@
       "next": "Next",
       "weight_unit": "kg",
       "delivery_label": "Delivery",
-      "place_order": "Place Order"
+      "place_order": "Place Order",
+      "shipping_address_title": "Shipping Address",
+      "add_new_address": "Add New Address",
+      "state": "State",
+      "city": "City",
+      "locality": "Locality",
+      "street": "Street",
+      "building_number": "Building Number",
+      "phone": "Phone",
+      "save_address": "Save Address",
+      "cancel_text": "Cancel",
+      "payment_method_title": "Payment Method"
     }
   },
   "sidebar": {

@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../ui/Button";
 import "./PaymentForm.css";
 import CheckoutNavigationButtons from "./CheckoutNavigationButtons";
 import { useLanguage } from "../../hooks/useLanguage";
+import { read } from "../../api/apiWrapper";
+import PaymentMethodList from "./PaymentMethodForm/PaymentMethodList";
 // import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 const PaymentForm = ({ onNext, onBack, checkoutData }) => {
@@ -44,9 +46,27 @@ const PaymentForm = ({ onNext, onBack, checkoutData }) => {
   //   }
   // };
 
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
+
   const [method, setMethod] = useState("Credit Card");
   const { translations } = useLanguage();
-  const { back, next } = translations.general.pages.checkout;
+  const { back, next, payment_method_title } =
+    translations.general.pages.checkout;
+
+  async function fetchPaymentMethods() {
+    try {
+      const data = await read(`payment-methods`);
+      setPaymentMethods(data?.data);
+      console.log("data -> ", data);
+    } catch (err) {
+      console.error("Failed to load payment methods", err);
+    }
+  }
+
+  useEffect(() => {
+    fetchPaymentMethods();
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -71,40 +91,20 @@ const PaymentForm = ({ onNext, onBack, checkoutData }) => {
 
   return (
     <form className="form payment-from" onSubmit={handleSubmit}>
-      <h2>Payment Method</h2>
-      <div className="radio-inputs-container">
-        <input
-          type="radio"
-          id="creditCard"
-          name="paymentMethod"
-          value="Credit Card"
-          checked={method === "Credit Card"}
-          onChange={() => setMethod("Credit Card")}
-        />
-        <label htmlFor="creditCard">
-          <span>Credit Card</span>
-          <small>Visa, Mastercard</small>
-        </label>
-        <input
-          type="radio"
-          id="cod"
-          name="paymentMethod"
-          value="COD"
-          checked={method === "COD"}
-          onChange={() => setMethod("COD")}
-        />
-        <label htmlFor="cod">
-          <span>COD</span>
-          <small>Pay on delivery</small>
-        </label>
-      </div>
+      <h2>{payment_method_title}</h2>
+
+      <PaymentMethodList
+        paymentMethods={paymentMethods}
+        selectedPaymentMethodId={selectedPaymentMethodId}
+        setSelectedPaymentMethodId={setSelectedPaymentMethodId}
+      />
 
       <CheckoutNavigationButtons
         onBack={onBack}
         onNext={handleSubmit}
         backLabel={back}
         nextLabel={next}
-        nextDisabled={!method}
+        nextDisabled={!selectedPaymentMethodId}
       />
     </form>
   );

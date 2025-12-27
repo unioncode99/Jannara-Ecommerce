@@ -1,8 +1,8 @@
-.radio-inputs-container > label {
+.payment-from .radio-inputs-container label {
   display: flex;
   flex-direction: column;
-  /* gap: 0.5rem; */
+  gap: 0.3rem;
 }
-.radio-inputs-container > label > small {
+.payment-from .radio-inputs-container label small {
   color: var(--grey-500);
 }
