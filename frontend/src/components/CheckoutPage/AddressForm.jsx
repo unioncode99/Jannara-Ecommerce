@@ -14,7 +14,7 @@ const AddressForm = ({ onNext }) => {
   const [states, setStates] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [showForm, setShowForm] = useState(false);
-  const { translations } = useLanguage();
+  const { translations, language } = useLanguage();
   const [form, setForm] = useState({
     personId: 1, // for test
     stateId: states[0]?.id || undefined, // for test
@@ -28,7 +28,8 @@ const AddressForm = ({ onNext }) => {
   const [personId, setPersonId] = useState(1);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [errors, setErrors] = useState({});
-  const { next } = translations.general.pages.checkout;
+  const { next, shipping_address_title, add_new_address } =
+    translations.general.pages.checkout;
 
   async function fetchPersonAddress(personId) {
     try {
@@ -164,7 +165,7 @@ const AddressForm = ({ onNext }) => {
 
   return (
     <form className="form shipping-address-form" onSubmit={handleSubmit}>
-      <h2>Shipping Address</h2>
+      <h2>{shipping_address_title}</h2>
 
       <div className="radio-inputs-container">
         {addresses?.map((address) => (
@@ -179,7 +180,10 @@ const AddressForm = ({ onNext }) => {
             />
             <label htmlFor={`address-${address.id}`}>
               <span>
-                {address.street}, {address.city}, {address.state}
+                {address.street}, {address.city},{" "}
+                {language == "en"
+                  ? states?.find((s) => s.id === address.stateId)?.nameEn
+                  : states?.find((s) => s.id === address.stateId)?.nameAr}
               </span>{" "}
               <SquarePen onClick={() => handleEditAddress(address)} />
             </label>
@@ -189,7 +193,7 @@ const AddressForm = ({ onNext }) => {
 
       {(addresses?.length < 5 || !addresses) && (
         <Button className="btn btn-primary" onClick={handleAddAddress}>
-          Add New Address
+          {add_new_address}
         </Button>
       )}
 

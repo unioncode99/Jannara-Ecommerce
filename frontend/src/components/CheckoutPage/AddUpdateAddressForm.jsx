@@ -15,8 +15,19 @@ const AddUpdateAddressForm = ({
   console.log("states", states);
   console.log("form", form);
 
-  const { language } = useLanguage();
+  const { language, translations } = useLanguage();
   const [options, setOptions] = useState([]);
+
+  const {
+    state,
+    city,
+    locality,
+    street,
+    building_number,
+    phone,
+    save_address,
+    cancel_text,
+  } = translations.general.pages.checkout;
 
   useEffect(() => {
     const options = states.map((state) => ({
@@ -36,47 +47,47 @@ const AddUpdateAddressForm = ({
     <div>
       <Select
         options={options}
-        label={language == "en" ? "State" : "الولاية"}
+        label={state}
         value={form.stateId ?? ""}
         onChange={(e) => setForm({ ...form, stateId: Number(e.target.value) })}
         errorMessage={errors.stateId}
         required={true}
       />
       <Input
-        label="City"
-        placeholder="City"
+        label={city}
+        placeholder={city}
         value={form?.city}
         onChange={(e) => setForm({ ...form, city: e.target.value })}
         errorMessage={errors.city}
         required
       />
       <Input
-        label="Locality"
-        placeholder="Locality"
+        label={locality}
+        placeholder={locality}
         value={form?.locality}
         onChange={(e) => setForm({ ...form, locality: e.target.value })}
         errorMessage={errors.locality}
         required
       />
       <Input
-        label="Street"
-        placeholder="Street"
+        label={street}
+        placeholder={street}
         value={form?.street}
         onChange={(e) => setForm({ ...form, street: e.target.value })}
         errorMessage={errors.street}
         required
       />
       <Input
-        label="Building Number"
-        placeholder="Building Number"
+        label={building_number}
+        placeholder={building_number}
         value={form?.buildingNumber}
         onChange={(e) => setForm({ ...form, buildingNumber: e.target.value })}
         errorMessage={errors.buildingNumber}
         required
       />
       <Input
-        label="Phone"
-        placeholder="Phone"
+        label={phone}
+        placeholder={phone}
         value={form?.phone}
         onChange={(e) => handlePhoneChange(e)}
         errorMessage={errors.phone}
@@ -87,14 +98,14 @@ const AddUpdateAddressForm = ({
         className="btn btn-primary btn-block"
         onClick={onSubmit}
       >
-        Save Address
+        {save_address}
       </Button>
       <Button
         style={{ marginBottom: "0.5rem" }}
         className="btn btn-primary btn-block"
         onClick={cancel}
       >
-        Cancel
+        {cancel_text}
       </Button>
     </div>
   );

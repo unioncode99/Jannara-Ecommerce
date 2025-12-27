@@ -209,7 +209,18 @@
       "next": "التالي",
       "weight_unit": "كجم",
       "delivery_label": "مدة التوصيل",
-      "place_order": "تأكيد الطلب"
+      "place_order": "تأكيد الطلب",
+      "shipping_address_title": "عنوان الشحن",
+      "add_new_address": "إضافة عنوان جديد",
+      "state": "الولاية",
+      "city": "المدينة",
+      "locality": "الحي",
+      "street": "الشارع",
+      "building_number": "رقم المبنى",
+      "phone": "رقم الهاتف",
+      "save_address": "حفظ العنوان",
+      "cancel_text": "إلغاء",
+      "payment_method_title": "طريقة الدفع"
     }
   },
   "sidebar": {
