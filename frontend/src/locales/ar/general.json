@@ -220,7 +220,21 @@
       "phone": "رقم الهاتف",
       "save_address": "حفظ العنوان",
       "cancel_text": "إلغاء",
-      "payment_method_title": "طريقة الدفع"
+      "payment_method_title": "طريقة الدفع",
+      "review_order_title": "مراجعة الطلب",
+      "shipping_address": "عنوان الشحن",
+      "shipping_method": "طريقة الشحن",
+      "payment_method": "طريقة الدفع",
+      "order_summary": "ملخص الطلب",
+      "subtotal": "المجموع الفرعي",
+      "shipping": "الشحن",
+      "grand_total": "المجموع النهائي",
+      "edit": "تعديل",
+      "secure_message": "الدفع آمن ومشفر",
+      "tax": "الضريبة",
+      "address": "العنوان",
+      "payment": "الدفع",
+      "review": "مراجعة"
     }
   },
   "sidebar": {

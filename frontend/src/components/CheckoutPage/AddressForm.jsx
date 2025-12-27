@@ -64,9 +64,12 @@ const AddressForm = ({ onNext }) => {
 
     // onNext(form);
     onNext({
-      shippingAddressId: selectedAddressId,
-      ...selectedAddress,
-      ...selectedState,
+      shippingAddress: {
+        ...selectedAddress,
+        state: {
+          ...selectedState,
+        },
+      },
     });
   };
 

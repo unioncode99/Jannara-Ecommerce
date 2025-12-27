@@ -226,7 +226,21 @@
       "phone": "Phone",
       "save_address": "Save Address",
       "cancel_text": "Cancel",
-      "payment_method_title": "Payment Method"
+      "payment_method_title": "Payment Method",
+      "review_order_title": "Review Your Order",
+      "shipping_address": "Shipping Address",
+      "shipping_method": "Shipping Method",
+      "payment_method": "Payment Method",
+      "order_summary": "Order Summary",
+      "subtotal": "Subtotal",
+      "grand_total": "Grand Total",
+      "edit": "Edit",
+      "secure_message": "Your payment is secure and encrypted",
+      "tax": "Tax",
+      "address": "Address",
+      "shipping": "Shipping",
+      "payment": "Payment",
+      "review": "Review"
     }
   },
   "sidebar": {

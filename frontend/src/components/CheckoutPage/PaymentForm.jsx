@@ -49,7 +49,6 @@ const PaymentForm = ({ onNext, onBack, checkoutData }) => {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethodId, setSelectedPaymentMethodId] = useState(null);
 
-  const [method, setMethod] = useState("Credit Card");
   const { translations } = useLanguage();
   const { back, next, payment_method_title } =
     translations.general.pages.checkout;
@@ -70,7 +69,11 @@ const PaymentForm = ({ onNext, onBack, checkoutData }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onNext({ paymentMethod: method });
+    onNext({
+      paymentMethod: paymentMethods.find(
+        (method) => method.id === selectedPaymentMethodId
+      ),
+    });
   };
 
   // return (

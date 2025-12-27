@@ -5,62 +5,123 @@ import "./ReviewOrder.css";
 import Button from "../ui/Button";
 import { useLanguage } from "../../hooks/useLanguage";
 import CheckoutNavigationButtons from "../CheckoutPage/CheckoutNavigationButtons";
+import { SquarePen } from "lucide-react";
 
-const ReviewOrder = ({ checkoutData, onBack }) => {
+const ReviewOrder = ({ checkoutData, onBack, handleEditStep }) => {
   const { cart } = useCart();
   console.log("checoutdat -> ", checkoutData);
   console.log("cart -> ", cart);
-  const { translations } = useLanguage();
-  const { back, place_order } = translations.general.pages.checkout;
+  const { translations, language } = useLanguage();
+  const {
+    review_order_title,
+    shipping_address,
+    shipping_method,
+    payment_method,
+    order_summary,
+    subtotal,
+    shipping,
+    grand_total,
+    secure_message,
+    back,
+    place_order,
+    tax,
+  } = translations.general.pages.checkout;
+
+  const { shippingAddress, shippingMethod, paymentMethod } = checkoutData;
 
   const handleSubmit = () => {
+    console.log("checkoutData", checkoutData);
     console.log("Order Placed! 🎉");
   };
 
+  console.log("checkoutData", checkoutData);
+
   return (
     <div className="review-order-container">
-      <h2>Review Order</h2>
-      {/* <p>
-        <strong>Name:</strong> {checkoutData.fullName}
-      </p>
-      <p>
-        <strong>Email:</strong> {checkoutData.email}
-      </p>
-      <p>
-        <strong>Phone:</strong> {checkoutData.phone}
-      </p> */}
-      <p>
-        <strong>Address:</strong>{" "}
-        <span>
-          {checkoutData.state}, {checkoutData.city}, {checkoutData.locality},{" "}
-          {checkoutData.street}, {checkoutData.buildingNumber}
-        </span>
-      </p>
-      <p>
-        <strong>Shipping Method:</strong>{" "}
-        <span>{checkoutData.shippingMethod}</span>
-      </p>
-      <p>
-        <strong>Payment Method:</strong>{" "}
-        <span>{checkoutData.paymentMethod}</span>
-      </p>
-      {/* <p>
-        <strong>Order ID:</strong> {checkoutData.orderId}
-      </p> */}
-      <p>
-        <strong>Grand Total:</strong>{" "}
-        <span>{formatMoney(cart?.grandTotal)}</span>
-      </p>
+      <h2>{review_order_title}</h2>
+
+      {/* Address */}
+      <div className="review-card">
+        <div className="review-header">
+          <h4>📍 {shipping_address}</h4>
+          <button onClick={() => handleEditStep("address")}>
+            <SquarePen />{" "}
+          </button>
+        </div>
+        <p>
+          {language == "en"
+            ? shippingAddress.state.nameEn
+            : shippingAddress.state.nameAr}
+          , {shippingAddress.city}, {shippingAddress.locality},{" "}
+          {shippingAddress.street}, {shippingAddress.buildingNumber}
+        </p>
+      </div>
+
+      {/* Shipping */}
+      <div className="review-card">
+        <div className="review-header">
+          <h4>🚚 {shipping_method}</h4>
+          <button onClick={() => handleEditStep("shipping")}>
+            <SquarePen />{" "}
+          </button>
+        </div>
+        <p>
+          {language == "en" ? shippingMethod.nameEn : shippingMethod.nameAr}
+        </p>
+      </div>
+
+      {/* Payment */}
+      <div className="review-card">
+        <div className="review-header">
+          <h4>💳 {payment_method}</h4>
+          <button onClick={() => handleEditStep("payment")}>
+            <SquarePen />{" "}
+          </button>
+        </div>
+        <p>{language == "en" ? paymentMethod.nameEn : paymentMethod.nameAr}</p>
+      </div>
+
+      {/* Summary */}
+      <div className="review-summary">
+        <h4>{order_summary}</h4>
+
+        <div className="summary-row">
+          <span>{subtotal}</span>
+          <span>{formatMoney(cart?.subTotal)}</span>
+        </div>
+
+        <div className="summary-row">
+          <span>{tax} (15%)</span>
+          <span>{formatMoney(cart?.taxPrice || 0)}</span>
+        </div>
+
+        <div className="summary-row">
+          <span>{shipping}</span>
+          <span>{formatMoney(checkoutData?.shippingCost || 0)}</span>
+        </div>
+
+        <hr />
+
+        <div className="summary-row total">
+          <strong>{grand_total}</strong>
+          <strong>
+            {formatMoney(
+              (cart?.subTotal || 0) +
+                (cart?.taxPrice || 0) +
+                (shippingMethod?.shippingCost || 0)
+            )}
+          </strong>
+        </div>
+      </div>
+
+      <p className="secure-text">🔒 {secure_message}</p>
 
       <CheckoutNavigationButtons
         onBack={onBack}
         onNext={handleSubmit}
         backLabel={back}
         nextLabel={place_order}
-        nextDisabled={!checkoutData}
       />
-
-      {/* <button onClick={() => alert("Order Placed! 🎉")}>Place Order</button> */}
     </div>
   );
 };
