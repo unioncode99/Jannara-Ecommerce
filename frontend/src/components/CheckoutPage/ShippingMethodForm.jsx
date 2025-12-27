@@ -25,10 +25,17 @@ const ShippingMethodForm = ({ onNext, onBack, checkoutData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onNext({
-      shippingMethodId: selectedShippingMethodId,
-      ...shippingMethods.find(
-        (method) => method.id === selectedShippingMethodId
-      ),
+      shippingMethod: {
+        ...shippingMethods.find(
+          (method) => method.id === selectedShippingMethodId
+        ),
+        shippingCost: calculateShippingCost(
+          shippingMethods.find(
+            (method) => method.id === selectedShippingMethodId
+          ),
+          checkoutData.extraFeeForShipping
+        ),
+      },
     });
   };
 

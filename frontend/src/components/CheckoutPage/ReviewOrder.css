@@ -23,3 +23,58 @@
 .review-order-container p span {
   color: var(--grey-500);
 }
+
+.review-order-container {
+  max-width: 600px;
+  margin: auto;
+}
+
+.review-card {
+  background: #fff;
+  background-color: var(--grey-200);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-1);
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.review-header button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--primary-500);
+}
+
+.review-summary {
+  border-radius: var(--border-radius);
+  background-color: var(--grey-200);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.summary-row.total {
+  font-size: 1.1rem;
+}
+
+.secure-text {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--grey-500);
+  margin-bottom: 1rem;
+}
