@@ -33,6 +33,7 @@ namespace Jannara_Ecommerce.Business
             services.AddScoped<IStateService, StateService>();
             services.AddScoped<IShippingMethodService, ShippingMethodService>();
             services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+            services.AddScoped<IOrderService, OrderService>();
             return services;
         }
     }

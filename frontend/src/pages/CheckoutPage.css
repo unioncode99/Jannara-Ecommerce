@@ -22,6 +22,7 @@
 
 .active-step-container {
   color: var(--primary-500);
+  margin-bottom: 1rem;
 }
 
 .step-container > span {

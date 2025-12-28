@@ -28,3 +28,35 @@ export function formatMoney(
 
   return showSymbol ? `${currencySymbol} ${formatted}` : formatted;
 }
+
+// utils/formatDateTime.js
+
+/**
+ * Format a Date or timestamp as a human-readable string
+ * @param {string|Date} date - Date object or ISO string
+ * @param {Object} options - Formatting options
+ * @param {string} options.locale - Locale for formatting (default: 'en-SD')
+ * @param {Object} options.dateOptions - Intl.DateTimeFormat options
+ * @returns {string} Formatted date string
+ */
+export function formatDateTime(
+  date,
+  {
+    locale = "en-SD",
+    dateOptions = {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    },
+  } = {}
+) {
+  if (!date) return "";
+  const dt = typeof date === "string" ? new Date(date) : date;
+  if (isNaN(dt)) return "";
+
+  return new Intl.DateTimeFormat(locale, dateOptions).format(dt);
+}

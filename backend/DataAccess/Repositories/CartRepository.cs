@@ -14,10 +14,12 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
     {
         private readonly string _connectionString;
         private readonly ILogger<ICartRepository> _logger;
-        public CartRepository(IOptions<DatabaseSettings> options, ILogger<ICartRepository> logger)
+        private readonly IConfiguration _config;
+        public CartRepository(IOptions<DatabaseSettings> options, ILogger<ICartRepository> logger, IConfiguration config)
         {
             _connectionString = options.Value.DefaultConnection;
             _logger = logger;
+            _config = config;
         }
 
         public async Task<Result<bool>> ClearCartAsync(int cartId)
@@ -71,9 +73,11 @@ SELECT @json = (
         totals.TotalWeight,
 
         -- Tax (15%)
-        CAST(totals.SubTotal * 0.15 AS DECIMAL(10,2)) AS TaxPrice,
-
-
+@taxRate as TaxRate,
+        CAST(
+  COALESCE(totals.SubTotal, 0) * COALESCE(@taxRate, 0)
+  AS DECIMAL(10,2)
+) AS TaxPrice,
 
         -- Shipping rule
         CASE
@@ -163,7 +167,15 @@ SELECT @json AS FullJson;
 
                 using (var command = new SqlCommand(query, connection))
                 {
+                    decimal? taxRate = null;
+
+                    if (decimal.TryParse(_config["TaxRate"], out var tax))
+                    {
+                        taxRate = tax;
+                    }
+
                     command.Parameters.AddWithValue("@customerId", customerId);
+                    command.Parameters.AddWithValue("@taxRate", (object)taxRate ?? (object)DBNull.Value);
                     try
                     {
                         await connection.OpenAsync();

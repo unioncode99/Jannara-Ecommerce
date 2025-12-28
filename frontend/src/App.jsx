@@ -23,6 +23,7 @@ import FavoritesPage from "./pages/FavoritesPage";
 import CartPage from "./pages/CartPage";
 import { CartProvider } from "./contexts/CartContext";
 import CheckoutPage from "./pages/CheckoutPage";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
 
 function App() {
   const { language } = useLanguage();
@@ -72,6 +73,10 @@ function App() {
             <Route
               path="/confirm-account"
               element={<AccountConfirmationPage />}
+            />
+            <Route
+              path="order-success/:publicOrderId"
+              element={<OrderSuccessPage />}
             />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

@@ -1,8 +1,9 @@
-using Jannara_Ecommerce.Business;
+﻿using Jannara_Ecommerce.Business;
 using Jannara_Ecommerce.DataAccess;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -58,6 +59,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+// ⚡ Set the Stripe secret key from configuration
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 
 var app = builder.Build();

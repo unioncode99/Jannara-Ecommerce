@@ -29,7 +29,7 @@ const ProductPage = () => {
   );
 
   useEffect(() => {
-    setQuantity(0);
+    setQuantity(1);
   }, [selectedSellerProductId]);
 
   // Fetch product details
@@ -65,7 +65,7 @@ const ProductPage = () => {
       }
     });
 
-    setQuantity(0);
+    setQuantity(1);
     setSelectedOptions(defaults);
   }, [product]);
 
@@ -79,13 +79,13 @@ const ProductPage = () => {
     );
     setSelectedSellerProductId(0);
     setSelectedItem(item || null);
-    setQuantity(0);
+    setQuantity(1);
   }, [selectedOptions, product]);
 
   // Handle option selection
   const handleSelect = (variationId, optionId) => {
     setSelectedOptions((prev) => ({ ...prev, [variationId]: optionId }));
-    setQuantity(0);
+    setQuantity(1);
     setSelectedSellerProductId(0);
   };
 

@@ -234,7 +234,18 @@
       "tax": "الضريبة",
       "address": "العنوان",
       "payment": "الدفع",
-      "review": "مراجعة"
+      "review": "مراجعة",
+      "pay_now": "ادفع الآن",
+      "payment_success": "تم الدفع بنجاح!",
+      "thank_you": "شكراً لشرائك.",
+      "order": "الطلب",
+      "status": "الحالة",
+      "paid": "مدفوع",
+      "pending": "قيد الانتظار",
+      "placed_at": "تاريخ الطلب",
+      "items": "العناصر",
+      "continue_shopping": "متابعة التسوق",
+      "no_order": "لم يتم العثور على الطلب."
     }
   },
   "sidebar": {

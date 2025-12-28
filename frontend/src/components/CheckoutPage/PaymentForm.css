@@ -6,3 +6,9 @@
 .payment-from .radio-inputs-container label small {
   color: var(--grey-500);
 }
+.card-box {
+  border: 1px solid var(--border-color);
+  padding: 0.7rem;
+  border-radius: var(--border-radius);
+  margin-top: 0.5rem;
+}

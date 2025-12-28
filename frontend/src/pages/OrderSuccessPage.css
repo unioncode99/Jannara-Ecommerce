@@ -1,0 +1,73 @@
+.order-success-page {
+  max-width: var(--fixed-width);
+  width: 90vw;
+  margin: 4rem auto;
+  background-color: var(--card-background);
+  box-shadow: var(--shadow-2);
+  border-radius: var(--border-radius);
+  padding: 2rem 4rem;
+}
+
+.order-success-page h1 {
+  color: var(--primary-500);
+  text-align: center;
+}
+
+.order-success-page p {
+  color: var(--grey-500);
+}
+
+.order-summary {
+  margin-top: 1.5rem;
+}
+
+.order-summary p {
+  text-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  /* text overflow */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.order-summary p span {
+  /* text-overflow: hidden; */
+}
+
+.order-summary li {
+  margin-bottom: 0.3rem;
+  margin-left: 1rem;
+  color: var(--grey-400);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.totals p {
+  margin: 0.3rem 0;
+}
+.btn-continue-container {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-continue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.error-container,
+.no-order-container {
+  display: grid;
+  place-items: center;
+  height: 60vh;
+  color: #d9534f;
+}

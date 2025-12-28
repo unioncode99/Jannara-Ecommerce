@@ -36,6 +36,15 @@ const ShippingMethodForm = ({ onNext, onBack, checkoutData }) => {
           checkoutData.extraFeeForShipping
         ),
       },
+      totalCost:
+        calculateShippingCost(
+          shippingMethods.find(
+            (method) => method.id === selectedShippingMethodId
+          ),
+          checkoutData.extraFeeForShipping
+        ) +
+        cart.subTotal +
+        cart.taxPrice,
     });
   };
 

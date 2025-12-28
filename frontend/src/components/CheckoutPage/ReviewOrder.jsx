@@ -7,7 +7,7 @@ import { useLanguage } from "../../hooks/useLanguage";
 import CheckoutNavigationButtons from "../CheckoutPage/CheckoutNavigationButtons";
 import { SquarePen } from "lucide-react";
 
-const ReviewOrder = ({ checkoutData, onBack, handleEditStep }) => {
+const ReviewOrder = ({ checkoutData, onBack, onNext, handleEditStep }) => {
   const { cart } = useCart();
   console.log("checoutdat -> ", checkoutData);
   console.log("cart -> ", cart);
@@ -16,7 +16,6 @@ const ReviewOrder = ({ checkoutData, onBack, handleEditStep }) => {
     review_order_title,
     shipping_address,
     shipping_method,
-    payment_method,
     order_summary,
     subtotal,
     shipping,
@@ -27,10 +26,11 @@ const ReviewOrder = ({ checkoutData, onBack, handleEditStep }) => {
     tax,
   } = translations.general.pages.checkout;
 
-  const { shippingAddress, shippingMethod, paymentMethod } = checkoutData;
+  const { shippingAddress, shippingMethod } = checkoutData;
 
   const handleSubmit = () => {
     console.log("checkoutData", checkoutData);
+    onNext({ test: 1 });
     console.log("Order Placed! 🎉");
   };
 
@@ -70,17 +70,6 @@ const ReviewOrder = ({ checkoutData, onBack, handleEditStep }) => {
         </p>
       </div>
 
-      {/* Payment */}
-      <div className="review-card">
-        <div className="review-header">
-          <h4>💳 {payment_method}</h4>
-          <button onClick={() => handleEditStep("payment")}>
-            <SquarePen />{" "}
-          </button>
-        </div>
-        <p>{language == "en" ? paymentMethod.nameEn : paymentMethod.nameAr}</p>
-      </div>
-
       {/* Summary */}
       <div className="review-summary">
         <h4>{order_summary}</h4>
@@ -91,7 +80,9 @@ const ReviewOrder = ({ checkoutData, onBack, handleEditStep }) => {
         </div>
 
         <div className="summary-row">
-          <span>{tax} (15%)</span>
+          <span>
+            {tax} ({cart.taxRate * 100}%)
+          </span>
           <span>{formatMoney(cart?.taxPrice || 0)}</span>
         </div>
 

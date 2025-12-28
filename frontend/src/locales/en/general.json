@@ -240,7 +240,18 @@
       "address": "Address",
       "shipping": "Shipping",
       "payment": "Payment",
-      "review": "Review"
+      "review": "Review",
+      "pay_now": "Pay Now",
+      "payment_success": "Payment Successful!",
+      "thank_you": "Thank you for your purchase.",
+      "order": "Order",
+      "status": "Status",
+      "paid": "Paid",
+      "pending": "Pending",
+      "placed_at": "Placed At",
+      "items": "Items",
+      "continue_shopping": "Continue Shopping",
+      "no_order": "No order found."
     }
   },
   "sidebar": {

@@ -24,7 +24,6 @@ const CheckoutPage = () => {
   const STEP_MAP = {
     address: 1,
     shipping: 2,
-    payment: 3,
   };
 
   const handleEditStep = (section) => {
@@ -38,8 +37,8 @@ const CheckoutPage = () => {
   const stepLabels = {
     1: address,
     2: shipping,
-    3: payment,
-    4: review,
+    3: review,
+    4: payment,
   };
 
   return (
@@ -65,16 +64,17 @@ const CheckoutPage = () => {
         />
       )}
       {step === 3 && (
-        <PaymentForm
-          onNext={handleNextStep}
+        <ReviewOrder
           onBack={handlePrevStep}
+          handleEditStep={handleEditStep}
+          onNext={handleNextStep}
           checkoutData={checkoutData}
         />
       )}
       {step === 4 && (
-        <ReviewOrder
+        <PaymentForm
+          onNext={handleNextStep}
           onBack={handlePrevStep}
-          handleEditStep={handleEditStep}
           checkoutData={checkoutData}
         />
       )}
