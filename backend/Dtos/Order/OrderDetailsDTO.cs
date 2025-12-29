@@ -11,6 +11,8 @@ namespace Jannara_Ecommerce.DTOs.Order
         public int ShippingMethodId { get; set; }
         public string PaymentIntentId { get; set; }
         public byte OrderStatus { get; set; }
+        public string StatusNameEn { get; set; }
+        public string StatusNameAr { get; set; }
         public decimal SubTotal { get; set; }
         public decimal TaxCost { get; set; }
         public decimal ShippingCost { get; set; }

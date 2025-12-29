@@ -1,13 +1,1 @@
-.table-view .delete-order-btn,
-.table-view .edit-order-btn {
-  background-color: transparent;
-  font-weight: bold;
-}
 
-.table-view .delete-order-btn:hover {
-  color: #d9534f;
-}
-
-.table-view .edit-order-btn:hover {
-  color: green;
-}

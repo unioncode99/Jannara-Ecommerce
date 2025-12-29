@@ -410,6 +410,25 @@ SELECT @json = (
         o.shipping_method_id AS ShippingMethodId,
         o.payment_intent_id AS PaymentIntentId,
         o.order_status AS OrderStatus,
+
+        CASE o.order_status
+            WHEN 1 THEN 'Pending'
+            WHEN 2 THEN 'Processing'
+            WHEN 3 THEN 'Shipped'
+            WHEN 4 THEN 'Delivered'
+            WHEN 5 THEN 'Cancelled'
+            ELSE 'Unknown'
+        END AS StatusNameEn,
+
+        CASE o.order_status
+            WHEN 1 THEN N'قيد الانتظار'
+            WHEN 2 THEN N'قيد المعالجة'
+            WHEN 3 THEN N'تم الشحن'
+            WHEN 4 THEN N'تم التوصيل'
+            WHEN 5 THEN N'ملغى'
+            ELSE N'غير معروف'
+        END AS StatusNameAr,
+
         o.subtotal AS SubTotal,
         o.tax_cost AS TaxCost,
         o.shipping_cost AS ShippingCost,
@@ -425,6 +444,7 @@ SELECT @json = (
                 oi.seller_product_id AS SellerProductId,
                 oi.quantity AS Quantity,
                 oi.unit_price AS UnitPrice,
+                oi.total_price AS TotalPrice,
 
                 p.name_en AS NameEn,
                 p.name_ar AS NameAr,
@@ -498,6 +518,25 @@ SELECT @json = (
         o.shipping_method_id AS ShippingMethodId,
         o.payment_intent_id AS PaymentIntentId,
         o.order_status AS OrderStatus,
+
+        CASE o.order_status
+            WHEN 1 THEN 'Pending'
+            WHEN 2 THEN 'Processing'
+            WHEN 3 THEN 'Shipped'
+            WHEN 4 THEN 'Delivered'
+            WHEN 5 THEN 'Cancelled'
+            ELSE 'Unknown'
+        END AS StatusNameEn,
+
+        CASE o.order_status
+            WHEN 1 THEN N'قيد الانتظار'
+            WHEN 2 THEN N'قيد المعالجة'
+            WHEN 3 THEN N'تم الشحن'
+            WHEN 4 THEN N'تم التوصيل'
+            WHEN 5 THEN N'ملغى'
+            ELSE N'غير معروف'
+        END AS StatusNameAr,
+
         o.subtotal AS SubTotal,
         o.tax_cost AS TaxCost,
         o.shipping_cost AS ShippingCost,
@@ -513,6 +552,7 @@ SELECT @json = (
                 oi.seller_product_id AS SellerProductId,
                 oi.quantity AS Quantity,
                 oi.unit_price AS UnitPrice,
+                oi.total_price AS TotalPrice,
 
                 p.name_en AS NameEn,
                 p.name_ar AS NameAr,

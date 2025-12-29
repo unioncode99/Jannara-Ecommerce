@@ -1,15 +1,14 @@
-import { Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import Button from "../ui/Button";
 import Table from "../ui/Table";
 import { formatDateTime, formatMoney } from "../../utils/utils";
 import "./TableView.css";
+import { useLanguage } from "../../hooks/useLanguage";
 
-const TableView = ({ orders }) => {
+const TableView = ({ orders, viewOrder }) => {
   console.log("orders", orders);
-  const handleEdit = (order) => {};
-  function setDeleteId(id) {}
-  function setIsConfirmOpen(id) {}
-  //   return <div>TableView</div>;
+  const { language } = useLanguage();
+
   return (
     <div className="table-view">
       <Table
@@ -18,23 +17,14 @@ const TableView = ({ orders }) => {
           ID: order.publicOrderId,
           Date: formatDateTime(order.placedAt),
           Total: formatMoney(order.grandTotal),
-          Status: order.orderStatus,
+          Status: language == "en" ? order.statusNameEn : order.statusNameAr,
           Actions: (
             <>
               <Button
-                className="edit-order-btn"
-                onClick={() => handleEdit(order)}
+                className="view-order-btn"
+                onClick={() => viewOrder(order)}
               >
-                <Pencil />
-              </Button>
-              <Button
-                className="delete-order-btn"
-                onClick={() => {
-                  setDeleteId(order.id);
-                  setIsConfirmOpen(true);
-                }}
-              >
-                <Trash2 />
+                <Eye />
               </Button>
             </>
           ),

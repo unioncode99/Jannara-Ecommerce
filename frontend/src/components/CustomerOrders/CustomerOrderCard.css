@@ -1,0 +1,39 @@
+.customer-order-card {
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0.75rem;
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+.customer-order-card:hover {
+  /* border-color: var(--primary-500); */
+  box-shadow: var(--shadow-2);
+  /* transform: scale(1.1); */
+}
+.customer-order-card h3 {
+  /* white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip; */
+}
+
+.customer-order-card p {
+  color: var(--grey-500);
+  text-align: start;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.customer-order-card li {
+  margin-bottom: 0.3rem;
+  margin-left: 1rem;
+  color: var(--grey-400);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}

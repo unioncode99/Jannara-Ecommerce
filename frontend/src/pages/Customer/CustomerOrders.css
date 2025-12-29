@@ -1,0 +1,17 @@
+.order-status {
+  background-color: var(--primary-100);
+  padding: 0.2rem 0.4rem;
+  color: var(--primary-500);
+  border-radius: var(--border-radius);
+  font-weight: bold;
+}
+
+.view-order-btn {
+  background-color: transparent;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.view-order-btn:hover {
+  color: var(--primary-500);
+}

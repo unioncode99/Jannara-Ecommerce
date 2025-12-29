@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import TableView from "../../components/CustomerOrders/TableView";
 import { read } from "../../api/apiWrapper";
+import CardView from "../../components/CustomerOrders/CardView";
+import "./CustomerOrders.css";
 
 const CustomerOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -35,7 +37,8 @@ const CustomerOrders = () => {
       <h1>My Orders</h1>
       {/* View Switch */}
       <div></div>
-      <TableView orders={orders} />
+      {/* <TableView orders={orders} /> */}
+      <CardView orders={orders} />
     </div>
   );
 };

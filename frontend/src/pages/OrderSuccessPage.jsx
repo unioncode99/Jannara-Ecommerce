@@ -85,7 +85,9 @@ const OrderSuccessPage = () => {
         </p>
         <p>
           <span>{status}:</span>{" "}
-          <span>{order.orderStatus === 2 ? "Paid" : "Pending"}</span>
+          <span>
+            {language == "en" ? order.statusNameEn : order.statusNameAr}
+          </span>
         </p>
         <p>
           <span>{placed_at}:</span>
@@ -99,7 +101,7 @@ const OrderSuccessPage = () => {
               <span>
                 {language == "en" ? item.nameEn : item.nameAr} ({item.quantity})
               </span>
-              <span>{formatMoney(item.unitPrice)}</span>
+              <span>{formatMoney(item.totalPrice)}</span>
             </li>
           ))}
         </ul>
