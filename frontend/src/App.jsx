@@ -24,6 +24,7 @@ import CartPage from "./pages/CartPage";
 import { CartProvider } from "./contexts/CartContext";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
+import CustomerOrders from "./pages/Customer/CustomerOrders";
 
 function App() {
   const { language } = useLanguage();
@@ -37,6 +38,7 @@ function App() {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/customer-dashboard" element={<CustomerDashboard />} />
+            <Route path="/customer-orders" element={<CustomerOrders />} />
             <Route path="/seller-dashboard" element={<SellerDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route

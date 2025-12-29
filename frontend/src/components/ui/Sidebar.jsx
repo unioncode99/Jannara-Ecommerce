@@ -29,10 +29,10 @@ const menus = {
       path: "/customer-dashboard",
       icon: <LayoutDashboard />,
     },
-    { key: "shop_now", path: "/", icon: "🏠" },
+    { key: "shop_now", path: "/", icon: <House /> },
     { key: "favorites", path: "/favorites", icon: <Heart /> },
     { key: "cart", path: "/cart", icon: <ShoppingCart /> },
-    { key: "orders", path: "/orders", icon: <ShoppingBag /> },
+    { key: "orders", path: "/customer-orders", icon: <ShoppingBag /> },
   ],
   seller: [
     { key: "dashboard", path: "/seller-dashboard", icon: <LayoutDashboard /> },

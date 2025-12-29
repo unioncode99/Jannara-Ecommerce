@@ -1,0 +1,41 @@
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .table-responsive {
+    min-width: 900px;
+    overflow-x: auto;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  background-color: var(--card-background);
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+  padding: 0.5rem 1rem;
+  text-align: start;
+  border: 1px solid var(--border-color);
+  border: 1px solid var(--grey-300);
+  color: var(--text-color);
+}
+.table-hover tbody tr {
+  transition: var(--transition);
+}
+.table-hover tbody tr:hover {
+  background-color: var(--grey-200);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: var(--grey-200);
+}
