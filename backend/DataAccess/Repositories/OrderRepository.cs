@@ -29,16 +29,188 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
         {
             using (var connection = new SqlConnection(_connectionString))
             {
+                
+//                string query = @"
+//-- VARIABLES
+//DECLARE @orderId INT;
+//DECLARE @invoiceId INT;
+//DECLARE @subtotal DECIMAL(18,2);
+//DECLARE @taxCost DECIMAL(18,2);
+//DECLARE @shippingCost DECIMAL(18,2);
+//DECLARE @grandTotal DECIMAL(18,2);
+//DECLARE @totalWeight DECIMAL(18,2);
+//DECLARE @itemsCount INT;
+
+//-- BEGIN TRANSACTION
+//BEGIN TRANSACTION;
+
+//BEGIN TRY
+//	-- INPUT VALIDATIONS
+//    -- 1️ Validate Cart exists
+//    IF NOT EXISTS (SELECT 1 FROM Carts WHERE id = @cartId)
+//        THROW 50001, 'Cart does not exist.', 1;
+
+//    -- 2️ Validate Cart has items
+//    IF NOT EXISTS (SELECT 1 FROM CartItems WHERE cart_id = @cartId)
+//        THROW 50002, 'Cart is empty.', 1;
+
+//    -- 3️ Validate Customer exists
+//    IF NOT EXISTS (SELECT 1 FROM Customers WHERE id = @customerId)
+//        THROW 50003, 'Customer does not exist.', 1;
+
+//    -- 4️ Validate Payment Method exists
+//    IF NOT EXISTS (SELECT 1 FROM PaymentMethods WHERE id = @paymentMethodId)
+//        THROW 50004, 'Payment method is invalid.', 1;
+
+//    -- 5️ Validate Shipping Address belongs to customer
+//    IF NOT EXISTS (
+//    SELECT 1 
+//    FROM Addresses 
+//    WHERE id = @shippingAddressId 
+//      AND person_id = (SELECT person_id FROM Customers WHERE id = @customerId)
+//)
+//    THROW 50005, 'Shipping address is invalid for this customer.', 1;
+
+//    -- 6️ Validate Shipping Method exists
+//    IF NOT EXISTS (SELECT 1 FROM ShippingMethods WHERE id = @shippingMethodId)
+//        THROW 50006, 'Shipping method does not exist.', 1;
+
+//    -- 7️ Validate tax rate
+//    IF @taxRate < 0 OR @taxRate > 1
+//    THROW 50007, 'Tax rate must be between 0 and 1.', 1;
+
+//    -- 1️ CALCULATE SUBTOTAL, TOTAL WEIGHT, ITEMS COUNT
+//    SELECT 
+//   @subtotal = ISNULL(SUM(ci.quantity * ci.price_at_add_time), 0),
+//    @totalWeight = ISNULL(SUM(ci.[quantity] * p.[weight_kg]), 0),
+//    @itemsCount = ISNULL(SUM(ci.[quantity]), 0)
+//    FROM CartItems ci
+//    INNER JOIN SellerProducts sp ON sp.id = ci.seller_product_id
+//    INNER JOIN ProductItems pi ON pi.id = sp.product_item_id
+//    INNER JOIN Products p ON p.id = pi.product_id
+//    WHERE ci.cart_id = @cartId;
+
+//    -- 2️ FETCH SHIPPING METHOD INFO
+//    DECLARE @basePrice DECIMAL(18,2);
+//    DECLARE @pricePerKg DECIMAL(18,2);
+//    DECLARE @pricePerItem DECIMAL(18,2);
+//    DECLARE @freeOver DECIMAL(18,2);
+//    DECLARE @stateFee DECIMAL(18,2);
+
+//    SELECT 
+//        @basePrice = sm.base_price,
+//        @pricePerKg = sm.price_per_kg,
+//        @pricePerItem = sm.price_per_item,
+//        @freeOver = sm.free_over,
+//        @stateFee = ISNULL(st.[extra_fee_for_shipping],0)
+//    FROM ShippingMethods sm
+//    JOIN Addresses sa ON sa.[id] = @shippingAddressId
+//    JOIN States st ON st.[id] = sa.[state_id]
+//    WHERE sm.[id] = @shippingMethodId;
+
+//    -- 3️ CALCULATE SHIPPING COST
+//    IF @freeOver IS NOT NULL AND @subtotal >= @freeOver
+//        SET @shippingCost = 0;
+//    ELSE
+//        SET @shippingCost = ISNULL(@basePrice, 0)
+//                          + ISNULL(@pricePerKg, 0) * ISNULL(@totalWeight, 0)
+//                          + ISNULL(@pricePerItem, 0) * ISNULL(@itemsCount, 0)
+//                          + ISNULL(@stateFee, 0);
+
+//    -- 4️ CALCULATE TAX AND GRAND TOTAL
+//    SET @taxCost = ROUND(@subtotal * ISNULL(@taxRate, 0), 2); 
+//    SET @grandTotal = @subtotal + @taxCost + @shippingCost;
+
+//    -- 5️ INSERT ORDER
+//	-- 1 = Pending
+//    INSERT INTO Orders ([customer_id], [shipping_address_id], shipping_method_id, payment_intent_id, subtotal, [tax_cost], [shipping_cost], [grand_total], [order_status], [placed_at])
+//    VALUES (@customerId, @shippingAddressId, @shippingMethodId, @paymentIntentId, @subtotal, @taxCost, @shippingCost, @grandTotal, 1, GETDATE());
+
+//    SET @orderId = SCOPE_IDENTITY();
+
+//    -- 6️ INSERT ORDER ITEMS
+//    INSERT INTO OrderItems([order_id], [seller_product_id], [quantity], [unit_price], [created_at])
+//    SELECT 
+//        @orderId,
+//        ci.[seller_product_id],
+//        ci.[quantity],
+//        ci.price_at_add_time,
+//        GETDATE()
+//    FROM CartItems ci
+//    WHERE ci.[cart_id] = @cartId;
+
+//    -- 7️ INSERT INVOICE
+//	-- 1 = Paid, 2 = Unpaid
+//    INSERT INTO [invoices] ([order_id], [customer_id], invoice_number, [invoice_status], [created_at])
+//    VALUES (@orderId, @customerId, @orderId + 100, CASE WHEN @payNow = 1 THEN 1 ELSE 2 END, GETDATE());
+
+//    SET @invoiceId = SCOPE_IDENTITY();
+
+//    -- 8️ INSERT PAYMENT IF PAYNOW = 1
+//    IF @payNow = 1
+//    BEGIN
+//        INSERT INTO [payments] ([invoice_id], [paid_by_customer_id], payment_method_id, [amount], is_paid, [paid_at], [transaction_reference], [created_at])
+//        VALUES (
+//            @invoiceId,
+//            @customerId,
+//            @paymentMethodId,
+//            @grandTotal,
+//            1,
+//            GETDATE(),
+//            @transactionReference,
+//            GETDATE()
+//        );
+//    END
+
+//    -- deactivate cart
+//    Update carts set is_active = 0 where id = @cartId;
+
+//    -- create new cart for customer
+//    INSERT INTO Carts(customer_id, is_active)
+//    VALUES (@customerId, 1);
+    
+
+//    -- 9️ COMMIT TRANSACTION
+//    COMMIT TRANSACTION;
+
+//    -- 10️ RETURN RESULTS
+//   -- SELECT 
+//       -- @orderId AS [orderId], 
+//        --@invoiceId AS [invoiceId], 
+//       -- CASE WHEN @payNow = 1 THEN 'paid' ELSE 'unpaid' END AS [invoiceStatus],
+//       -- @subtotal AS [subtotal],
+//       -- @taxCost AS [tax],
+//--@shippingCost AS [shippingCost],
+//       -- @grandTotal AS [grandTotal];
+//select * from orders where id = @orderId;
+
+//END TRY
+//BEGIN CATCH
+//    ROLLBACK TRANSACTION;
+//    THROW;
+//END CATCH
+//";
+
                 string query = @"
 -- VARIABLES
 DECLARE @orderId INT;
 DECLARE @invoiceId INT;
-DECLARE @subtotal DECIMAL(18,2);
-DECLARE @taxCost DECIMAL(18,2);
-DECLARE @shippingCost DECIMAL(18,2);
-DECLARE @grandTotal DECIMAL(18,2);
-DECLARE @totalWeight DECIMAL(18,2);
-DECLARE @itemsCount INT;
+DECLARE @subtotal DECIMAL(18,2) = 0;
+DECLARE @taxCost DECIMAL(18,2) = 0;
+DECLARE @shippingCost DECIMAL(18,2) = 0;
+DECLARE @grandTotal DECIMAL(18,2) = 0;
+DECLARE @totalWeight DECIMAL(18,2) = 0;
+DECLARE @itemsCount INT = 0;
+-- SHIPPING VARIABLES (DECLARE ONCE)
+DECLARE @basePrice DECIMAL(18,2) = 0;
+DECLARE @pricePerKg DECIMAL(18,2) = 0;
+DECLARE @pricePerItem DECIMAL(18,2) = 0;
+DECLARE @freeOver DECIMAL(18,2) = 0;
+DECLARE @stateFee DECIMAL(18,2) = 0;
+-- SELLER VARIABLES
+DECLARE @sellerId INT;
+DECLARE @sellerOrderId INT;
+
 
 -- BEGIN TRANSACTION
 BEGIN TRANSACTION;
@@ -78,7 +250,7 @@ BEGIN TRY
     IF @taxRate < 0 OR @taxRate > 1
     THROW 50007, 'Tax rate must be between 0 and 1.', 1;
 
-    -- 1️ CALCULATE SUBTOTAL, TOTAL WEIGHT, ITEMS COUNT
+    -- CALCULATE SUBTOTAL, TOTAL WEIGHT, ITEMS COUNT
     SELECT 
    @subtotal = ISNULL(SUM(ci.quantity * ci.price_at_add_time), 0),
     @totalWeight = ISNULL(SUM(ci.[quantity] * p.[weight_kg]), 0),
@@ -89,12 +261,7 @@ BEGIN TRY
     INNER JOIN Products p ON p.id = pi.product_id
     WHERE ci.cart_id = @cartId;
 
-    -- 2️ FETCH SHIPPING METHOD INFO
-    DECLARE @basePrice DECIMAL(18,2);
-    DECLARE @pricePerKg DECIMAL(18,2);
-    DECLARE @pricePerItem DECIMAL(18,2);
-    DECLARE @freeOver DECIMAL(18,2);
-    DECLARE @stateFee DECIMAL(18,2);
+    -- FETCH SHIPPING METHOD INFO
 
     SELECT 
         @basePrice = sm.base_price,
@@ -107,7 +274,7 @@ BEGIN TRY
     JOIN States st ON st.[id] = sa.[state_id]
     WHERE sm.[id] = @shippingMethodId;
 
-    -- 3️ CALCULATE SHIPPING COST
+    -- CALCULATE SHIPPING COST
     IF @freeOver IS NOT NULL AND @subtotal >= @freeOver
         SET @shippingCost = 0;
     ELSE
@@ -116,18 +283,18 @@ BEGIN TRY
                           + ISNULL(@pricePerItem, 0) * ISNULL(@itemsCount, 0)
                           + ISNULL(@stateFee, 0);
 
-    -- 4️ CALCULATE TAX AND GRAND TOTAL
+    -- CALCULATE TAX AND GRAND TOTAL
     SET @taxCost = ROUND(@subtotal * ISNULL(@taxRate, 0), 2); 
     SET @grandTotal = @subtotal + @taxCost + @shippingCost;
 
-    -- 5️ INSERT ORDER
+    -- INSERT ORDER
 	-- 1 = Pending
     INSERT INTO Orders ([customer_id], [shipping_address_id], shipping_method_id, payment_intent_id, subtotal, [tax_cost], [shipping_cost], [grand_total], [order_status], [placed_at])
     VALUES (@customerId, @shippingAddressId, @shippingMethodId, @paymentIntentId, @subtotal, @taxCost, @shippingCost, @grandTotal, 1, GETDATE());
 
     SET @orderId = SCOPE_IDENTITY();
 
-    -- 6️ INSERT ORDER ITEMS
+    -- INSERT ORDER ITEMS
     INSERT INTO OrderItems([order_id], [seller_product_id], [quantity], [unit_price], [created_at])
     SELECT 
         @orderId,
@@ -138,14 +305,14 @@ BEGIN TRY
     FROM CartItems ci
     WHERE ci.[cart_id] = @cartId;
 
-    -- 7️ INSERT INVOICE
+    -- INSERT INVOICE
 	-- 1 = Paid, 2 = Unpaid
-    INSERT INTO [invoices] ([order_id], [customer_id], invoice_number, [invoice_status], [created_at])
-    VALUES (@orderId, @customerId, @orderId + 100, CASE WHEN @payNow = 1 THEN 1 ELSE 2 END, GETDATE());
+    INSERT INTO [invoices] ([order_id], [customer_id], amount, [invoice_status], [created_at])
+    VALUES (@orderId, @customerId, @grandTotal, CASE WHEN @payNow = 1 THEN 1 ELSE 2 END, GETDATE());
 
     SET @invoiceId = SCOPE_IDENTITY();
 
-    -- 8️ INSERT PAYMENT IF PAYNOW = 1
+    -- INSERT PAYMENT IF PAYNOW = 1
     IF @payNow = 1
     BEGIN
         INSERT INTO [payments] ([invoice_id], [paid_by_customer_id], payment_method_id, [amount], is_paid, [paid_at], [transaction_reference], [created_at])
@@ -161,6 +328,121 @@ BEGIN TRY
         );
     END
 
+
+-- SPLIT INTO SELLER ORDERS
+    DECLARE seller_cursor CURSOR FOR
+    SELECT DISTINCT sp.seller_id
+    FROM OrderItems oi
+    JOIN SellerProducts sp ON sp.id = oi.seller_product_id
+    WHERE oi.order_id = @orderId;
+
+    OPEN seller_cursor;
+    FETCH NEXT FROM seller_cursor INTO @sellerId;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+
+        -- Reset seller totals
+        DECLARE @sellerSubtotal DECIMAL(18,2) = 0;
+        DECLARE @sellerTotalWeight DECIMAL(18,2) = 0;
+        DECLARE @sellerItemsCount INT = 0;
+        DECLARE @sellerShipping DECIMAL(18,2) = 0;
+        DECLARE @sellerTax DECIMAL(18,2) = 0;
+        DECLARE @sellerGrandTotal DECIMAL(18,2) = 0;
+
+-- CALCULATE SELLER SUBTOTAL, WEIGHT, COUNT
+
+    SELECT 
+        @sellerSubtotal  = ISNULL(SUM(oi.quantity * oi.unit_price), 0),
+        @sellerTotalWeight = ISNULL(SUM(oi.quantity * p.weight_kg), 0),
+        @sellerItemsCount = ISNULL(SUM(oi.quantity), 0)
+    FROM OrderItems oi
+    INNER JOIN SellerProducts sp ON sp.id = oi.seller_product_id
+    INNER JOIN ProductItems pi ON pi.id = sp.product_item_id
+    INNER JOIN Products p ON p.id = pi.product_id
+    WHERE oi.order_id = @orderId
+      AND sp.seller_id = @sellerId;
+
+-- CALCULATE SHIPPING COST
+
+IF @freeOver IS NOT NULL AND @subtotal >= @freeOver
+    SET @sellerShipping = 0;  -- free shipping applies to entire order
+ELSE
+    SET @sellerShipping =
+        ISNULL(@basePrice, 0) * (CAST(@sellerSubtotal AS DECIMAL(18,2)) / @subtotal)
+      + ISNULL(@pricePerKg, 0) * @sellerTotalWeight
+      + ISNULL(@pricePerItem, 0) * @sellerItemsCount
+      + ISNULL(@stateFee, 0) * (CAST(@sellerSubtotal AS DECIMAL(18,2)) / @subtotal);
+
+
+-- CALCULATE TAX AND GRAND TOTAL
+
+ -- Seller tax & grand total
+        SET @sellerTax = ROUND(@sellerSubtotal * ISNULL(@taxRate, 0), 2);
+        SET @sellerGrandTotal = @sellerSubtotal + @sellerTax + @sellerShipping;
+
+-- INSERT SELLER ORDER
+-- 1 = Pending
+        INSERT INTO SellerOrders
+        (
+            customer_order_id,
+            seller_id,
+            order_status,
+            subtotal,
+            tax_cost,
+            shipping_cost,
+            grand_total
+        )
+        VALUES
+        (
+            @orderId,
+            @sellerId,
+            1,
+            @sellerSubtotal,
+            @sellerTax,
+            @sellerShipping,
+            @sellerGrandTotal
+        );
+
+        SET @sellerOrderId = SCOPE_IDENTITY();
+
+-- INSERT SELLER ORDER ITEMS
+        INSERT INTO SellerOrderItems
+        (
+            seller_order_id,
+            quantity,
+            unit_price
+        )
+        SELECT
+            @sellerOrderId,
+            oi.quantity,
+            oi.unit_price
+        FROM OrderItems oi
+        JOIN SellerProducts sp ON sp.id = oi.seller_product_id
+        WHERE oi.order_id = @orderId
+          AND sp.seller_id = @sellerId;
+
+-- INSERT SELLER INVOICE
+        INSERT INTO SellerInvoices
+        (
+            seller_order_id,
+            seller_id,
+            amount,
+            invoice_status
+        )
+        VALUES
+        (
+            @sellerOrderId,
+            @sellerId,
+            @sellerGrandTotal,
+            2 -- Unpaid
+        );
+
+        FETCH NEXT FROM seller_cursor INTO @sellerId;
+    END;
+    CLOSE seller_cursor;
+    DEALLOCATE seller_cursor;
+
     -- deactivate cart
     Update carts set is_active = 0 where id = @cartId;
 
@@ -169,10 +451,10 @@ BEGIN TRY
     VALUES (@customerId, 1);
     
 
-    -- 9️ COMMIT TRANSACTION
+    -- COMMIT TRANSACTION
     COMMIT TRANSACTION;
 
-    -- 10️ RETURN RESULTS
+    -- RETURN RESULTS
    -- SELECT 
        -- @orderId AS [orderId], 
         --@invoiceId AS [invoiceId], 
@@ -199,7 +481,7 @@ END CATCH
                     command.Parameters.AddWithValue("@payNow", orderCreateRequest.PayNow);
                     command.Parameters.AddWithValue("@taxRate", orderCreateRequest.TaxRate);
                     command.Parameters.AddWithValue("@transactionReference", orderCreateRequest.TransactionReference ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@paymentIntentId", orderCreateRequest.PaymentIntentId);
+                    command.Parameters.AddWithValue("@paymentIntentId", orderCreateRequest.PaymentIntentId ?? (object)DBNull.Value);
 
                     try
                     {
@@ -215,7 +497,7 @@ END CATCH
                                     reader.GetInt32(reader.GetOrdinal("customer_id")),
                                     reader.GetInt32(reader.GetOrdinal("shipping_address_id")),
                                     reader.GetInt32(reader.GetOrdinal("shipping_method_id")),
-                                    reader.GetString(reader.GetOrdinal("payment_intent_id")),
+                                    reader.IsDBNull(reader.GetOrdinal("payment_intent_id")) ? null : reader.GetString(reader.GetOrdinal("payment_intent_id")),
                                     reader.GetByte(reader.GetOrdinal("order_status")),
                                     reader.GetDecimal(reader.GetOrdinal("subtotal")),
                                     reader.GetDecimal(reader.GetOrdinal("tax_cost")),

@@ -39,6 +39,23 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<PlaceOrderResponseDTO>> PlaceOrderAsync(OrderCreateDTO orderCreateRequest)
         {
+            orderCreateRequest.TaxRate =
+            decimal.TryParse(_config["TaxRate"], out var tax)
+            ? tax
+            : null;
+
+            if (orderCreateRequest.PaymentMethodId == 1)
+            {
+                orderCreateRequest.PayNow = false;
+                var orderResult = await CreateAsync(orderCreateRequest);
+
+                if (orderResult == null || !orderResult.IsSuccess || orderResult.Data == null)
+                {
+                    return new Result<PlaceOrderResponseDTO>(false, "order fail", null, 500);
+                }
+                return new Result<PlaceOrderResponseDTO>(true, "order placed", new PlaceOrderResponseDTO(orderResult.Data, string.Empty), 200);
+            }
+
             if (orderCreateRequest == null || orderCreateRequest.GrandTotal <= 0)
             {
                 return new Result<PlaceOrderResponseDTO>(false, "invalid data", null, 400);
@@ -67,11 +84,6 @@ namespace Jannara_Ecommerce.Business.Services
             {
                 return new Result<PlaceOrderResponseDTO>(false, "payment fail", null);
             }
-
-            orderCreateRequest.TaxRate =
-            decimal.TryParse(_config["TaxRate"], out var tax)
-            ? tax
-            : null;
 
             orderCreateRequest.PaymentIntentId = intent.Id;
             orderCreateRequest.PayNow = false;
