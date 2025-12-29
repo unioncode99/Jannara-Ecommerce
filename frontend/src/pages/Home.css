@@ -17,9 +17,3 @@
     max-width: 320px;
   }
 }
-
-.loader-container {
-  display: grid;
-  place-items: center;
-  height: 60vh;
-}
