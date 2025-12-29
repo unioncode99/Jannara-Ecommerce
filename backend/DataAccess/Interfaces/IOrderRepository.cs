@@ -8,6 +8,7 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
         Task<Result<OrderDTO>> CreateAsync(OrderCreateDTO orderCreateRequest);
         Task<Result<OrderDTO>> ConfirmPaymentAsync(int? orderId, string? paymentIntentId, int paymentMethodId);
         Task<Result<OrderDetailsDTO>> GetByPublicIdAsync(string publicId);
+        Task<Result<IEnumerable<OrderDetailsDTO>>> GetCustomerOrdersAsync(int customerId);
 
     }
 }

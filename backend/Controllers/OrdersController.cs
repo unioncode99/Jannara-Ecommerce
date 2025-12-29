@@ -37,5 +37,17 @@ namespace Jannara_Ecommerce.Controllers
             }
             return StatusCode(result.ErrorCode, result.Message);
         }
+
+        [HttpGet(Name = "GetCustomerOrders")]
+        public async Task<ActionResult<ProductDetailDTO>> GetCustomerOrders([FromQuery]int customerId)
+        {
+            var result = await _service.GetCustomerOrdersAsync(customerId);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
     }
 }

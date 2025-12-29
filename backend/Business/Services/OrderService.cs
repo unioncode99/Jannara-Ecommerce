@@ -32,6 +32,11 @@ namespace Jannara_Ecommerce.Business.Services
             return await _orderRepository.GetByPublicIdAsync(publicId);
         }
 
+        public async Task<Result<IEnumerable<OrderDetailsDTO>>> GetCustomerOrdersAsync(int customerId)
+        {
+            return await _orderRepository.GetCustomerOrdersAsync(customerId);
+        }
+
         public async Task<Result<PlaceOrderResponseDTO>> PlaceOrderAsync(OrderCreateDTO orderCreateRequest)
         {
             if (orderCreateRequest == null || orderCreateRequest.GrandTotal <= 0)

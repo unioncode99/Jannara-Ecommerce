@@ -483,5 +483,93 @@ SELECT @json AS FullJson;
             }
         }
 
+        public async Task<Result<IEnumerable<OrderDetailsDTO>>> GetCustomerOrdersAsync(int customerId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+DECLARE @json NVARCHAR(MAX);
+SELECT @json = (
+    SELECT
+        o.id AS Id,
+        o.public_order_id AS PublicOrderId,
+        o.customer_id AS CustomerId,
+        o.shipping_address_id AS ShippingAddressId,
+        o.shipping_method_id AS ShippingMethodId,
+        o.payment_intent_id AS PaymentIntentId,
+        o.order_status AS OrderStatus,
+        o.subtotal AS SubTotal,
+        o.tax_cost AS TaxCost,
+        o.shipping_cost AS ShippingCost,
+        o.grand_total AS GrandTotal,
+        o.placed_at AS PlacedAt,
+        o.created_at AS CreatedAt,
+        o.updated_at AS UpdatedAt,
+
+        -- Nested JSON for OrderItems (all items, no seller filter)
+        (
+            SELECT
+                oi.id AS Id,
+                oi.seller_product_id AS SellerProductId,
+                oi.quantity AS Quantity,
+                oi.unit_price AS UnitPrice,
+
+                p.name_en AS NameEn,
+                p.name_ar AS NameAr,
+                p.default_image_url AS DefaultImageUrl,
+                pi.sku AS Sku,
+
+                oi.created_at AS CreatedAt,
+                oi.updated_at AS UpdatedAt
+            FROM OrderItems oi
+            LEFT JOIN SellerProducts sp
+                ON sp.id = oi.seller_product_id
+            LEFT JOIN ProductItems pi
+                ON sp.product_item_id = pi.id
+            LEFT JOIN Products p
+                ON pi.product_id = p.id
+            WHERE oi.order_id = o.id
+            FOR JSON PATH
+        ) AS OrderItems
+    FROM Orders o
+    WHERE o.customer_id = @customerId -- filter by customer
+    FOR JSON PATH
+);
+
+SELECT @json AS FullJson;
+";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@customerId", customerId);
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+                        {
+                            if (!await reader.ReadAsync())
+                                return new Result<IEnumerable<OrderDetailsDTO>>(false, "customer orders not found", null, 404);
+
+                            // Read the entire JSON as a string first
+                            string json = await reader.GetFieldValueAsync<string>(0);
+
+                            var product = JsonSerializer.Deserialize<IEnumerable<OrderDetailsDTO>>(
+                                json,
+                                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                            );
+
+                            return new Result<IEnumerable<OrderDetailsDTO>>(true, "customer orders fetched successfully", product, 200);
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error fetching customer orders : {ex}");
+                        return new Result<IEnumerable<OrderDetailsDTO>>(false, "Error fetching customer orders", null, 500);
+                    }
+                }
+            }
+        }
+
     }
 }
