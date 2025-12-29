@@ -3,6 +3,7 @@ import TableView from "../../components/CustomerOrders/TableView";
 import { read } from "../../api/apiWrapper";
 import CardView from "../../components/CustomerOrders/CardView";
 import "./CustomerOrders.css";
+import ViewSwitcher from "../../components/CustomerOrders/ViewSwitcher";
 
 const CustomerOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -35,10 +36,9 @@ const CustomerOrders = () => {
   return (
     <div>
       <h1>My Orders</h1>
-      {/* View Switch */}
-      <div></div>
-      {/* <TableView orders={orders} /> */}
-      <CardView orders={orders} />
+      <ViewSwitcher view={view} setView={setView} />
+      {view == "table" && <TableView orders={orders} />}
+      {view == "card" && <CardView orders={orders} />}
     </div>
   );
 };
