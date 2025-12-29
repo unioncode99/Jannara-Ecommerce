@@ -246,6 +246,15 @@
       "items": "العناصر",
       "continue_shopping": "متابعة التسوق",
       "no_order": "لم يتم العثور على الطلب."
+    },
+    "customer_orders": {
+      "order": "الطلب",
+      "status": "الحالة",
+      "placed_at": "تاريخ الطلب",
+      "items": "المنتجات",
+      "total": "الإجمالي",
+      "actions": "الإجراءات",
+      "no_orders": "لا توجد طلبات"
     }
   },
   "sidebar": {

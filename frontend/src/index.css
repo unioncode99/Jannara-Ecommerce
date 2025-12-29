@@ -283,3 +283,16 @@ small,
     transform: rotate(360deg);
   }
 }
+.loader-container {
+  display: grid;
+  place-items: center;
+  height: 60vh;
+}
+
+.error-container,
+.not-found-container {
+  display: grid;
+  place-items: center;
+  height: 60vh;
+  color: #d9534f;
+}

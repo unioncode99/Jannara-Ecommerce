@@ -252,6 +252,15 @@
       "items": "Items",
       "continue_shopping": "Continue Shopping",
       "no_order": "No order found."
+    },
+    "customer_orders": {
+      "order": "Order",
+      "status": "Status",
+      "placed_at": "Placed At",
+      "items": "Items",
+      "total": "Total",
+      "actions": "Actions",
+      "no_orders": "No orders found"
     }
   },
   "sidebar": {

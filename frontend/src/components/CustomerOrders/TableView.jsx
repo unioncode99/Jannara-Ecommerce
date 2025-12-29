@@ -7,12 +7,19 @@ import { useLanguage } from "../../hooks/useLanguage";
 
 const TableView = ({ orders, viewOrder }) => {
   console.log("orders", orders);
-  const { language } = useLanguage();
+  const { language, translations } = useLanguage();
+  const {
+    order: order_label,
+    status,
+    actions,
+    total,
+    placed_at,
+  } = translations.general.pages.customer_orders;
 
   return (
     <div className="table-view">
       <Table
-        headers={["Order #", "Date", "Total", "Status", "Actions"]}
+        headers={[`${order_label} #`, placed_at, total, status, actions]}
         data={orders.map((order) => ({
           ID: order.publicOrderId,
           Date: formatDateTime(order.placedAt),

@@ -14,12 +14,8 @@ const OrderSuccessPage = () => {
   const [error, setError] = useState(null);
   const { language, translations } = useLanguage();
   const {
-    title,
-    subtitle,
     order: orderLabel,
     status,
-    paid,
-    pending,
     placed_at,
     items,
     subtotal,
@@ -68,7 +64,7 @@ const OrderSuccessPage = () => {
   }
   if (!order) {
     return (
-      <div className="no-order-container">
+      <div className="not-found-container">
         <h1>{no_order}</h1>
       </div>
     );

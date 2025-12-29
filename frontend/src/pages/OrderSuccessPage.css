@@ -63,11 +63,3 @@
   justify-content: center;
   gap: 0.5rem;
 }
-
-.error-container,
-.no-order-container {
-  display: grid;
-  place-items: center;
-  height: 60vh;
-  color: #d9534f;
-}
