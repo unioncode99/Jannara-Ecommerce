@@ -900,5 +900,41 @@ SELECT @json AS FullJson;
             }
         }
 
+        public async Task<Result<bool>> CancelOrderAsync(OrderCancelRequestDTO orderCancelRequestDTO)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+UPDATE Orders
+                SET order_status = 5
+                WHERE (id = @orderId OR public_order_id = @publicId)
+                  AND order_status = 1;
+";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@orderId", orderCancelRequestDTO.OrderId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@publicId", orderCancelRequestDTO.PublicId ?? (object)DBNull.Value);
+                    try
+                    {
+                        await connection.OpenAsync();
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected == 0)
+                        {
+                            return new Result<bool>(false, "can not cancel order", false, 400);
+                        }
+
+                        return new Result<bool>(false, "order_cancelled_successfully", false, 200);
+                    }
+
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Unexpected error in CancelOrder");
+                        return new Result<bool>(false, "can not internal_server_error order", false, 500);
+                    }
+                }
+            }
+        }
+
     }
 }
