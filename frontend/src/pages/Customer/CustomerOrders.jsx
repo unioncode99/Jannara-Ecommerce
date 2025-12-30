@@ -6,15 +6,19 @@ import "./CustomerOrders.css";
 import ViewSwitcher from "../../components/CustomerOrders/ViewSwitcher";
 import SpinnerLoader from "../../components/ui/SpinnerLoader";
 import { useLanguage } from "../../hooks/useLanguage";
+import OrderInfoModal from "../../components/CustomerOrders/OrderInfoModal";
 
 const CustomerOrders = () => {
   const [orders, setOrders] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState("table"); // 'table' or 'card'
+  const [isOrderInfoModalOpen, setIsOrderInfoModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const customerId = 1; // for test
   const { translations } = useLanguage();
-  const { no_orders } = translations.general.pages.customer_orders;
+
+  const { no_orders, my_orders } = translations.general.pages.customer_orders;
 
   useEffect(() => {
     const fetchCustomerOrders = async () => {
@@ -35,8 +39,10 @@ const CustomerOrders = () => {
     fetchCustomerOrders();
   }, [customerId]);
 
-  function viewOrder() {
-    console.log("test");
+  function viewOrder(order) {
+    setIsOrderInfoModalOpen(true);
+    setSelectedOrder(order);
+    console.log("Opened 0-> ", order);
   }
 
   if (loading) {
@@ -64,10 +70,16 @@ const CustomerOrders = () => {
 
   return (
     <div>
-      <h1>My Orders</h1>
+      <h1>{my_orders}</h1>
       <ViewSwitcher view={view} setView={setView} />
       {view == "table" && <TableView orders={orders} viewOrder={viewOrder} />}
       {view == "card" && <CardView orders={orders} viewOrder={viewOrder} />}
+      <OrderInfoModal
+        show={isOrderInfoModalOpen}
+        onClose={() => setIsOrderInfoModalOpen(false)}
+        onConfirm={() => console.log("Hello")}
+        order={selectedOrder}
+      />
     </div>
   );
 };

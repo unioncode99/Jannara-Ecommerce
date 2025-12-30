@@ -260,7 +260,13 @@
       "items": "Items",
       "total": "Total",
       "actions": "Actions",
-      "no_orders": "No orders found"
+      "no_orders": "No orders found",
+      "order_details": "Order Details",
+      "order_id": "ID",
+      "seller": "Seller",
+      "cancel_order": "Cancel Order",
+      "cancel": "Cancel",
+      "my_orders": "My Orders"
     }
   },
   "sidebar": {
@@ -284,5 +290,12 @@
         "superadmin": "Super Admin"
       }
     }
+  },
+  "order_statuses": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
   }
 }
