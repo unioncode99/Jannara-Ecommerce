@@ -1,0 +1,15 @@
+.welcome-customer-container {
+  background-color: var(--primary-200);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+}
+.welcome-customer-container p {
+  text-align: start;
+}
+.welcome-customer-container .show-now-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  margin-top: 1rem;
+}

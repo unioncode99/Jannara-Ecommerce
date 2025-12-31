@@ -1,0 +1,32 @@
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  background-color: var(--card-background);
+  box-shadow: var(--shadow-2);
+  border-radius: var(--border-radius);
+  gap: 1rem;
+  padding: 1rem;
+}
+.stat-item-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background-color: var(--primary-200);
+}
+.stat-item p {
+  text-align: start;
+}
+.stat-item-label {
+  color: var(--grey-500);
+}

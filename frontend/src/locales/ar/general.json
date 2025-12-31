@@ -266,6 +266,19 @@
       "confirm": "تأكيد",
       "load_failed": "فشل تحميل تفاصيل الطلب.",
       "order_cancelled_successfully": "تم إلغاء الطلب بنجاح"
+    },
+    "customer_dashboard": {
+      "welcome_title": "مرحبًا بعودتك",
+      "welcome_description": "تتبع طلباتك، إدارة ملفك الشخصي، واكتشف منتجات جديدة مصممة خصيصًا لك.",
+      "shop_now": "تسوق الآن",
+      "total_orders": "إجمالي الطلبات",
+      "total_spent": "إجمالي المبلغ",
+      "total_pending": "الطلبات المعلقة",
+      "recent_orders": "أحدث الطلبات",
+      "view_all_orders": "عرض جميع الطلبات",
+      "items_count": "منتجات",
+      "wishlist": "قائمة المفضلة",
+      "view_all": "عرض الكل"
     }
   },
   "sidebar": {
