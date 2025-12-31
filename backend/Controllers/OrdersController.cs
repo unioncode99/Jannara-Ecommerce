@@ -49,5 +49,15 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
+        [HttpPatch("cancel")]
+        public async Task<IActionResult> CancelOrder([FromBody] OrderCancelRequestDTO orderCancelRequestDTO)
+        {
+            var result = await _service.CancelOrderAsync(orderCancelRequestDTO);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
     }
 }

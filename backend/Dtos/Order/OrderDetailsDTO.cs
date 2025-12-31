@@ -1,4 +1,5 @@
 ﻿using Jannara_Ecommerce.DTOs.OrderItem;
+using Jannara_Ecommerce.DTOs.SellerOrder;
 
 namespace Jannara_Ecommerce.DTOs.Order
 {
@@ -22,5 +23,6 @@ namespace Jannara_Ecommerce.DTOs.Order
         public DateTime UpdatedAt { get; set; }
 
         public IEnumerable<OrderItemDetailsDTO> OrderItems { get; set; }
+        public IEnumerable<SellerOrderDetailsDTO> SellerOrders { get; set; }
     }
 }

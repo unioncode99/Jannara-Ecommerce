@@ -30,167 +30,6 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
             using (var connection = new SqlConnection(_connectionString))
             {
                 
-//                string query = @"
-//-- VARIABLES
-//DECLARE @orderId INT;
-//DECLARE @invoiceId INT;
-//DECLARE @subtotal DECIMAL(18,2);
-//DECLARE @taxCost DECIMAL(18,2);
-//DECLARE @shippingCost DECIMAL(18,2);
-//DECLARE @grandTotal DECIMAL(18,2);
-//DECLARE @totalWeight DECIMAL(18,2);
-//DECLARE @itemsCount INT;
-
-//-- BEGIN TRANSACTION
-//BEGIN TRANSACTION;
-
-//BEGIN TRY
-//	-- INPUT VALIDATIONS
-//    -- 1️ Validate Cart exists
-//    IF NOT EXISTS (SELECT 1 FROM Carts WHERE id = @cartId)
-//        THROW 50001, 'Cart does not exist.', 1;
-
-//    -- 2️ Validate Cart has items
-//    IF NOT EXISTS (SELECT 1 FROM CartItems WHERE cart_id = @cartId)
-//        THROW 50002, 'Cart is empty.', 1;
-
-//    -- 3️ Validate Customer exists
-//    IF NOT EXISTS (SELECT 1 FROM Customers WHERE id = @customerId)
-//        THROW 50003, 'Customer does not exist.', 1;
-
-//    -- 4️ Validate Payment Method exists
-//    IF NOT EXISTS (SELECT 1 FROM PaymentMethods WHERE id = @paymentMethodId)
-//        THROW 50004, 'Payment method is invalid.', 1;
-
-//    -- 5️ Validate Shipping Address belongs to customer
-//    IF NOT EXISTS (
-//    SELECT 1 
-//    FROM Addresses 
-//    WHERE id = @shippingAddressId 
-//      AND person_id = (SELECT person_id FROM Customers WHERE id = @customerId)
-//)
-//    THROW 50005, 'Shipping address is invalid for this customer.', 1;
-
-//    -- 6️ Validate Shipping Method exists
-//    IF NOT EXISTS (SELECT 1 FROM ShippingMethods WHERE id = @shippingMethodId)
-//        THROW 50006, 'Shipping method does not exist.', 1;
-
-//    -- 7️ Validate tax rate
-//    IF @taxRate < 0 OR @taxRate > 1
-//    THROW 50007, 'Tax rate must be between 0 and 1.', 1;
-
-//    -- 1️ CALCULATE SUBTOTAL, TOTAL WEIGHT, ITEMS COUNT
-//    SELECT 
-//   @subtotal = ISNULL(SUM(ci.quantity * ci.price_at_add_time), 0),
-//    @totalWeight = ISNULL(SUM(ci.[quantity] * p.[weight_kg]), 0),
-//    @itemsCount = ISNULL(SUM(ci.[quantity]), 0)
-//    FROM CartItems ci
-//    INNER JOIN SellerProducts sp ON sp.id = ci.seller_product_id
-//    INNER JOIN ProductItems pi ON pi.id = sp.product_item_id
-//    INNER JOIN Products p ON p.id = pi.product_id
-//    WHERE ci.cart_id = @cartId;
-
-//    -- 2️ FETCH SHIPPING METHOD INFO
-//    DECLARE @basePrice DECIMAL(18,2);
-//    DECLARE @pricePerKg DECIMAL(18,2);
-//    DECLARE @pricePerItem DECIMAL(18,2);
-//    DECLARE @freeOver DECIMAL(18,2);
-//    DECLARE @stateFee DECIMAL(18,2);
-
-//    SELECT 
-//        @basePrice = sm.base_price,
-//        @pricePerKg = sm.price_per_kg,
-//        @pricePerItem = sm.price_per_item,
-//        @freeOver = sm.free_over,
-//        @stateFee = ISNULL(st.[extra_fee_for_shipping],0)
-//    FROM ShippingMethods sm
-//    JOIN Addresses sa ON sa.[id] = @shippingAddressId
-//    JOIN States st ON st.[id] = sa.[state_id]
-//    WHERE sm.[id] = @shippingMethodId;
-
-//    -- 3️ CALCULATE SHIPPING COST
-//    IF @freeOver IS NOT NULL AND @subtotal >= @freeOver
-//        SET @shippingCost = 0;
-//    ELSE
-//        SET @shippingCost = ISNULL(@basePrice, 0)
-//                          + ISNULL(@pricePerKg, 0) * ISNULL(@totalWeight, 0)
-//                          + ISNULL(@pricePerItem, 0) * ISNULL(@itemsCount, 0)
-//                          + ISNULL(@stateFee, 0);
-
-//    -- 4️ CALCULATE TAX AND GRAND TOTAL
-//    SET @taxCost = ROUND(@subtotal * ISNULL(@taxRate, 0), 2); 
-//    SET @grandTotal = @subtotal + @taxCost + @shippingCost;
-
-//    -- 5️ INSERT ORDER
-//	-- 1 = Pending
-//    INSERT INTO Orders ([customer_id], [shipping_address_id], shipping_method_id, payment_intent_id, subtotal, [tax_cost], [shipping_cost], [grand_total], [order_status], [placed_at])
-//    VALUES (@customerId, @shippingAddressId, @shippingMethodId, @paymentIntentId, @subtotal, @taxCost, @shippingCost, @grandTotal, 1, GETDATE());
-
-//    SET @orderId = SCOPE_IDENTITY();
-
-//    -- 6️ INSERT ORDER ITEMS
-//    INSERT INTO OrderItems([order_id], [seller_product_id], [quantity], [unit_price], [created_at])
-//    SELECT 
-//        @orderId,
-//        ci.[seller_product_id],
-//        ci.[quantity],
-//        ci.price_at_add_time,
-//        GETDATE()
-//    FROM CartItems ci
-//    WHERE ci.[cart_id] = @cartId;
-
-//    -- 7️ INSERT INVOICE
-//	-- 1 = Paid, 2 = Unpaid
-//    INSERT INTO [invoices] ([order_id], [customer_id], invoice_number, [invoice_status], [created_at])
-//    VALUES (@orderId, @customerId, @orderId + 100, CASE WHEN @payNow = 1 THEN 1 ELSE 2 END, GETDATE());
-
-//    SET @invoiceId = SCOPE_IDENTITY();
-
-//    -- 8️ INSERT PAYMENT IF PAYNOW = 1
-//    IF @payNow = 1
-//    BEGIN
-//        INSERT INTO [payments] ([invoice_id], [paid_by_customer_id], payment_method_id, [amount], is_paid, [paid_at], [transaction_reference], [created_at])
-//        VALUES (
-//            @invoiceId,
-//            @customerId,
-//            @paymentMethodId,
-//            @grandTotal,
-//            1,
-//            GETDATE(),
-//            @transactionReference,
-//            GETDATE()
-//        );
-//    END
-
-//    -- deactivate cart
-//    Update carts set is_active = 0 where id = @cartId;
-
-//    -- create new cart for customer
-//    INSERT INTO Carts(customer_id, is_active)
-//    VALUES (@customerId, 1);
-    
-
-//    -- 9️ COMMIT TRANSACTION
-//    COMMIT TRANSACTION;
-
-//    -- 10️ RETURN RESULTS
-//   -- SELECT 
-//       -- @orderId AS [orderId], 
-//        --@invoiceId AS [invoiceId], 
-//       -- CASE WHEN @payNow = 1 THEN 'paid' ELSE 'unpaid' END AS [invoiceStatus],
-//       -- @subtotal AS [subtotal],
-//       -- @taxCost AS [tax],
-//--@shippingCost AS [shippingCost],
-//       -- @grandTotal AS [grandTotal];
-//select * from orders where id = @orderId;
-
-//END TRY
-//BEGIN CATCH
-//    ROLLBACK TRANSACTION;
-//    THROW;
-//END CATCH
-//";
-
                 string query = @"
 -- VARIABLES
 DECLARE @orderId INT;
@@ -410,11 +249,13 @@ ELSE
         INSERT INTO SellerOrderItems
         (
             seller_order_id,
+            seller_product_id,
             quantity,
             unit_price
         )
         SELECT
             @sellerOrderId,
+            oi.seller_product_id,
             oi.quantity,
             oi.unit_price
         FROM OrderItems oi
@@ -719,7 +560,7 @@ SELECT @json = (
         o.created_at AS CreatedAt,
         o.updated_at AS UpdatedAt,
 
-        -- Nested JSON for OrderItems
+        -- OrderItems
         (
             SELECT
                 oi.id AS Id,
@@ -744,7 +585,90 @@ SELECT @json = (
             on pi.product_id = p.id
             WHERE oi.order_id = o.id
             FOR JSON PATH
-        ) AS OrderItems
+        ) AS OrderItems,
+
+-- SellerOrders 
+  (
+            SELECT
+                so.id AS Id,
+                so.seller_id AS SellerId,
+                so.order_status AS OrderStatus,
+
+        CASE so.order_status
+            WHEN 1 THEN 'Pending'
+            WHEN 2 THEN 'Processing'
+            WHEN 3 THEN 'Shipped'
+            WHEN 4 THEN 'Delivered'
+            WHEN 5 THEN 'Cancelled'
+            ELSE 'Unknown'
+        END AS StatusNameEn,
+
+        CASE so.order_status
+            WHEN 1 THEN N'قيد الانتظار'
+            WHEN 2 THEN N'قيد المعالجة'
+            WHEN 3 THEN N'تم الشحن'
+            WHEN 4 THEN N'تم التوصيل'
+            WHEN 5 THEN N'ملغى'
+            ELSE N'غير معروف'
+        END AS StatusNameAr,
+
+                so.subtotal AS SubTotal,
+                so.tax_cost AS TaxCost,
+                so.shipping_cost AS ShippingCost,
+                so.grand_total AS GrandTotal,
+                so.created_at AS CreatedAt,
+                so.updated_at AS UpdatedAt,
+-- Seller info
+JSON_QUERY((
+    SELECT
+        s.id AS Id,
+        s.business_name as BusinessName,
+        s.website_url as WebsiteUrl,
+        u.id AS UserId,
+        u.email AS Email,
+        p.first_name AS FirstName,
+        p.last_name AS LastName,
+        p.phone AS Phone,
+        p.image_url as ImageUrl
+
+    FROM Sellers s
+    LEFT JOIN Users u
+        ON u.id = s.user_id
+    LEFT JOIN People p
+        ON p.id = u.person_id
+    WHERE s.id = so.seller_id
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+)) AS Seller,
+
+                -- SellerOrderItems
+                (
+                    SELECT
+                        soi.id AS Id,
+                        soi.seller_product_id AS SellerProductId,
+                        soi.quantity AS Quantity,
+                        soi.unit_price AS UnitPrice,
+                        soi.total_price AS TotalPrice,
+
+                        p.name_en AS NameEn,
+                        p.name_ar AS NameAr,
+                        p.default_image_url AS DefaultImageUrl,
+                        pi.sku AS Sku,
+
+                        soi.created_at AS CreatedAt,
+                        soi.updated_at AS UpdatedAt
+                    FROM SellerOrderItems soi
+                    LEFT JOIN SellerProducts sp ON sp.id = soi.seller_product_id
+                    LEFT JOIN ProductItems pi ON sp.product_item_id = pi.id
+                    LEFT JOIN Products p ON pi.product_id = p.id
+                    WHERE soi.seller_order_id = so.id
+                    FOR JSON PATH
+                ) AS SellerOrderItems
+
+            FROM SellerOrders so
+            WHERE so.customer_order_id = o.id
+            FOR JSON PATH
+        ) AS SellerOrders
+
     FROM Orders o
     WHERE o.public_order_id = @publicId
     FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
@@ -827,7 +751,7 @@ SELECT @json = (
         o.created_at AS CreatedAt,
         o.updated_at AS UpdatedAt,
 
-        -- Nested JSON for OrderItems (all items, no seller filter)
+        -- OrderItems 
         (
             SELECT
                 oi.id AS Id,
@@ -852,7 +776,90 @@ SELECT @json = (
                 ON pi.product_id = p.id
             WHERE oi.order_id = o.id
             FOR JSON PATH
-        ) AS OrderItems
+        ) AS OrderItems,
+
+-- SellerOrders 
+  (
+            SELECT
+                so.id AS Id,
+                so.seller_id AS SellerId,
+                so.order_status AS OrderStatus,
+
+        CASE so.order_status
+            WHEN 1 THEN 'Pending'
+            WHEN 2 THEN 'Processing'
+            WHEN 3 THEN 'Shipped'
+            WHEN 4 THEN 'Delivered'
+            WHEN 5 THEN 'Cancelled'
+            ELSE 'Unknown'
+        END AS StatusNameEn,
+
+        CASE so.order_status
+            WHEN 1 THEN N'قيد الانتظار'
+            WHEN 2 THEN N'قيد المعالجة'
+            WHEN 3 THEN N'تم الشحن'
+            WHEN 4 THEN N'تم التوصيل'
+            WHEN 5 THEN N'ملغى'
+            ELSE N'غير معروف'
+        END AS StatusNameAr,
+
+                so.subtotal AS SubTotal,
+                so.tax_cost AS TaxCost,
+                so.shipping_cost AS ShippingCost,
+                so.grand_total AS GrandTotal,
+                so.created_at AS CreatedAt,
+                so.updated_at AS UpdatedAt,
+-- Seller info
+JSON_QUERY((
+    SELECT
+        s.id AS Id,
+        s.business_name as BusinessName,
+        s.website_url as WebsiteUrl,
+        u.id AS UserId,
+        u.email AS Email,
+        p.first_name AS FirstName,
+        p.last_name AS LastName,
+        p.phone AS Phone,
+        p.image_url as ImageUrl
+
+    FROM Sellers s
+    LEFT JOIN Users u
+        ON u.id = s.user_id
+    LEFT JOIN People p
+        ON p.id = u.person_id
+    WHERE s.id = so.seller_id
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+)) AS Seller,
+
+                -- SellerOrderItems
+                (
+                    SELECT
+                        soi.id AS Id,
+                        soi.seller_product_id AS SellerProductId,
+                        soi.quantity AS Quantity,
+                        soi.unit_price AS UnitPrice,
+                        soi.total_price AS TotalPrice,
+
+                        p.name_en AS NameEn,
+                        p.name_ar AS NameAr,
+                        p.default_image_url AS DefaultImageUrl,
+                        pi.sku AS Sku,
+
+                        soi.created_at AS CreatedAt,
+                        soi.updated_at AS UpdatedAt
+                    FROM SellerOrderItems soi
+                    LEFT JOIN SellerProducts sp ON sp.id = soi.seller_product_id
+                    LEFT JOIN ProductItems pi ON sp.product_item_id = pi.id
+                    LEFT JOIN Products p ON pi.product_id = p.id
+                    WHERE soi.seller_order_id = so.id
+                    FOR JSON PATH
+                ) AS SellerOrderItems
+
+            FROM SellerOrders so
+            WHERE so.customer_order_id = o.id
+            FOR JSON PATH
+        ) AS SellerOrders
+
     FROM Orders o
     WHERE o.customer_id = @customerId -- filter by customer
     FOR JSON PATH
@@ -888,6 +895,42 @@ SELECT @json AS FullJson;
                     {
                         _logger.LogError($"Error fetching customer orders : {ex}");
                         return new Result<IEnumerable<OrderDetailsDTO>>(false, "Error fetching customer orders", null, 500);
+                    }
+                }
+            }
+        }
+
+        public async Task<Result<bool>> CancelOrderAsync(OrderCancelRequestDTO orderCancelRequestDTO)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+UPDATE Orders
+                SET order_status = 5
+                WHERE (id = @orderId OR public_order_id = @publicId)
+                  AND order_status = 1;
+";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@orderId", orderCancelRequestDTO.OrderId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@publicId", orderCancelRequestDTO.PublicId ?? (object)DBNull.Value);
+                    try
+                    {
+                        await connection.OpenAsync();
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected == 0)
+                        {
+                            return new Result<bool>(false, "can not cancel order", false, 400);
+                        }
+
+                        return new Result<bool>(false, "order_cancelled_successfully", false, 200);
+                    }
+
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Unexpected error in CancelOrder");
+                        return new Result<bool>(false, "can not internal_server_error order", false, 500);
                     }
                 }
             }

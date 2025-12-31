@@ -260,7 +260,18 @@
       "items": "Items",
       "total": "Total",
       "actions": "Actions",
-      "no_orders": "No orders found"
+      "no_orders": "No orders found",
+      "order_details": "Order Details",
+      "order_id": "ID",
+      "seller": "Seller",
+      "cancel_order": "Cancel Order",
+      "cancel": "Cancel",
+      "my_orders": "My Orders",
+      "cant_cancel_not_pending": "You can't cancel this order",
+      "confirm_modal_title": "Are you sure you want to cancel this order?",
+      "confirm": "Confirm",
+      "load_failed": "Failed to load order details.",
+      "order_cancelled_successfully": "Order cancelled successfully"
     }
   },
   "sidebar": {
@@ -284,5 +295,12 @@
         "superadmin": "Super Admin"
       }
     }
+  },
+  "order_statuses": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
   }
 }

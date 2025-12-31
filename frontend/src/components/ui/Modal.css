@@ -1,0 +1,63 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+}
+
+.modal {
+  background-color: var(--card-background);
+  color: var(--text-color);
+  width: 90vw;
+  max-width: var(--fixed-width);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-2);
+  padding: 1rem 2rem;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.modal-header h3 {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.close-btn {
+  background-color: transparent;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0;
+}
+
+.close-btn > svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.close-btn:hover,
+.close-btn:focus,
+.close-btn:active {
+  transform: scale(1.1);
+}
+
+.modal-body {
+  /* padding: 1rem; */
+  /* max-height: 400px; */
+  overflow-y: auto;
+}
+
+.modal-footer {
+  text-align: end;
+  padding-top: 1rem;
+}

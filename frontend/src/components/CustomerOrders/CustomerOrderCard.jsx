@@ -19,12 +19,12 @@ const CustomerOrderCard = ({ order, viewOrder }) => {
         <span>{order_label} #</span>
         <span>{order.publicOrderId}</span>
       </p>
-      <p>
+      {/* <p>
         <span>{status}:</span>
         <span className="order-status">
           {language == "en" ? order.statusNameEn : order.statusNameAr}
         </span>
-      </p>
+      </p> */}
       <p>
         <span>{total}:</span>
         <span>{formatMoney(order.grandTotal)}</span>

@@ -19,12 +19,12 @@ const TableView = ({ orders, viewOrder }) => {
   return (
     <div className="table-view">
       <Table
-        headers={[`${order_label} #`, placed_at, total, status, actions]}
+        headers={[`${order_label} #`, placed_at, total, actions]}
         data={orders.map((order) => ({
           ID: order.publicOrderId,
           Date: formatDateTime(order.placedAt),
           Total: formatMoney(order.grandTotal),
-          Status: language == "en" ? order.statusNameEn : order.statusNameAr,
+          // Status: language == "en" ? order.statusNameEn : order.statusNameAr,
           Actions: (
             <>
               <Button

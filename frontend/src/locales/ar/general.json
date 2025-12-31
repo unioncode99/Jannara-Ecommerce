@@ -254,7 +254,18 @@
       "items": "المنتجات",
       "total": "الإجمالي",
       "actions": "الإجراءات",
-      "no_orders": "لا توجد طلبات"
+      "no_orders": "لا توجد طلبات",
+      "order_details": "تفاصيل الطلب",
+      "order_id": "معرف الطلب",
+      "seller": "البائع",
+      "cancel_order": "إلغاء الطلب",
+      "cancel": "إلغاء",
+      "my_orders": "طلباتي",
+      "cant_cancel_not_pending": "لا يمكنك إلغاء هذا الطلب",
+      "confirm_modal_title": "هل أنت متأكد أنك تريد إلغاء هذا الطلب؟",
+      "confirm": "تأكيد",
+      "load_failed": "فشل تحميل تفاصيل الطلب.",
+      "order_cancelled_successfully": "تم إلغاء الطلب بنجاح"
     }
   },
   "sidebar": {
@@ -278,5 +289,12 @@
         "superadmin": "مدير عام"
       }
     }
+  },
+  "order_statuses": {
+    "pending": "قيد الانتظار",
+    "processing": "قيد المعالجة",
+    "shipped": "تم الشحن",
+    "delivered": "تم التوصيل",
+    "cancelled": "ملغى"
   }
 }

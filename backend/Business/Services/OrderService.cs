@@ -17,6 +17,16 @@ namespace Jannara_Ecommerce.Business.Services
             StripeConfiguration.ApiKey = _config["Stripe:SecretKey"];
         }
 
+        public async Task<Result<bool>> CancelOrderAsync(OrderCancelRequestDTO orderCancelRequestDTO)
+        {
+            if (orderCancelRequestDTO.OrderId == null && string.IsNullOrEmpty(orderCancelRequestDTO.PublicId))
+            {
+                return new Result<bool>(false, "Order ID or Public ID is required", false, 400);
+            }
+
+            return await _orderRepository.CancelOrderAsync(orderCancelRequestDTO);
+        }
+
         public async Task<Result<OrderDTO>> ConfirmPaymentAsync(int? orderId, string? paymentIntentId, int paymentMethodId)
         {
             return await _orderRepository.ConfirmPaymentAsync(orderId, paymentIntentId, paymentMethodId);
