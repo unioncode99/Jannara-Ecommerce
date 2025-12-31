@@ -260,7 +260,12 @@
       "seller": "البائع",
       "cancel_order": "إلغاء الطلب",
       "cancel": "إلغاء",
-      "my_orders": "طلباتي"
+      "my_orders": "طلباتي",
+      "cant_cancel_not_pending": "لا يمكنك إلغاء هذا الطلب",
+      "confirm_modal_title": "هل أنت متأكد أنك تريد إلغاء هذا الطلب؟",
+      "confirm": "تأكيد",
+      "load_failed": "فشل تحميل تفاصيل الطلب.",
+      "order_cancelled_successfully": "تم إلغاء الطلب بنجاح"
     }
   },
   "sidebar": {

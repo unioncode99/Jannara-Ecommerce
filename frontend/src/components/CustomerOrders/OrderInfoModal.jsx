@@ -91,9 +91,11 @@ const OrderInfoModal = ({ show, onClose, onConfirm, order }) => {
           <Button className="btn btn-primary" onClick={onClose}>
             {cancel}
           </Button>
-          <Button className="btn btn-primary" onClick={onConfirm}>
-            {cancel_order}
-          </Button>
+          {order && order?.statusNameEn == "Pending" && (
+            <Button className="btn btn-primary" onClick={onConfirm}>
+              {cancel_order}
+            </Button>
+          )}
         </div>
       </Modal>
     </div>

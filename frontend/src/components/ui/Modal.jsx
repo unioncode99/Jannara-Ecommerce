@@ -2,12 +2,12 @@ import { X } from "lucide-react";
 import Button from "./Button";
 import "./Modal.css"; // Import the modal styles
 
-const Modal = ({ show, onClose, title, children, footer }) => {
+const Modal = ({ show, onClose, title, children, footer, className }) => {
   if (!show) return null;
 
   return (
     <div className="modal-overlay">
-      <div className="modal">
+      <div className={`modal ${className}`}>
         <div className="modal-header">
           <h3>{title}</h3>
           <Button

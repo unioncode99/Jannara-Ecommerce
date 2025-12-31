@@ -47,6 +47,7 @@ const apiWrapper = async (url, method = "GET", data = null) => {
 export const create = (url, data) => apiWrapper(url, "POST", data);
 export const read = (url) => apiWrapper(url, "GET");
 export const update = (url, data) => apiWrapper(url, "PUT", data);
+export const patch = (url, data) => apiWrapper(url, "PATCH", data);
 export const remove = (url, data) => apiWrapper(url, "DELETE", data);
 
 export default api;
