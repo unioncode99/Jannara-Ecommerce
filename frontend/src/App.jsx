@@ -25,6 +25,7 @@ import { CartProvider } from "./contexts/CartContext";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
 import CustomerOrders from "./pages/Customer/CustomerOrders";
+import CustomerProfile from "./pages/Customer/CustomerProfile";
 
 function App() {
   const { language } = useLanguage();
@@ -80,6 +81,7 @@ function App() {
               path="order-success/:publicOrderId"
               element={<OrderSuccessPage />}
             />
+            <Route path="customer-profile" element={<CustomerProfile />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

@@ -86,6 +86,10 @@ const Sidebar = (props) => {
     links = menus.unknown_user || [];
   }
 
+  function handleProfile() {
+    navigate("/customer-profile");
+  }
+
   return (
     <aside className={`sidebar ${isSibebarOpen ? "" : "close"}`}>
       {/* Top */}
@@ -119,7 +123,7 @@ const Sidebar = (props) => {
       {/* Bottom */}
       {user ? (
         <div className="sidebar-bottom">
-          <button className="profile-btn">
+          <button className="profile-btn" onClick={handleProfile}>
             <span className="profile-avatar">
               <img
                 src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d"

@@ -285,6 +285,17 @@
       "items_count": "items",
       "wishlist": "Wishlist",
       "view_all": "View All"
+    },
+    "customer_profile": {
+      "settings_title": "Settings",
+      "profile": "Profile",
+      "security": "Security",
+      "notifications": "Notifications",
+      "old_password": "Old Password",
+      "new_password": "New Password",
+      "confirm_password": "Confirm Password",
+      "change_password_submit": "Change Password",
+      "password_changed": "Password changed successfully"
     }
   },
   "sidebar": {

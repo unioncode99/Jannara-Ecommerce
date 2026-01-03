@@ -1,0 +1,26 @@
+.customer-settings-container {
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  gap: 2rem;
+}
+
+.customer-settings-container .tabs-container {
+  flex: 1;
+}
+
+@media screen and (max-width: 768px) {
+  .customer-settings-container {
+    flex-direction: column;
+  }
+  .customer-settings-container div {
+    width: 100%;
+  }
+}
+
+.tabs-container {
+  background-color: var(--card-background);
+  box-shadow: var(--shadow-1);
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+}

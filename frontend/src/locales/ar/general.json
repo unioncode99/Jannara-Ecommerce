@@ -279,6 +279,17 @@
       "items_count": "منتجات",
       "wishlist": "قائمة المفضلة",
       "view_all": "عرض الكل"
+    },
+    "customer_profile": {
+      "settings_title": "الإعدادات",
+      "profile": "الملف الشخصي",
+      "security": "الأمان",
+      "notifications": "الإشعارات",
+      "old_password": "كلمة المرور القديمة",
+      "new_password": "كلمة المرور الجديدة",
+      "confirm_password": "تأكيد كلمة المرور",
+      "change_password_submit": "تغيير كلمة المرور",
+      "password_changed": "تم تغيير كلمة المرور بنجاح"
     }
   },
   "sidebar": {
