@@ -1,6 +1,7 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Order;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
@@ -451,37 +452,61 @@ select @@ROWCOUNT";
 
             }
         }
-        public async Task<Result<bool>> ResetPasswordAsync(int id, string newPassword)
+        public async Task<Result<bool>> ResetPasswordAsync(ChangePasswordDTO resetPasswordDTO)
         {
-            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (var connection = new SqlConnection(_connectionString))
             {
+
                 string query = @"
-UPDATE Users
-SET 
-    password = @newPassword
-WHERE id = @id;
-select @@ROWCOUNT";
-                using (SqlCommand command = new SqlCommand(query, connection))
+BEGIN TRY
+
+    --  Validate user exists
+    IF NOT EXISTS (SELECT 1 FROM Users WHERE id = @userId)
+        THROW 50001, 'User does not exist.', 1;
+
+    -- Update password
+    UPDATE Users
+    SET [password] = @newPassword
+    WHERE id = @userId;
+
+END TRY
+BEGIN CATCH
+    THROW;
+END CATCH
+";
+
+                using (var command = new SqlCommand(query, connection))
                 {
+                    command.Parameters.AddWithValue("@oldPassword", resetPasswordDTO.OldPassword);
+                    command.Parameters.AddWithValue("@newPassword", resetPasswordDTO.NewPassword);
+                    command.Parameters.AddWithValue("@userId", resetPasswordDTO.UserId);
                     try
                     {
                         await connection.OpenAsync();
-                        command.Parameters.AddWithValue("@id", id);
-                        command.Parameters.AddWithValue("@newPassword", newPassword);
-                        object result = await command.ExecuteScalarAsync();
-                        int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
-                        if (rowAffected > 0)
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+
+                        if (rowsAffected == 0)
                         {
-                            return new Result<bool>(true, "Password changed successfully.", true);
+                            return new Result<bool>(false, "can not reset password", false, 400);
                         }
-                        else
+
+                        return new Result<bool>(true, "password_changed_successfully", true, 200);
+                    }
+                    catch (SqlException sqlEx)
+                    {
+                        string message = sqlEx.Number switch
                         {
-                            return new Result<bool>(false, "Failed to  change password.", false);
-                        }
+                            50001 => "User does not exist",
+                            50002 => "Old password is incorrect",
+                            _ => "internal_server_error"
+                        };
+                        _logger.LogError(sqlEx, "SQL exception in ResetPasswordAsync");
+                        return new Result<bool>(false, message, false, 400);
                     }
                     catch (Exception ex)
                     {
-                        return new Result<bool>(false, "An unexpected error occurred on the server.", false, 500);
+                        _logger.LogError(ex, "Unexpected error in ResetPasswordAsync");
+                        return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }
             }
@@ -523,5 +548,8 @@ select @@ROWCOUNT";
                 }
             }
         }
+        
+        
+
     }
 }

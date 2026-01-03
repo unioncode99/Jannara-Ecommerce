@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Jannara_Ecommerce.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -87,6 +87,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteUser(int id)
         {
+            
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)
             {
@@ -94,5 +95,32 @@ namespace Jannara_Ecommerce.Controllers
             }
             return StatusCode(result.ErrorCode, result.Message);
         }
+
+        [HttpPut("reset-password")]
+        public async Task<ActionResult> ResetPassword([FromBody] ChangePasswordDTO resetPasswordDTO)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+
+            resetPasswordDTO.UserId = userId;
+            var result = await _service.ResetPasswordAsync(resetPasswordDTO);
+
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.ErrorCode, result.Message);
+            }
+
+            return Ok(new
+            {
+                message = "Password reset successfully"
+            });
+        }
+
     }
 }

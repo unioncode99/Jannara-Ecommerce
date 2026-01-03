@@ -924,7 +924,7 @@ UPDATE Orders
                             return new Result<bool>(false, "can not cancel order", false, 400);
                         }
 
-                        return new Result<bool>(false, "order_cancelled_successfully", false, 200);
+                        return new Result<bool>(true, "order_cancelled_successfully", true, 200);
                     }
 
                     catch (Exception ex)

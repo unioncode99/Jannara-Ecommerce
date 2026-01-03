@@ -205,5 +205,26 @@ namespace Jannara_Ecommerce.Business.Services
         {
             return await _repo.MarkEmailAsConfirmed(id);
         }
+
+        public async Task<Result<bool>> ResetPasswordAsync(ChangePasswordDTO resetPasswordDTO)
+        {
+
+            var userResult = await FindAsync((int)resetPasswordDTO.UserId);
+
+            if (!userResult.IsSuccess)
+            {
+                return new Result<bool>(false, "User not found", false, 404);
+            }
+            var isValidOldPassword = _passwordService.VerifyPassword<UserDTO>(null, userResult.Data.Password, resetPasswordDTO.OldPassword);
+
+            if (!isValidOldPassword)
+            {
+                return new Result<bool>(false, "Old password is incorrect", false, 400);
+            }
+
+            resetPasswordDTO.NewPassword =  _passwordService.HashPassword<UserDTO>(null, resetPasswordDTO.NewPassword);
+            resetPasswordDTO.OldPassword =  _passwordService.HashPassword<UserDTO>(null, resetPasswordDTO.OldPassword);
+            return await _repo.ResetPasswordAsync(resetPasswordDTO);
+        }
     }
 }

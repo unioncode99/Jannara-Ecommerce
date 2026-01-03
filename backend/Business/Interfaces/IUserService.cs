@@ -16,6 +16,7 @@ namespace Jannara_Ecommerce.Business.Interfaces
         public Task<Result<bool>> DeleteAsync(int id);
         public Task<Result<PagedResponseDTO<UserPublicDTO>>> GetAllAsync(int pageNumber, int pageSize);
         public Task<Result<bool>> ResetPasswordAsync(int id, string newPassword, SqlConnection conn, SqlTransaction transaction);
+        public Task<Result<bool>> ResetPasswordAsync(ChangePasswordDTO resetPasswordDTO);
         public Task<Result<bool>> MarkEmailAsConfirmed(int id);
 
     }

@@ -26,6 +26,7 @@ namespace Jannara_Ecommerce.DataAccess
             services.AddScoped<IShippingMethodRepository, ShippingMethodRepository>();
             services.AddScoped<IPaymentMethodRepository, PaymentMethodRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IDashboardRepository, DashboardRepository>();
             return services;
         }
     }
