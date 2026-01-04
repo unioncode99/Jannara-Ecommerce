@@ -272,7 +272,8 @@
       "confirm_modal_title": "Are you sure you want to cancel this order?",
       "confirm": "Confirm",
       "load_failed": "Failed to load order details.",
-      "order_cancelled_successfully": "Order cancelled successfully"
+      "order_cancelled_successfully": "Order cancelled successfully",
+      "search_order_placeholder": "Search Orders..."
     },
     "customer_dashboard": {
       "welcome_title": "Welcome back",

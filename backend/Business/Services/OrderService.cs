@@ -1,5 +1,6 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
+using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Order;
 using Jannara_Ecommerce.Utilities;
 using Stripe;
@@ -42,9 +43,9 @@ namespace Jannara_Ecommerce.Business.Services
             return await _orderRepository.GetByPublicIdAsync(publicId);
         }
 
-        public async Task<Result<IEnumerable<OrderDetailsDTO>>> GetCustomerOrdersAsync(int customerId)
+        public async Task<Result<PagedResponseDTO<OrderDetailsDTO>>> GetCustomerOrdersAsync(FilterCustomerOrderDTO filterCustomerOrderDTO)
         {
-            return await _orderRepository.GetCustomerOrdersAsync(customerId);
+            return await _orderRepository.GetCustomerOrdersAsync(filterCustomerOrderDTO);
         }
 
         public async Task<Result<PlaceOrderResponseDTO>> PlaceOrderAsync(OrderCreateDTO orderCreateRequest)

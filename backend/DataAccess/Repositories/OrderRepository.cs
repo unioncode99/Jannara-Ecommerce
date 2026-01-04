@@ -1,6 +1,7 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.CartItem;
+using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Order;
 using Jannara_Ecommerce.DTOs.Product;
 using Jannara_Ecommerce.Utilities;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Org.BouncyCastle.Pqc.Crypto.Lms;
 using Org.BouncyCastle.Utilities.Zlib;
 using Stripe;
+using Stripe.Climate;
 using System.Data;
 using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -709,12 +711,27 @@ SELECT @json AS FullJson;
             }
         }
 
-        public async Task<Result<IEnumerable<OrderDetailsDTO>>> GetCustomerOrdersAsync(int customerId)
+        public async Task<Result<PagedResponseDTO<OrderDetailsDTO>>> GetCustomerOrdersAsync(FilterCustomerOrderDTO filterCustomerOrderDTO)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 DECLARE @json NVARCHAR(MAX);
+
+-- Total count
+select count(*) as total
+    FROM Orders o
+    WHERE o.customer_id = (
+    SELECT id 
+    FROM Customers 
+    WHERE user_id = @userId
+)
+AND (
+    @SearchTerm IS NULL
+    OR o.public_order_id LIKE '%' + @SearchTerm + '%'
+);
+
+-- Items
 SELECT @json = (
     SELECT
         o.id AS Id,
@@ -861,8 +878,24 @@ JSON_QUERY((
         ) AS SellerOrders
 
     FROM Orders o
-    WHERE o.customer_id = @customerId -- filter by customer
-    FOR JSON PATH
+       WHERE o.customer_id = (
+    SELECT id 
+    FROM Customers 
+    WHERE user_id = @userId
+)
+AND (
+    @SearchTerm IS NULL
+    OR o.public_order_id LIKE '%' + @SearchTerm + '%'
+)
+ORDER BY
+    CASE WHEN @SortBy = 'price_asc' THEN o.grand_total END ASC,
+    CASE WHEN @SortBy = 'price_desc' THEN o.grand_total END DESC,
+    CASE WHEN @SortBy = 'newest' THEN o.id END DESC,
+    CASE WHEN @SortBy = 'oldest' THEN o.id END ASC,
+    o.id DESC
+OFFSET (@PageNumber - 1) * @PageSize ROWS
+FETCH NEXT @PageSize ROWS ONLY
+FOR JSON PATH
 );
 
 SELECT @json AS FullJson;
@@ -870,31 +903,46 @@ SELECT @json AS FullJson;
 
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@customerId", customerId);
+                    command.Parameters.AddWithValue("@userId", filterCustomerOrderDTO.UserId);
+                    command.Parameters.AddWithValue("@SearchTerm", (object?)filterCustomerOrderDTO.SearchTerm ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@SortBy", (object?)filterCustomerOrderDTO.SortBy ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@PageNumber", filterCustomerOrderDTO.PageNumber);
+                    command.Parameters.AddWithValue("@PageSize", filterCustomerOrderDTO.PageSize);
                     try
                     {
                         await connection.OpenAsync();
-                        using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+                        using var reader = await command.ExecuteReaderAsync();
                         {
                             if (!await reader.ReadAsync())
-                                return new Result<IEnumerable<OrderDetailsDTO>>(false, "customer orders not found", null, 404);
+                            {
+                                return new Result<PagedResponseDTO<OrderDetailsDTO>>(
+                                    false, "customer_orders_not_found", null, 404);
+                            }
+
+                            // Total
+                            int total = reader.GetInt32(0);
+                            await reader.NextResultAsync();
+                            await reader.ReadAsync();
+
 
                             // Read the entire JSON as a string first
-                            string json = await reader.GetFieldValueAsync<string>(0);
+                            string json = reader.IsDBNull(0)
+    ? "[]"
+    : reader.GetString(0);
 
-                            var product = JsonSerializer.Deserialize<IEnumerable<OrderDetailsDTO>>(
+                            var orders = JsonSerializer.Deserialize<IEnumerable<OrderDetailsDTO>>(
                                 json,
                                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
                             );
-
-                            return new Result<IEnumerable<OrderDetailsDTO>>(true, "customer orders fetched successfully", product, 200);
-
+                            var response = new PagedResponseDTO<OrderDetailsDTO>(total, filterCustomerOrderDTO.PageNumber, filterCustomerOrderDTO.PageSize, orders);
+                            return new Result<PagedResponseDTO<OrderDetailsDTO>>(true, "products_retrieved_successfully", response, 200);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError($"Error fetching customer orders : {ex}");
-                        return new Result<IEnumerable<OrderDetailsDTO>>(false, "Error fetching customer orders", null, 500);
+                        return new Result<PagedResponseDTO<OrderDetailsDTO>>(false, "Error fetching customer orders", null, 500);
+
                     }
                 }
             }

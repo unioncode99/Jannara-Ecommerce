@@ -1,6 +1,7 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DTOs.Order;
 using Jannara_Ecommerce.DTOs.Product;
+using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,9 +40,14 @@ namespace Jannara_Ecommerce.Controllers
         }
 
         [HttpGet(Name = "GetCustomerOrders")]
-        public async Task<ActionResult<ProductDetailDTO>> GetCustomerOrders([FromQuery]int customerId)
+        public async Task<ActionResult<ProductDetailDTO>> GetCustomerOrders([FromQuery] FilterCustomerOrderDTO filterCustomerOrderDTO)
         {
-            var result = await _service.GetCustomerOrdersAsync(customerId);
+            if (filterCustomerOrderDTO.PageNumber <= 0 || filterCustomerOrderDTO.PageSize <= 0)
+            {
+                return BadRequest(new ResponseMessage("invalid_pagination_parameters"));
+            }
+
+            var result = await _service.GetCustomerOrdersAsync(filterCustomerOrderDTO);
             if (result.IsSuccess)
             {
                 return Ok(result);

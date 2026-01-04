@@ -266,7 +266,8 @@
       "confirm_modal_title": "هل أنت متأكد أنك تريد إلغاء هذا الطلب؟",
       "confirm": "تأكيد",
       "load_failed": "فشل تحميل تفاصيل الطلب.",
-      "order_cancelled_successfully": "تم إلغاء الطلب بنجاح"
+      "order_cancelled_successfully": "تم إلغاء الطلب بنجاح",
+      "search_order_placeholder": "ابحث في الطلبات..."
     },
     "customer_dashboard": {
       "welcome_title": "مرحبًا بعودتك",
