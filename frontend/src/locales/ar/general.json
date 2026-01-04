@@ -292,7 +292,8 @@
       "change_password_submit": "تغيير كلمة المرور",
       "password_changed": "تم تغيير كلمة المرور بنجاح",
       "save": "حفظ",
-      "personal_info": "المعلومات الشخصية"
+      "personal_info": "المعلومات الشخصية",
+      "user_info": "معلومات المستخدم"
     }
   },
   "sidebar": {

@@ -191,13 +191,13 @@ namespace Jannara_Ecommerce.Business.Services
             return await _repo.GetAllAsync(pageNumber, pageSize);
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, UserUpdateDTO updatedUser)
+        public async Task<Result<UserPublicDTO>> UpdateAsync(int id, UserUpdateDTO updatedUser)
         {
             // Get current user
             var  currentUserResult = await _repo.GetByIdAsync(id);
             if (!currentUserResult.IsSuccess)
             {
-                return new Result<bool>(false, currentUserResult.Message, false, currentUserResult.ErrorCode);
+                return new Result<UserPublicDTO>(false, currentUserResult.Message, null, currentUserResult.ErrorCode);
             }
             var currentUser = currentUserResult.Data;
             // Check username
@@ -206,11 +206,11 @@ namespace Jannara_Ecommerce.Business.Services
                 var existByUsernameResult = await _repo.IsExistByUsername(updatedUser.Username);
                 if (!existByUsernameResult.IsSuccess)
                 {
-                    return new Result<bool>(false, existByUsernameResult.Message, false, existByUsernameResult.ErrorCode);
+                    return new Result<UserPublicDTO>(false, existByUsernameResult.Message, null, existByUsernameResult.ErrorCode);
                 }
                 if (existByUsernameResult.Data)
                 {
-                    return new Result<bool>(false, "username_exists", false, 409);
+                    return new Result<UserPublicDTO>(false, "username_exists", null, 409);
                 }
             }
             // Handle password
@@ -223,7 +223,8 @@ namespace Jannara_Ecommerce.Business.Services
                 updatedUser.Password = currentUser.Password; 
             }
 
-            return await _repo.UpdateAsync(id, updatedUser);
+            var updateResult = await _repo.UpdateAsync(id, updatedUser);
+            return new Result<UserPublicDTO>(true, updateResult.Message, updateResult.Data.ToUserPublicDTO(), updateResult.ErrorCode);
         }
 
 

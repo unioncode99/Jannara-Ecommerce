@@ -77,7 +77,7 @@ namespace Jannara_Ecommerce.Controllers
 
             if (!result.IsSuccess)
                 return StatusCode(result.ErrorCode, result.Message);
-            return Ok();
+            return Ok(result.Data);
         }
 
         [HttpDelete("{id:int}")]

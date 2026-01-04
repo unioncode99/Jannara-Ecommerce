@@ -12,7 +12,7 @@ namespace Jannara_Ecommerce.Business.Interfaces
         public Task<Result<UserDTO>> FindAsync(string email);
         public Task<Result<UserPublicDTO>> AddNewAsync(int personId, UserCreateDTO newUser, SqlConnection connection, SqlTransaction transaction);
         public Task<Result<UserPublicDTO>> CreateAsync(UserCreateRequestDTO userCreateRequestDTO);
-        public Task<Result<bool>> UpdateAsync(int id, UserUpdateDTO updatedUser);
+        public Task<Result<UserPublicDTO>> UpdateAsync(int id, UserUpdateDTO updatedUser);
         public Task<Result<bool>> DeleteAsync(int id);
         public Task<Result<PagedResponseDTO<UserPublicDTO>>> GetAllAsync(int pageNumber, int pageSize);
         public Task<Result<bool>> ResetPasswordAsync(int id, string newPassword, SqlConnection conn, SqlTransaction transaction);

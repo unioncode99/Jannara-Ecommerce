@@ -298,7 +298,8 @@
       "change_password_submit": "Change Password",
       "password_changed": "Password changed successfully",
       "save": "Save",
-      "personal_info": "Personal Info"
+      "personal_info": "Personal Info",
+      "user_info": "User Info"
     }
   },
   "sidebar": {
