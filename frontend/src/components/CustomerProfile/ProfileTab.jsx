@@ -1,4 +1,10 @@
+import PersonalInfoForm from "./PersonalInfoForm";
+
 const ProfileTab = () => {
-  return <div>ProfileTab</div>;
+  return (
+    <div>
+      <PersonalInfoForm />
+    </div>
+  );
 };
 export default ProfileTab;

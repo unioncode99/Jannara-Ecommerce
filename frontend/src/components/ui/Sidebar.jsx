@@ -125,10 +125,7 @@ const Sidebar = (props) => {
         <div className="sidebar-bottom">
           <button className="profile-btn" onClick={handleProfile}>
             <span className="profile-avatar">
-              <img
-                src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d"
-                alt="Profile"
-              />
+              <img src={person?.imageUrl} alt="Profile" />
             </span>
 
             <span className="profile-info">

@@ -87,6 +87,7 @@ const ChangePasswordForm = () => {
       <Input
         label={old_password}
         name="old_password"
+        type="password"
         placeholder={old_password}
         icon={<Key />}
         value={formData.oldPassword}
@@ -96,6 +97,7 @@ const ChangePasswordForm = () => {
       <Input
         label={new_password}
         name="new_password"
+        type="password"
         placeholder={new_password}
         icon={<Key />}
         value={formData.newPassword}
@@ -105,6 +107,7 @@ const ChangePasswordForm = () => {
       <Input
         label={confirm_password}
         name="confirm_password"
+        type="password"
         placeholder={confirm_password}
         icon={<Key />}
         value={formData.confirmPassword}

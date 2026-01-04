@@ -1,6 +1,7 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Seller;
@@ -75,14 +76,26 @@ namespace Jannara_Ecommerce.Business.Services
         {
             var newPerson = userCreateRequestDTO.GetPersonCreateDTO();
             var newUser = userCreateRequestDTO.GetUserCreateDTO();
-            GetImageUrlsResult imageUrls = null;
+
+            string? profileImageUrl = null;
+
+            // Save Image
             if (newPerson.ProfileImage != null)
             {
-                var imageUrlResult = _imageService.GetImageUrls(newPerson.ProfileImage, _imageSettings.Value.ProfileFolder);
-                if (!imageUrlResult.IsSuccess)
-                    return new Result<UserPublicDTO>(false, imageUrlResult.Message, null, imageUrlResult.ErrorCode);
-                imageUrls = imageUrlResult.Data;
+                var imageSaveResult = await _imageService.SaveImageAsync(
+            newPerson.ProfileImage,
+            _imageSettings.Value.ProfileFolder);
+
+                if (!imageSaveResult.IsSuccess)
+                    return new Result<UserPublicDTO>(
+                        false,
+                        imageSaveResult.Message,
+                        null,
+                        imageSaveResult.ErrorCode);
+
+                profileImageUrl = imageSaveResult.Data;
             }
+
             using (var connection = new SqlConnection(_connectionString))
             {
                 DbTransaction transaction = null;
@@ -90,49 +103,68 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
-
-                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls?.RelativeUrl,  connection,(SqlTransaction) transaction);
+                    // Create Person
+                    var personResult = await _personService.AddNewAsync(newPerson, profileImageUrl,  connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
+                        if (profileImageUrl != null)
+                        {
+                            _imageService.DeleteImage(profileImageUrl);
+                        }
                         return new Result<UserPublicDTO>(false, personResult.Message, null, personResult.ErrorCode);
                     }
+                    // Create User
                     var userResult = await AddNewAsync(personResult.Data.Id, newUser, connection,(SqlTransaction) transaction);
                     if (!userResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
+                        if (profileImageUrl != null)
+                        {
+                            _imageService.DeleteImage(profileImageUrl);
+                        }
                         return new Result<UserPublicDTO>(false, userResult.Message, null, userResult.ErrorCode);
                     }
-
+                    // Assign Role
                     var userRoleResult = await _userRoleService.AddNewAsync((int) Roles.Admin, userResult.Data.Id, true, connection, (SqlTransaction)transaction);
                     if (!userRoleResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
+                        if (profileImageUrl != null)
+                        {
+                            _imageService.DeleteImage(profileImageUrl);
+                        }
                         return new Result<UserPublicDTO>(false, userRoleResult.Message, null, userRoleResult.ErrorCode);
                     }
                     userResult.Data.Roles.Add(new UserRoleInfoDTO(userRoleResult.Data.Id,Roles.Admin.ToString(), Roles.Admin.GetNameAr() , userRoleResult.Data.IsActive, userRoleResult.Data.CreatedAt, userRoleResult.Data.UpdatedAt));
                     await transaction.CommitAsync();
-
+                    // Send Confirmation email
                     var accountConfirmationResult = await _accountConfirmationService.SendAccountConfirmationAsync(userResult.Data);
 
                     if (!accountConfirmationResult.IsSuccess)
                     {
                         _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
-                    }
-                    if (newPerson.ProfileImage != null)
-                        await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrls.PhysicalUrl);                    
+                    }                   
                     return userResult;
                 }
                 catch (Exception ex)
                 {
                     if (transaction != null)
+                    {
                         try
                         {
                             await transaction.RollbackAsync();
-                        }catch (Exception rollBackEx) 
+                        }
+                        catch (Exception rollBackEx)
                         {
                             _logger.LogError(rollBackEx, "failed to roll back while insert a new user");
                         }
+                    }
+
+                    if (profileImageUrl != null)
+                    {
+                        _imageService.DeleteImage(profileImageUrl);
+                    }
                     _logger.LogError(ex, "failed to insert a new user");
                     return new Result<UserPublicDTO>(false, "internal_server_error", null, 500);
                 }
@@ -161,26 +193,34 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<bool>> UpdateAsync(int id, UserUpdateDTO updatedUser)
         {
+            // Get current user
             var  currentUserResult = await _repo.GetByIdAsync(id);
             if (!currentUserResult.IsSuccess)
+            {
                 return new Result<bool>(false, currentUserResult.Message, false, currentUserResult.ErrorCode);
-
-            
-            if (!string.Equals(currentUserResult.Data.Username, updatedUser.Username, StringComparison.OrdinalIgnoreCase))
+            }
+            var currentUser = currentUserResult.Data;
+            // Check username
+            if (!string.Equals(currentUser.Username, updatedUser.Username, StringComparison.OrdinalIgnoreCase))
             {
                 var existByUsernameResult = await _repo.IsExistByUsername(updatedUser.Username);
                 if (!existByUsernameResult.IsSuccess)
+                {
                     return new Result<bool>(false, existByUsernameResult.Message, false, existByUsernameResult.ErrorCode);
+                }
                 if (existByUsernameResult.Data)
+                {
                     return new Result<bool>(false, "username_exists", false, 409);
+                }
             }
+            // Handle password
             if (!string.IsNullOrWhiteSpace(updatedUser.Password))
             {
                 updatedUser.Password = _passwordService.HashPassword(updatedUser, updatedUser.Password);
             }
             else
             {
-                updatedUser.Password = currentUserResult.Data.Password; 
+                updatedUser.Password = currentUser.Password; 
             }
 
             return await _repo.UpdateAsync(id, updatedUser);

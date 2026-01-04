@@ -60,13 +60,24 @@ namespace Jannara_Ecommerce.Business.Services
             var newUser = sellerCreateRequestDTO.GetUserCreateDTO();
             var newSeller = sellerCreateRequestDTO.GetSellerCreateDTO();
 
-            GetImageUrlsResult imageUrls = null;
+            string? profileImageUrl = null;
+            // Save Image
             if (newPerson.ProfileImage != null)
             {
-                var imageUrlResult = _imageService.GetImageUrls(newPerson.ProfileImage, _imageSettings.Value.ProfileFolder);
-                if (!imageUrlResult.IsSuccess)
-                    return new Result<SellerDTO>(false, imageUrlResult.Message, null, imageUrlResult.ErrorCode);
-                imageUrls = imageUrlResult.Data;
+                var imageSaveResult = await _imageService.SaveImageAsync(
+            newPerson.ProfileImage,
+            _imageSettings.Value.ProfileFolder);
+
+                if (!imageSaveResult.IsSuccess)
+                {
+                    return new Result<SellerDTO>(
+                        false,
+                        imageSaveResult.Message,
+                        null,
+                        imageSaveResult.ErrorCode);
+                }
+
+                profileImageUrl = imageSaveResult.Data;
             }
 
             using (var connection = new SqlConnection(_connectionString))
@@ -76,33 +87,52 @@ namespace Jannara_Ecommerce.Business.Services
                 {
                     await connection.OpenAsync();
                     transaction = await connection.BeginTransactionAsync();
-                    var personResult = await _personService.AddNewAsync(newPerson, imageUrls?.RelativeUrl, connection,(SqlTransaction) transaction);
+                    // Create Person
+                    var personResult = await _personService.AddNewAsync(newPerson, profileImageUrl, connection,(SqlTransaction) transaction);
                     if (!personResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
+                        if (profileImageUrl != null)
+                        {
+                            _imageService.DeleteImage(profileImageUrl);
+                        }
                         return new Result<SellerDTO>(false, personResult.Message, null, personResult.ErrorCode);
                     }
+                    // Create User
                     var userResult = await _userService.AddNewAsync(personResult.Data.Id, newUser, connection, (SqlTransaction)transaction);
                     if (!userResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
+                        if (profileImageUrl != null)
+                        {
+                            _imageService.DeleteImage(profileImageUrl);
+                        }
                         return new Result<SellerDTO>(false, userResult.Message, null, userResult.ErrorCode);
                     }
-
+                    // Assign Role
                     var userRoleResult = await _userRoleService.AddNewAsync((int)Roles.Seller, userResult.Data.Id, true, connection, (SqlTransaction)transaction);
                     if (!userRoleResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
+                        if (profileImageUrl != null)
+                        {
+                            _imageService.DeleteImage(profileImageUrl);
+                        }
                         return new Result<SellerDTO>(false, userResult.Message, null, userResult.ErrorCode);
                     }
-                    var sellerResult = await AddNewAsync (userResult.Data.Id, newSeller, connection, (SqlTransaction)transaction);
+                    // Create Seller
+                    var sellerResult = await AddNewAsync(userResult.Data.Id, newSeller, connection, (SqlTransaction)transaction);
                     if (!sellerResult.IsSuccess)
                     {
                         await transaction.RollbackAsync();
+                        if (profileImageUrl != null)
+                        {
+                            _imageService.DeleteImage(profileImageUrl);
+                        }
                         return new Result<SellerDTO>(false, sellerResult.Message, null, sellerResult.ErrorCode);
                     }
                     await transaction.CommitAsync();
-
+                    // Send Confirmation email
                     var accountConfirmationResult = await _confirmationService.SendAccountConfirmationAsync(userResult.Data);
 
                     if (!accountConfirmationResult.IsSuccess)
@@ -110,8 +140,6 @@ namespace Jannara_Ecommerce.Business.Services
                         _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
                     }
 
-                    if (sellerCreateRequestDTO.ProfileImage != null)
-                        await _imageService.SaveImageAsync(newPerson.ProfileImage, imageUrls.PhysicalUrl);
                     return sellerResult;
                 }
                 catch (Exception ex)
@@ -127,6 +155,10 @@ namespace Jannara_Ecommerce.Business.Services
                         {
                             _logger.LogError(rollBackEx, "Failed to rollback while create a new seller");
                         }
+                    }
+                    if (profileImageUrl != null)
+                    {
+                        _imageService.DeleteImage(profileImageUrl);
                     }
                     _logger.LogError(ex, "Failed to insert a new seller");
                     return new Result<SellerDTO>(false, "internal_server_error", null, 500);

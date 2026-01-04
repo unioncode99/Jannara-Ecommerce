@@ -15,6 +15,7 @@
     "last_name": "اسم العائلة",
     "phone": "الهاتف",
     "date_of_birth": "تاريخ الميلاد",
+    "gender": "الجنس",
     "user_info": "معلومات المستخدم",
     "email": "البريد الإلكتروني",
     "username": "اسم المستخدم",
@@ -289,7 +290,9 @@
       "new_password": "كلمة المرور الجديدة",
       "confirm_password": "تأكيد كلمة المرور",
       "change_password_submit": "تغيير كلمة المرور",
-      "password_changed": "تم تغيير كلمة المرور بنجاح"
+      "password_changed": "تم تغيير كلمة المرور بنجاح",
+      "save": "حفظ",
+      "personal_info": "المعلومات الشخصية"
     }
   },
   "sidebar": {

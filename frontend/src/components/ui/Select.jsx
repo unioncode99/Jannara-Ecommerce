@@ -11,6 +11,7 @@ const Select = ({
   required = false,
   disabled = false,
   errorMessage = "",
+  showLabel = false,
   ...props
 }) => {
   const { language } = useLanguage();
@@ -18,7 +19,9 @@ const Select = ({
     <div className={`form-row ${className} ${errorMessage ? "error" : ""}`}>
       {label && (
         <label htmlFor={name} className="form-label">
-          <span className="visually-hidden">{label}</span>
+          <span className={`${!showLabel ? "visually-hidden" : ""}`}>
+            {label}
+          </span>
         </label>
       )}
       <select

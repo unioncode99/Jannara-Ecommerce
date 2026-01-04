@@ -145,7 +145,7 @@ Select * from People Where Id  = @id;
                 }
             }
         }
-        public async Task<Result<bool>> UpdateAsync(int id, PersonUpdateDTO  updatedPerson, string imageUrl)
+        public async Task<Result<PersonDTO>> UpdateAsync(int id, PersonUpdateDTO  updatedPerson, string imageUrl)
         {
             using(var connection = new SqlConnection(_connectionString))
             {
@@ -159,7 +159,7 @@ SET
     gender = @gender,
     date_of_birth = @date_of_birth
 WHERE Id = @id;
-select @@ROWCOUNT";
+select * from People where id = @id";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@first_name", updatedPerson.FirstName);
@@ -173,16 +173,32 @@ select @@ROWCOUNT";
                     try
                     {
                         await connection.OpenAsync();
-                        object? result = await command.ExecuteScalarAsync();
-                        int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
-                        if (rowAffected > 0)
-                            return new Result<bool>(true, "person_updated_successfully", true);
-                        return new Result<bool>(false, "person_not_found", false, 404);
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                PersonDTO person = new PersonDTO
+                                (
+                                    reader.GetInt32(reader.GetOrdinal("Id")),
+                                    reader.GetString(reader.GetOrdinal("first_name")),
+                                    reader.GetString(reader.GetOrdinal("last_name")),
+                                    reader.GetString(reader.GetOrdinal("phone")),
+                                    reader.IsDBNull(reader.GetOrdinal("image_url")) ? null : reader.GetString(reader.GetOrdinal("image_url")),
+                                    (Gender)reader.GetByte(reader.GetOrdinal("gender")),
+                                    DateOnly.FromDateTime(reader.GetDateTime(reader.GetOrdinal("date_of_birth"))),
+                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                               );
+                                return new Result<PersonDTO>(true, "person_updated_successfully", person);
+                            }
+                            return new Result<PersonDTO>(false, "person_not_found", null, 404);
+
+                        }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to update person with PersonId {PersonId}", id);
-                        return new Result<bool>(false, "internal_server_error", false, 500);
+                        return new Result<PersonDTO>(false, "internal_server_error", null, 500);
                     }
 
                 }

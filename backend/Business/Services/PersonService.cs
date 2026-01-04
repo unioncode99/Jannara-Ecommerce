@@ -13,11 +13,14 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IPersonRepository _repo;
         private readonly IImageService _imageService;
         private readonly IOptions<ImageSettings> _imageOptions;
-        public PersonService(IPersonRepository repo, IImageService imageService, IOptions<ImageSettings> imageSettings)
+        private readonly string _baseUrl;
+        public PersonService(IPersonRepository repo, IImageService imageService, 
+            IOptions<ImageSettings> imageSettings, IOptions<AppSettings> appSettings)
         {
             _repo = repo;
             _imageService = imageService;
             _imageOptions = imageSettings;
+            _baseUrl = appSettings.Value.BaseUrl;
         }
         public async Task<Result<PersonDTO>> AddNewAsync(PersonCreateDTO personCreateDTO, string imageUrl, SqlConnection connection, SqlTransaction transaction)
         {  
@@ -37,37 +40,63 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<PersonDTO>> FindAsync(int id)
         {
-            return await _repo.GetByIdAsync(id);
+            var personResult = await _repo.GetByIdAsync(id);
+            personResult.Data.ImageUrl = ImageUrlHelper.ToAbsoluteUrl(personResult.Data.ImageUrl, _baseUrl);
+            return personResult;
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, PersonUpdateDTO updatedPerson)
+        public async Task<Result<PersonDTO>> UpdateAsync(int id, PersonUpdateDTO updatedPerson)
         {
+            // Fetch existing person
             var findResult = await _repo.GetByIdAsync(id);
             if (!findResult.IsSuccess)
-                return new Result<bool>(false, findResult.Message, false, findResult.ErrorCode);
+            {
+                return new Result<PersonDTO>(false, findResult.Message, null, findResult.ErrorCode);
+            }
 
-            GetImageUrlsResult imageUrl = null;
+            string? finalImageUrl = findResult.Data.ImageUrl;
+            // Handle delete-only request
+            if (updatedPerson.DeleteProfileImage && !string.IsNullOrWhiteSpace(finalImageUrl))
+            {
+                var deleteResult = _imageService.DeleteImage(finalImageUrl);
+                if (!deleteResult.IsSuccess)
+                {
+                    return new Result<PersonDTO>(false, deleteResult.Message, null, deleteResult.ErrorCode);
+                }
+
+                finalImageUrl = null;
+            }
+            // Handle new uploaded image
             if (updatedPerson.ProfileImage != null)
             {
-                var ImageUrlResult = _imageService.GetImageUrls(updatedPerson.ProfileImage, _imageOptions.Value.ProfileFolder);
-                if (!ImageUrlResult.IsSuccess)
-                    return new Result<bool>(false, ImageUrlResult.Message, false, ImageUrlResult.ErrorCode);
-                imageUrl = ImageUrlResult.Data;
+                // Delete old image if it exists (after deleteProfileImage handled)
+                if (!string.IsNullOrWhiteSpace(finalImageUrl))
+                {
+                    var deleteOld = _imageService.DeleteImage(finalImageUrl);
+                    if (!deleteOld.IsSuccess)
+                    {
+                        return new Result<PersonDTO>(false, deleteOld.Message, null, deleteOld.ErrorCode);
+                    }
+                }
+                // Save new image
+                var saveResult = await _imageService.SaveImageAsync(
+           updatedPerson.ProfileImage,
+           _imageOptions.Value.ProfileFolder);
+
+                if (!saveResult.IsSuccess)
+                {
+                    return new Result<PersonDTO>(false, saveResult.Message, null, saveResult.ErrorCode);
+                }
+                // Update final image path for DB
+                finalImageUrl = saveResult.Data;
             }
-            else if (updatedPerson.DeleteProfileImage && findResult.Data.ImageUrl is not null)
-            {
-                var deleteImageResult = _imageService.DeleteImage(findResult.Data.ImageUrl);
-                if (!deleteImageResult.IsSuccess)
-                    return new Result<bool>(false, deleteImageResult.Message, false, deleteImageResult.ErrorCode);
-                imageUrl = null;
-            }
-            else
-                imageUrl.RelativeUrl = findResult.Data.ImageUrl;
-            if (imageUrl != null) 
-                await _imageService.ReplaceImageAsync(findResult.Data.ImageUrl,imageUrl.RelativeUrl, updatedPerson.ProfileImage);
-            return await _repo.UpdateAsync(id, updatedPerson, imageUrl.RelativeUrl);
+            // Update DB with new image path
+            var updateResult = await _repo.UpdateAsync(id, updatedPerson, finalImageUrl);
+            updateResult.Data.ImageUrl = ImageUrlHelper.ToAbsoluteUrl(updateResult.Data.ImageUrl, _baseUrl);
+            return updateResult;
         }
 
-        
+
+
     }
 }
