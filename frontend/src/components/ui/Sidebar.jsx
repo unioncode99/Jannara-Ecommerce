@@ -43,7 +43,7 @@ const menus = {
   admin: [
     { key: "dashboard", path: "/admin-dashboard", icon: <LayoutDashboard /> },
     { key: "users", path: "/users", icon: <User /> },
-    { key: "categories", path: "/categories", icon: <Layers /> },
+    { key: "categories", path: "/product-categories", icon: <Layers /> },
   ],
   superadmin: [
     {
@@ -77,7 +77,8 @@ const Sidebar = (props) => {
     return person?.firstName + " " + person?.lastName;
   };
 
-  const role = user?.roles[0]?.nameEn.toLowerCase();
+  // const role = user?.roles[0]?.nameEn.toLowerCase();
+  const role = "admin"; // for test
 
   let links = [];
   if (role) {

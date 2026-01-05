@@ -1,0 +1,25 @@
+.product-categori-management-container header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.product-categori-management-container header h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.product-categori-management-container header h1 svg {
+  color: var(--primary-500);
+}
+
+.product-categori-management-container header button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.product-categori-management-container .confirm-modal {
+}

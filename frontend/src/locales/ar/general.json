@@ -25,6 +25,12 @@
     "already_have_account": "هل لديك حساب بالفعل؟ تسجيل الدخول",
     "business_name": "اسم العمل",
     "website_url": "رابط الموقع الإلكتروني",
+    "name_en": "الاسم باللغة الإنجليزية",
+    "name_ar": "الاسم باللغة العربية",
+    "description_en": "الوصف باللغة الإنجليزية",
+    "description_ar": "الوصف باللغة العربية",
+    "category": "الفئة",
+
     "errors": {
       "required": "هذا الحقل مطلوب",
       "invalid_email": "الرجاء إدخال بريد إلكتروني صالح",
@@ -295,6 +301,20 @@
       "save": "حفظ",
       "personal_info": "المعلومات الشخصية",
       "user_info": "معلومات المستخدم"
+    },
+    "product_categories_management": {
+      "add_category": "إضافة تصنيف",
+      "edit_category": "تعديل التصنيف",
+      "save": "حفظ",
+      "cancel_text": "إلغاء",
+      "title": "إدارة التصنيفات",
+      "confirm": "تأكيد",
+      "cancel": "إلغاء",
+      "delete_confirm_title": "هل أنت متأكد أنك تريد حذف هذا التصنيف؟",
+      "add_success": "تمت إضافة التصنيف بنجاح",
+      "edit_success": "تم تحديث التصنيف بنجاح",
+      "delete_success": "تم حذف التصنيف بنجاح",
+      "action_failed": "فشلت العملية. يرجى المحاولة مرة أخرى"
     }
   },
   "sidebar": {

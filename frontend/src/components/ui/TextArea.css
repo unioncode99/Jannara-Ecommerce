@@ -1,0 +1,17 @@
+textarea {
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  background-color: var(--input-background);
+  border: 2px solid var(--border-color);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+textarea:focus {
+  border-color: var(--border-color-focus);
+  outline-color: var(--primary-500);
+  background-color: var(--input-background);
+}

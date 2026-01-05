@@ -25,6 +25,11 @@
     "already_have_account": "Already have an account? Login",
     "business_name": "Business Name",
     "website_url": "Website URL",
+    "name_en": "Name In English",
+    "name_ar": "Name In Arabic",
+    "description_en": "Description In English",
+    "description_ar": "Description In Arabic",
+    "category": "Category",
     "errors": {
       "required": "This field is required",
       "invalid_email": "Please enter a valid email address",
@@ -301,6 +306,20 @@
       "save": "Save",
       "personal_info": "Personal Info",
       "user_info": "User Info"
+    },
+    "product_categories_management": {
+      "add_category": "Add Category",
+      "edit_category": "Edit Category",
+      "save": "Save",
+      "cancel_text": "Cancel",
+      "title": "Manage Categories",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "delete_confirm_title": "Are you sure you want to delete this category?",
+      "add_success": "Category added successfully",
+      "edit_success": "Category updated successfully",
+      "delete_success": "Category deleted successfully",
+      "action_failed": "Action failed. Please try again"
     }
   },
   "sidebar": {

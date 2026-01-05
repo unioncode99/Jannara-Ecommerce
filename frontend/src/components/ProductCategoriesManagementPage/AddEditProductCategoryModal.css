@@ -1,0 +1,14 @@
+.add-edit-product-category-form .btns-container {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 1rem;
+}
+
+.add-edit-product-category-form .btns-container .cancel-btn {
+  background-color: transparent;
+  color: var(--text-color);
+}
+.add-edit-product-category-form .btns-container .cancel-btn:hover {
+  background-color: var(--grey-200);
+}

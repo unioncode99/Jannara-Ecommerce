@@ -22,10 +22,10 @@ const ConfirmModal = (props) => {
     >
       <p>{message}</p>
       <div className="confirm-modal-actions">
-        <Button onClick={onClose} className="btn btn-primary">
+        <Button onClick={onClose} className="cancel-btn">
           {cancelLabel}
         </Button>
-        <Button onClick={onConfirm} className="btn-danger">
+        <Button onClick={onConfirm} className="btn btn-primary">
           {confirmLabel}
         </Button>
       </div>
