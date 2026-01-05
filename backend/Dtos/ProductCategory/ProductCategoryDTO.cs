@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Jannara_Ecommerce.DTOs
+namespace Jannara_Ecommerce.DTOs.ProductCategory
 {
     public class ProductCategoryDTO
     {
-        public ProductCategoryDTO(int id, string nameEn, string nameAr, string? descriptionEn, string? descriptionAr, DateTime createdAt, DateTime updatedAt)
+        public ProductCategoryDTO(int id, int? parentCategoryId, string nameEn, string nameAr, string? descriptionEn, string? descriptionAr, DateTime createdAt, DateTime updatedAt)
         {
             Id = id;
+            ParentCategoryId = parentCategoryId;
             NameEn = nameEn;
             NameAr = nameAr;
             DescriptionEn = descriptionEn;
@@ -16,6 +17,7 @@ namespace Jannara_Ecommerce.DTOs
         }
 
         public int Id { get; set; }
+        public int? ParentCategoryId { get; set; }
         [Required(ErrorMessage = "NameEn is required.")]
         public string NameEn { get; set; }
         [Required(ErrorMessage = "NameAr is required.")]
