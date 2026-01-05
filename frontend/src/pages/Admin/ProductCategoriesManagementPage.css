@@ -2,12 +2,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 2rem;
 }
 
 .product-categori-management-container header h1 {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
 
@@ -21,5 +23,22 @@
   gap: 0.5rem;
 }
 
-.product-categori-management-container .confirm-modal {
+.product-category-actions-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.product-category-actions-btn button {
+  background-color: transparent;
+  border-color: transparent;
+  cursor: pointer;
+  color: var(--grey-500);
+  transition: var(--transition);
+}
+.delete-product-category-btn:hover {
+  color: red;
+}
+.edit-product-category-btn:hover {
+  color: var(--primary-500);
 }

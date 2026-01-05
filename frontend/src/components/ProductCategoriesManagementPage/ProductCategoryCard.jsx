@@ -21,7 +21,7 @@ const ProductCategoryCard = ({
           ? productCategory.descriptionEn
           : productCategory.descriptionAr}
       </p>
-      <div>
+      <div className="product-category-actions-btn">
         <button
           onClick={() => handleEditProductCategory(productCategory)}
           className="edit-product-category-btn"

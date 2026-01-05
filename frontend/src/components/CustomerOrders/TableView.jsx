@@ -19,7 +19,13 @@ const TableView = ({ orders, viewOrder }) => {
   return (
     <div className="table-view">
       <Table
-        headers={[`${order_label} #`, placed_at, total, actions]}
+        headers={[
+          "English Name",
+          "Arabic Name",
+          "English Description",
+          "Arabic Description",
+          "Actions",
+        ]}
         data={orders.map((order) => ({
           ID: order.publicOrderId,
           Date: formatDateTime(order.placedAt),

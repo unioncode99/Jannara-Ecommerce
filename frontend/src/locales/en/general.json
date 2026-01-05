@@ -319,7 +319,12 @@
       "add_success": "Category added successfully",
       "edit_success": "Category updated successfully",
       "delete_success": "Category deleted successfully",
-      "action_failed": "Action failed. Please try again"
+      "action_failed": "Action failed. Please try again",
+      "name_en": "English Name",
+      "name_ar": "Arabic Name",
+      "description_en": "English Description",
+      "description_ar": "Arabic Description",
+      "actions": "Actions"
     }
   },
   "sidebar": {

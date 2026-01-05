@@ -39,17 +39,3 @@
   gap: 1rem;
   justify-content: end;
 }
-
-.product-category-card div button {
-  background-color: transparent;
-  border-color: transparent;
-  cursor: pointer;
-  color: var(--grey-500);
-  transition: var(--transition);
-}
-.delete-product-category-btn:hover {
-  color: red;
-}
-.edit-product-category-btn:hover {
-  color: var(--primary-500);
-}

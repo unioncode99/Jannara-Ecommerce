@@ -153,7 +153,13 @@ const ProductCategoriesManagementPage = () => {
           handleEditProductCategory={handleEditProductCategory}
         />
       )}
-      {view == "table" && <TableView productCategories={productCategories} />}
+      {view == "table" && (
+        <TableView
+          productCategories={productCategories}
+          handleDeleteProductCategory={handleDeleteProductCategory}
+          handleEditProductCategory={handleEditProductCategory}
+        />
+      )}
       <AddEditProductCategoryModal
         show={isAddEditProductCategoryModalOpen}
         onClose={closeModal}
