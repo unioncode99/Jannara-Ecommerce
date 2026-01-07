@@ -186,9 +186,10 @@ namespace Jannara_Ecommerce.Business.Services
             return await _repo.GetByEmailAsync(email);
         }
 
-        public async Task<Result<PagedResponseDTO<UserPublicDTO>>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<Result<PagedResponseDTO<UserDetailsDTO>>> GetAllAsync(int pageNumber, int pageSize, int? currentUserId = null)
         {
-            return await _repo.GetAllAsync(pageNumber, pageSize);
+
+            return await _repo.GetAllAsync(pageNumber, pageSize, currentUserId);
         }
 
         public async Task<Result<UserPublicDTO>> UpdateAsync(int id, UserUpdateDTO updatedUser)

@@ -96,43 +96,112 @@ OUTPUT inserted.*
             }
         }
 
-        public async Task<Result<PagedResponseDTO<UserPublicDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20, int? currentUserId = null)
+        public async Task<Result<PagedResponseDTO<UserDetailsDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20, int? currentUserId = null)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
-SELECT COUNT(*) AS total FROM Users;
+DECLARE @isSuperAdmin BIT = 0;
+DECLARE @isAdmin BIT = 0;
+DECLARE @json NVARCHAR(MAX);
 
+select count(id) as total from users;
+
+-- Detect current user's role
 SELECT
-    U.id  ,
+    @isSuperAdmin = MAX(CASE WHEN R.name_en = 'SuperAdmin' THEN 1 ELSE 0 END),
+    @isAdmin = MAX(CASE WHEN R.name_en = 'Admin' THEN 1 ELSE 0 END)
+FROM UserRoles UR
+JOIN Roles R ON UR.role_id = R.id
+WHERE UR.user_id = @currentUserId
+  AND UR.is_active = 1;
+-- Users
+SELECT @json = (SELECT
+    U.id,
     U.person_id,
     U.email,
     U.username,
-    U.created_at ,
-    U.updated_at ,
+    U.created_at,
+    U.updated_at,
     (
-        SELECT 
-            UR.id as Id,
-            R.name_ar as NameAr,
-            R.name_en as NameEn,
-            UR.is_active as IsActive,
-            UR.created_at as CreatedAt,
-            UR.updated_at as UpdateAt
+	-- Roles
+        SELECT
+            UR.id AS Id,
+            R.name_ar AS NameAr,
+            R.name_en AS NameEn,
+            UR.is_active AS IsActive,
+            UR.created_at AS CreatedAt,
+            UR.updated_at AS UpdatedAt
         FROM UserRoles UR
         JOIN Roles R ON UR.role_id = R.id
         WHERE UR.user_id = U.id
         FOR JSON PATH
-    ) AS roles_json
+    ) AS Roles,
+	-- Person Info
+	JSON_QUERY(
+	(
+	Select 
+	p.id AS Id,
+	p.first_name As FirstName,
+	p.last_name As LastName,
+	p.phone As Phone,
+	p.image_url As ImageUrl,
+	p.gender As Gender,
+	CASE P.gender
+        WHEN 0 THEN 'Unknown'
+        WHEN 1 THEN 'Male'
+        WHEN 2 THEN 'Female'
+        WHEN 3 THEN 'Other'
+    END AS GenderNameEn,
+    CASE P.gender
+        WHEN 0 THEN N'غير محدد'
+        WHEN 1 THEN N'ذكر'
+        WHEN 2 THEN N'أنثى'
+        WHEN 3 THEN N'آخر'
+    END AS GenderNameAr,
+	p.date_of_birth As DateOfBirth,
+	p.created_at As CreatedAt,
+	p.updated_at As UpdatedAt
+	from People p where id = U.person_id
+	for JSON PAth, WITHOUT_ARRAY_WRAPPER
+	)) AS Person
 FROM Users U
+WHERE
+(
+    -- SuperAdmin → all users (exclude himself)
+    @isSuperAdmin = 1 And (U.id <>  @currentUserId)
+
+    OR
+
+    -- Admin → Seller & Customer only (exclude himself)
+    (
+        @isAdmin = 1
+        AND U.id <> @currentUserId
+        AND EXISTS (
+            SELECT 1
+            FROM UserRoles UR
+            JOIN Roles R ON UR.role_id = R.id
+            WHERE UR.user_id = U.id
+              AND UR.is_active = 1
+              AND R.name_en IN ('Seller', 'Customer')
+        )
+    )
+)
+-- Seller / Customer → condition never matches → returns 0 rows
 ORDER BY U.id
-OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
+OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY
+FOR JSON PATH
+);
+SELEct @json as FUllJSON;
 
 ";
+
                 using (var command = new SqlCommand(query, connection))
                 {
                     int offset = (pageNumber - 1) * pageSize;
                     command.Parameters.AddWithValue("@offset", offset);
                     command.Parameters.AddWithValue("@pageSize", pageSize);
+                    command.Parameters.AddWithValue("@currentUserId", currentUserId);
 
 
                     try
@@ -140,44 +209,33 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
                         await connection.OpenAsync();
                         using (var reader = await command.ExecuteReaderAsync())
                         {
-
-                            int total = 0;
-                            if (await reader.ReadAsync())
+                            if (!await reader.ReadAsync())
                             {
-                                total = reader.GetInt32(reader.GetOrdinal("total"));
+                                return new Result<PagedResponseDTO<UserDetailsDTO>>(
+                                    false, "users_not_found", null, 404);
                             }
+
+                            int total = reader.GetInt32(0);
                             await reader.NextResultAsync();
+                            await reader.ReadAsync();
+                          
+                            // Read the entire JSON as a string first
+                            string json = reader.IsDBNull(0)
+                            ? "[]"
+                            : reader.GetString(0);
 
-                            var users = new List<UserPublicDTO>();
-                            while (await reader.ReadAsync())
-                            {
-                                var rolesJson = reader.IsDBNull(reader.GetOrdinal("roles_json"))
-                                       ? "[]"
-                                       : reader.GetString(reader.GetOrdinal("roles_json"));
-
-                                var rolesList = JsonSerializer.Deserialize<List<UserRoleInfoDTO>>(rolesJson);
-                                users.Add(new UserPublicDTO(
-                                    reader.GetInt32(reader.GetOrdinal("id")),
-                                    reader.GetInt32(reader.GetOrdinal("person_id")),
-                                    reader.GetString(reader.GetOrdinal("email")),
-                                    reader.GetString(reader.GetOrdinal("username")),
-                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("updated_at")),
-                                    rolesList ?? new List<UserRoleInfoDTO>()
-                                ));
-                            }
-                            if (users.Count() < 1)
-                                return new Result<PagedResponseDTO<UserPublicDTO>>(false, "users_not_found", null, 404);
-
-                            var response = new PagedResponseDTO<UserPublicDTO>(total, pageNumber, pageSize, users);
-
-                            return new Result<PagedResponseDTO<UserPublicDTO>>(true, "users_retrieved_successfully", response);
+                            var users = JsonSerializer.Deserialize<IEnumerable<UserDetailsDTO>>(
+                                json,
+                                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                            );
+                            var response = new PagedResponseDTO<UserDetailsDTO>(total, pageNumber, pageSize, users);
+                            return new Result<PagedResponseDTO<UserDetailsDTO>>(true, "products_retrieved_successfully", response, 200);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve users for page {PageNumber} with page size {PageSize}", pageNumber, pageSize);
-                        return new Result<PagedResponseDTO<UserPublicDTO>>(false, "internal_server_error", null, 500);
+                        return new Result<PagedResponseDTO<UserDetailsDTO>>(false, "internal_server_error", null, 500);
                     }
 
                 }

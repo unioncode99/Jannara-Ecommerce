@@ -39,11 +39,20 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PagedResponseDTO<UserPublicDTO>>> GetAll([FromQuery] int pageNumber , [FromQuery] int pageSize)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+
             if (pageNumber == 0 || pageSize == 0)
             {
                 return BadRequest(new ResponseMessage("invalid_pagination_parameters"));
             }
-            var result = await _service.GetAllAsync(pageNumber, pageSize);
+            var result = await _service.GetAllAsync(pageNumber, pageSize, userId);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);
