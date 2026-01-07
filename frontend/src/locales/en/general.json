@@ -325,6 +325,17 @@
       "description_en": "English Description",
       "description_ar": "Arabic Description",
       "actions": "Actions"
+    },
+    "users_management": {
+      "title": "Manage Users",
+      "add_admin": "Add Admin",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "roles": "Roles",
+      "join_at": "Join at",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive"
     }
   },
   "sidebar": {

@@ -117,12 +117,12 @@ WHERE UR.user_id = @currentUserId
   AND UR.is_active = 1;
 -- Users
 SELECT @json = (SELECT
-    U.id,
-    U.person_id,
-    U.email,
-    U.username,
-    U.created_at,
-    U.updated_at,
+    U.id AS Id,
+    U.person_id AS PersonId,
+    U.email AS Email,
+    U.username AS Username,
+    U.created_at AS CreatedAt,
+    U.updated_at AS UpdatedAt,
     (
 	-- Roles
         SELECT
@@ -224,10 +224,14 @@ SELEct @json as FUllJSON;
                             ? "[]"
                             : reader.GetString(0);
 
-                            var users = JsonSerializer.Deserialize<IEnumerable<UserDetailsDTO>>(
-                                json,
-                                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-                            );
+                            //var users = JsonSerializer.Deserialize<IEnumerable<UserDetailsDTO>>(
+                            //    json,
+                            //    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                            //);
+                            var users = JsonSerializer.Deserialize<UserDetailsDTO[]>(
+                            json,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                        );
                             var response = new PagedResponseDTO<UserDetailsDTO>(total, pageNumber, pageSize, users);
                             return new Result<PagedResponseDTO<UserDetailsDTO>>(true, "products_retrieved_successfully", response, 200);
                         }

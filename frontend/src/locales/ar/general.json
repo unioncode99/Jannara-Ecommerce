@@ -320,6 +320,17 @@
       "description_en": "الوصف بالإنجليزية",
       "description_ar": "الوصف بالعربية",
       "actions": "الإجراءات"
+    },
+    "users_management": {
+      "title": "إدارة المستخدمين",
+      "add_admin": "إضافة مشرف",
+      "confirm": "تأكيد",
+      "cancel": "إلغاء",
+      "roles": "الأدوار",
+      "join_at": "انضم في",
+      "status": "الحالة",
+      "active": "نشط",
+      "inactive": "غير نشط"
     }
   },
   "sidebar": {

@@ -27,6 +27,7 @@ import OrderSuccessPage from "./pages/OrderSuccessPage";
 import CustomerOrders from "./pages/Customer/CustomerOrders";
 import CustomerProfile from "./pages/Customer/CustomerProfile";
 import ProductCategoriesManagementPage from "./pages/Admin/ProductCategoriesManagementPage";
+import UserManagementPage from "./pages/Admin/UserManagementPage";
 
 function App() {
   const { language } = useLanguage();
@@ -87,6 +88,7 @@ function App() {
               path="product-categories"
               element={<ProductCategoriesManagementPage />}
             />
+            <Route path="users" element={<UserManagementPage />} />
 
             <Route path="*" element={<NotFoundPage />} />
           </Route>

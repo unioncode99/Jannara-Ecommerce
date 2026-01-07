@@ -1,0 +1,13 @@
+.user-actions-btn-container button {
+  background-color: transparent;
+  border-color: transparent;
+  cursor: pointer;
+  color: var(--grey-500);
+  transition: var(--transition);
+}
+.delete-user-btn:hover {
+  color: #e3606d;
+}
+.edit-user-btn:hover {
+  color: #72dc8b;
+}
