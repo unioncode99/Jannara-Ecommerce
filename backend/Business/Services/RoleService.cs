@@ -1,6 +1,6 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.Role;
 using Jannara_Ecommerce.Utilities;
 
 namespace Jannara_Ecommerce.Business.Services

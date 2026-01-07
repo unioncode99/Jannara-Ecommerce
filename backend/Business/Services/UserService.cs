@@ -6,6 +6,7 @@ using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.DTOs.User;
+using Jannara_Ecommerce.DTOs.UserRole;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Mappers;
 using Jannara_Ecommerce.Utilities;

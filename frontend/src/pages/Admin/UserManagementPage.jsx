@@ -31,6 +31,10 @@ const UserManagementPage = () => {
     edit_success,
     delete_success,
     action_failed,
+    deactivate_user,
+    activate_user,
+    confirm_deactivate,
+    confirm_activate,
   } = translations.general.pages.users_management;
 
   const fetchUsers = async () => {
@@ -52,7 +56,11 @@ const UserManagementPage = () => {
 
   function handeAddAdmin() {}
 
-  function handleDactivateUser() {}
+  function handleToggleUserStatus(user) {
+    console.log("user -> ", user);
+    setSelectedUser(user);
+    setIsDactivateUserConfirmModalOpen(true);
+  }
 
   const closeModal = () => {
     setIsAddUserModalOpen(false);
@@ -76,10 +84,16 @@ const UserManagementPage = () => {
       </header>
       <ViewSwitcher view={view} setView={setView} />
       {view == "card" && (
-        <CardView users={users} handleDactivateUser={handleDactivateUser} />
+        <CardView
+          users={users}
+          handleToggleUserStatus={handleToggleUserStatus}
+        />
       )}
       {view == "table" && (
-        <TableView users={users} handleDactivateUser={handleDactivateUser} />
+        <TableView
+          users={users}
+          handleToggleUserStatus={handleToggleUserStatus}
+        />
       )}
       <AddAdminModal
         show={isAddUserModalOpen}
@@ -90,9 +104,15 @@ const UserManagementPage = () => {
         show={isDactivateUserConfirmModalOpen}
         onClose={() => closeModal()}
         onConfirm={() => DactivateUser()}
-        title={delete_confirm_title}
+        title={
+          selectedUser?.roles[0]?.isActive
+            ? confirm_deactivate
+            : confirm_activate
+        }
         cancelLabel={cancel}
-        confirmLabel={confirm}
+        confirmLabel={
+          selectedUser?.roles[0]?.isActive ? deactivate_user : activate_user
+        }
       />
     </div>
   );

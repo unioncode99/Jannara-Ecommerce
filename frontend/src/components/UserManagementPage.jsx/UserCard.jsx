@@ -3,7 +3,7 @@ import "./UserCard.css";
 import { useLanguage } from "../../hooks/useLanguage";
 import { formatDateTime } from "../../utils/utils";
 
-const UserCard = ({ user, handleDactivateUser }) => {
+const UserCard = ({ user, handleToggleUserStatus }) => {
   const { language, translations } = useLanguage();
   const { roles, join_at, status, active, inactive } =
     translations.general.pages.users_management;
@@ -53,7 +53,7 @@ const UserCard = ({ user, handleDactivateUser }) => {
       </p>
       <div className="user-actions-btn-container">
         <button
-          onClick={() => handleDactivateUser(user)}
+          onClick={() => handleToggleUserStatus(user)}
           className="edit-user-btn"
         >
           <Pencil />

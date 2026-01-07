@@ -1,14 +1,14 @@
 import UserCard from "./UserCard";
 import "./CardView.css";
 
-const CardView = ({ users, handleDactivateUser }) => {
+const CardView = ({ users, handleToggleUserStatus }) => {
   return (
     <div className="card-view">
       {users?.map((user) => (
         <UserCard
           key={user.id}
           user={user}
-          handleDactivateUser={handleDactivateUser}
+          handleToggleUserStatus={handleToggleUserStatus}
         />
       ))}
     </div>

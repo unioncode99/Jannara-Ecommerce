@@ -1,6 +1,6 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.UserRole;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 
@@ -29,7 +29,7 @@ namespace Jannara_Ecommerce.Business.Services
             return await _userRoleRepository.GetByIdAsync(id);
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, UserRoleDTO updatedUserRole)
+        public async Task<Result<bool>> UpdateAsync(int id, UserRoleUpdateDTO updatedUserRole)
         {
             return await _userRoleRepository.UpdateAsync(id, updatedUserRole);
         }

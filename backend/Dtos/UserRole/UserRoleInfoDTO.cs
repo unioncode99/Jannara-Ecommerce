@@ -1,4 +1,4 @@
-﻿namespace Jannara_Ecommerce.DTOs
+﻿namespace Jannara_Ecommerce.DTOs.UserRole
 {
     public class UserRoleInfoDTO
     {

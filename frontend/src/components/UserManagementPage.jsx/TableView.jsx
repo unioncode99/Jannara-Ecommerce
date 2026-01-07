@@ -4,7 +4,7 @@ import Table from "../ui/Table";
 import "./TableView.css";
 import { formatDateTime } from "../../utils/utils";
 
-const TableView = ({ users, handleDactivateUser }) => {
+const TableView = ({ users, handleToggleUserStatus }) => {
   const { translations, language } = useLanguage();
   const { name, roles, join_at, status, active, inactive, actions } =
     translations.general.pages.users_management;
@@ -57,7 +57,7 @@ const TableView = ({ users, handleDactivateUser }) => {
           Actions: (
             <div className="user-actions-btn-container">
               <button
-                onClick={() => handleDactivateUser(user)}
+                onClick={() => handleToggleUserStatus(user)}
                 className="edit-user-btn"
               >
                 <Pencil />

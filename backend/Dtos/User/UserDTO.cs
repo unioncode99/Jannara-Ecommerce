@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Jannara_Ecommerce.DTOs.UserRole;
+using System.ComponentModel.DataAnnotations;
 
 namespace Jannara_Ecommerce.DTOs.User
 {

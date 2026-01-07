@@ -332,7 +332,11 @@
       "active": "نشط",
       "inactive": "غير نشط",
       "actions": "الإجراءات",
-      "name": "الاسم"
+      "name": "الاسم",
+      "confirm_activate": "هل أنت متأكد من تفعيل هذا المستخدم؟",
+      "confirm_deactivate": "هل أنت متأكد من تعطيل هذا المستخدم؟",
+      "activate_user": "تفعيل المستخدم",
+      "deactivate_user": "تعطيل المستخدم"
     }
   },
   "sidebar": {

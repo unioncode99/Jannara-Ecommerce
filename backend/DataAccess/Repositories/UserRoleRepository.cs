@@ -1,5 +1,5 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
+using Jannara_Ecommerce.DTOs.UserRole;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
@@ -175,14 +175,13 @@ VALUES
             }
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, UserRoleDTO updatedUserRole)
+        public async Task<Result<bool>> UpdateAsync(int id, UserRoleUpdateDTO updatedUserRole)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 UPDATE UserRoles
 SET 
-    role_id = @role_id,
     is_active = @is_active
 WHERE id = @id;
 select @@ROWCOUNT
@@ -190,7 +189,6 @@ select @@ROWCOUNT
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", updatedUserRole.Id);
-                    command.Parameters.AddWithValue("@role_id", updatedUserRole.RoleId);
                     command.Parameters.AddWithValue("@is_active", updatedUserRole.IsActive);
                     try
                     {

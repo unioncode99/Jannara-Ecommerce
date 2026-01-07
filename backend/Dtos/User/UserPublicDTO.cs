@@ -1,4 +1,6 @@
-﻿namespace Jannara_Ecommerce.DTOs.User
+﻿using Jannara_Ecommerce.DTOs.UserRole;
+
+namespace Jannara_Ecommerce.DTOs.User
 {
     public class UserPublicDTO
     {

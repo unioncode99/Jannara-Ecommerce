@@ -1,8 +1,8 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
-using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Order;
 using Jannara_Ecommerce.DTOs.User;
+using Jannara_Ecommerce.DTOs.UserRole;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;

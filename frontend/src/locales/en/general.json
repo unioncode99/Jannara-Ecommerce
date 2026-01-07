@@ -337,7 +337,11 @@
       "active": "Active",
       "inactive": "Inactive",
       "actions": "Actions",
-      "name": "Name"
+      "name": "Name",
+      "confirm_activate": "Are you sure you want to activate this user?",
+      "confirm_deactivate": "Are you sure you want to deactivate this user?",
+      "activate_user": "Activate User",
+      "deactivate_user": "Deactivate User"
     }
   },
   "sidebar": {
