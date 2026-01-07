@@ -330,7 +330,9 @@
       "join_at": "انضم في",
       "status": "الحالة",
       "active": "نشط",
-      "inactive": "غير نشط"
+      "inactive": "غير نشط",
+      "actions": "الإجراءات",
+      "name": "الاسم"
     }
   },
   "sidebar": {

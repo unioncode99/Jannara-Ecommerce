@@ -11,88 +11,10 @@
   box-shadow: var(--shadow-2);
 }
 
-.user-card .profile-image-container {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  display: inline-block;
-  overflow: hidden;
-  padding: 0;
-}
-
-.user-card .profile-image-container img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.user-card h3 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.user-card h3 div {
-  /* display: flex;
-  align-items: center;
-  padding: 0.5rem;
-  border-radius: var(--border-radius);
-  background-color: var(--background-color);
-  color: var(--primary-500); */
-}
-
-.user-card h3 div small {
-  display: block;
-}
-.user-card h3 div small:last-child {
-  color: var(--grey-500);
-}
-
 .user-card p {
   color: var(--grey-500);
   text-align: start;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.user-roles-container {
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  gap: 0.5rem;
-  margin: 0.5rem 0;
-}
-
-.user-roles-container .role {
-  display: inline-block;
-  background-color: var(--primary-200);
-  padding: 0.2rem 0.4rem;
-  border-radius: var(--border-radius);
-  color: var(--text-color);
-}
-
-.user-card .user-actions-btn-container {
-  margin-top: 0.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--background-color);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  justify-content: end;
-}
-
-.user-status {
-  display: inline-block;
-  background-color: var(--primary-200);
-  padding: 0.2rem 0.4rem;
-  border-radius: var(--border-radius);
-  color: var(--white);
-}
-.user-status.active {
-  background-color: #72dc8b;
-}
-.user-status.inactive {
-  background-color: #e3606d;
 }

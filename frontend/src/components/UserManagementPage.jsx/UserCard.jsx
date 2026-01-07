@@ -10,7 +10,7 @@ const UserCard = ({ user, handleDactivateUser }) => {
 
   return (
     <div className="user-card">
-      <h3>
+      <h3 className="user-name-container">
         {!user.person.imageUrl && (
           <span>
             {" "}

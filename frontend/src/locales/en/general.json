@@ -335,7 +335,9 @@
       "join_at": "Join at",
       "status": "Status",
       "active": "Active",
-      "inactive": "Inactive"
+      "inactive": "Inactive",
+      "actions": "Actions",
+      "name": "Name"
     }
   },
   "sidebar": {
