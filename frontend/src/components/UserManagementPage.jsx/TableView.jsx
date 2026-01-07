@@ -4,14 +4,14 @@ import Table from "../ui/Table";
 import "./TableView.css";
 import { formatDateTime } from "../../utils/utils";
 
-const TableView = ({ users, handleToggleUserStatus }) => {
+const TableView = ({ users, handleUserRoles }) => {
   const { translations, language } = useLanguage();
-  const { name, roles, join_at, status, active, inactive, actions } =
+  const { name, roles, join_at, actions } =
     translations.general.pages.users_management;
   return (
     <div className="table-view">
       <Table
-        headers={[name, roles, status, join_at, actions]}
+        headers={[name, roles, join_at, actions]}
         data={users.map((user) => ({
           name: (
             <div className="user-name-container">
@@ -44,20 +44,11 @@ const TableView = ({ users, handleToggleUserStatus }) => {
               ))}
             </p>
           ),
-          status: (
-            <small
-              className={`user-status ${
-                user?.roles[0]?.isActive ? "active" : "inactive"
-              }`}
-            >
-              {user?.roles[0]?.isActive ? active : inactive}
-            </small>
-          ),
           join_at: formatDateTime(user?.createdAt),
           Actions: (
             <div className="user-actions-btn-container">
               <button
-                onClick={() => handleToggleUserStatus(user)}
+                onClick={() => handleUserRoles(user)}
                 className="edit-user-btn"
               >
                 <Pencil />

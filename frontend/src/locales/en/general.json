@@ -338,10 +338,17 @@
       "inactive": "Inactive",
       "actions": "Actions",
       "name": "Name",
-      "confirm_activate": "Are you sure you want to activate this user?",
-      "confirm_deactivate": "Are you sure you want to deactivate this user?",
-      "activate_user": "Activate User",
-      "deactivate_user": "Deactivate User"
+      "confirm_activate": "Are you sure you want to activate this role?",
+      "confirm_deactivate": "Are you sure you want to deactivate this role?",
+      "activate_role": "Activate Role",
+      "deactivate_role": "Deactivate Role",
+      "deactivate_role_success": "Role deactivated successfully",
+      "activate_role_success": "Role activated successfully",
+      "deactivate_role_error": "Failed to deactivate role",
+      "activate_role_error": "Failed to activate role",
+      "add_admin_success": "Admin added successfully",
+      "add_admin_error": "Failed to add admin",
+      "manage_user_roles": "Manage User Roles"
     }
   },
   "sidebar": {

@@ -10,7 +10,9 @@ import { Layers, Plus, User, UserPlus } from "lucide-react";
 import CardView from "../../components/UserManagementPage.jsx/CardView";
 import TableView from "../../components/UserManagementPage.jsx/TableView";
 import AddAdminModal from "../../components/UserManagementPage.jsx/AddAdminModal";
-import { read } from "../../api/apiWrapper";
+import { read, update } from "../../api/apiWrapper";
+import { toast } from "../../components/ui/Toast";
+import UserRolesModal from "../../components/UserManagementPage.jsx/UserRolesModal";
 
 const UserManagementPage = () => {
   const [view, setView] = useState("table"); // 'table' or 'card'
@@ -20,21 +22,22 @@ const UserManagementPage = () => {
   const [isDactivateUserConfirmModalOpen, setIsDactivateUserConfirmModalOpen] =
     useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [isManageUserRolesModalOpen, setIsManageUserRolesModalOpen] =
+    useState(false);
   const { translations } = useLanguage();
   const {
     title,
     add_admin,
-    confirm,
     cancel,
-    delete_confirm_title,
-    add_success,
-    edit_success,
-    delete_success,
-    action_failed,
-    deactivate_user,
-    activate_user,
+    deactivate_role_success,
+    activate_role_success,
+    deactivate_role,
+    activate_role,
     confirm_deactivate,
     confirm_activate,
+    activate_role_error,
+    deactivate_role_error,
   } = translations.general.pages.users_management;
 
   const fetchUsers = async () => {
@@ -56,21 +59,72 @@ const UserManagementPage = () => {
 
   function handeAddAdmin() {}
 
-  function handleToggleUserStatus(user) {
-    console.log("user -> ", user);
-    setSelectedUser(user);
+  function handleToggleUserStatus(role) {
+    console.log("role -> ", role);
+    setSelectedRole(role);
     setIsDactivateUserConfirmModalOpen(true);
   }
 
   const closeModal = () => {
     setIsAddUserModalOpen(false);
     setIsDactivateUserConfirmModalOpen(false);
+    setIsManageUserRolesModalOpen(false);
     setSelectedUser(null);
+    setSelectedRole(null);
   };
 
   async function AddAdmin() {}
 
-  async function DactivateUser() {}
+  async function ToggleUserStatus() {
+    try {
+      if (!selectedUser || !selectedUser.roles?.[0]) {
+        return;
+      }
+
+      const updatedRole = {
+        id: selectedUser.roles[0].id,
+        isActive: !selectedUser.roles[0].isActive,
+      };
+
+      const data = await update(`user-roles/${selectedRole.id}`, updatedRole);
+
+      if (selectedUser?.roles[0]?.isActive) {
+        toast.show(deactivate_role_success, "success");
+      } else {
+        toast.show(activate_role_success, "success");
+      }
+
+      setUsers((prevUsers) =>
+        prevUsers.map((u) =>
+          u.id === selectedUser.id
+            ? {
+                ...u,
+                roles: u.roles.map((r) =>
+                  r.id === updatedRole.id
+                    ? { ...r, isActive: updatedRole.isActive }
+                    : r
+                ),
+              }
+            : u
+        )
+      );
+      console.log("data", data);
+    } catch (error) {
+      console.error("ToggleUserStatus:", error);
+      if (selectedRole.isActive) {
+        toast.show(deactivate_role_error, "success");
+      } else {
+        toast.show(activate_role_error, "success");
+      }
+    } finally {
+      closeModal();
+    }
+  }
+
+  function handleUserRoles(user) {
+    setSelectedUser(user);
+    setIsManageUserRolesModalOpen(true);
+  }
 
   return (
     <div className="product-categori-management-container">
@@ -84,35 +138,29 @@ const UserManagementPage = () => {
       </header>
       <ViewSwitcher view={view} setView={setView} />
       {view == "card" && (
-        <CardView
-          users={users}
-          handleToggleUserStatus={handleToggleUserStatus}
-        />
+        <CardView users={users} handleUserRoles={handleUserRoles} />
       )}
       {view == "table" && (
-        <TableView
-          users={users}
-          handleToggleUserStatus={handleToggleUserStatus}
-        />
+        <TableView users={users} handleUserRoles={handleUserRoles} />
       )}
       <AddAdminModal
         show={isAddUserModalOpen}
         onClose={closeModal}
         onConfirm={AddAdmin}
       />
+      <UserRolesModal
+        show={isManageUserRolesModalOpen}
+        user={selectedUser}
+        handleToggleUserStatus={handleToggleUserStatus}
+        onClose={() => closeModal()}
+      />
       <ConfirmModal
         show={isDactivateUserConfirmModalOpen}
         onClose={() => closeModal()}
-        onConfirm={() => DactivateUser()}
-        title={
-          selectedUser?.roles[0]?.isActive
-            ? confirm_deactivate
-            : confirm_activate
-        }
+        onConfirm={() => ToggleUserStatus()}
+        title={selectedRole?.isActive ? confirm_deactivate : confirm_activate}
         cancelLabel={cancel}
-        confirmLabel={
-          selectedUser?.roles[0]?.isActive ? deactivate_user : activate_user
-        }
+        confirmLabel={selectedRole?.isActive ? deactivate_role : activate_role}
       />
     </div>
   );

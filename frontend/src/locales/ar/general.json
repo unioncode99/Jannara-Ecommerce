@@ -333,10 +333,17 @@
       "inactive": "غير نشط",
       "actions": "الإجراءات",
       "name": "الاسم",
-      "confirm_activate": "هل أنت متأكد من تفعيل هذا المستخدم؟",
-      "confirm_deactivate": "هل أنت متأكد من تعطيل هذا المستخدم؟",
-      "activate_user": "تفعيل المستخدم",
-      "deactivate_user": "تعطيل المستخدم"
+      "confirm_activate": "هل أنت متأكد أنك تريد تفعيل هذا الدور؟",
+      "confirm_deactivate": "هل أنت متأكد أنك تريد تعطيل هذا الدور؟",
+      "activate_role": "تفعيل الدور",
+      "deactivate_role": "تعطيل الدور",
+      "deactivate_role_success": "تم تعطيل الدور بنجاح",
+      "activate_role_success": "تم تفعيل الدور بنجاح",
+      "deactivate_role_error": "فشل في تعطيل الدور",
+      "activate_role_error": "فشل في تفعيل الدور",
+      "add_admin_success": "تمت إضافة المشرف بنجاح",
+      "add_admin_error": "فشل في إضافة المشرف",
+      "manage_user_roles": "إدارة أدوار المستخدم"
     }
   },
   "sidebar": {

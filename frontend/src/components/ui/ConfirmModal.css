@@ -10,6 +10,10 @@
   color: var(--text-color);
 }
 
+.confirm-modal-actions .btn-primary {
+  color: var(--white);
+}
+
 .confirm-modal-actions .cancel-btn {
   background-color: transparent;
 }

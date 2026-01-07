@@ -1,0 +1,14 @@
+.role-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  background-color: var(--grey-200);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+.role-item:hover {
+  background-color: var(--grey-300);
+}

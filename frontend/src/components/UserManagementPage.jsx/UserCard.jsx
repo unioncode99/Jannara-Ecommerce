@@ -3,7 +3,7 @@ import "./UserCard.css";
 import { useLanguage } from "../../hooks/useLanguage";
 import { formatDateTime } from "../../utils/utils";
 
-const UserCard = ({ user, handleToggleUserStatus }) => {
+const UserCard = ({ user, handleUserRoles }) => {
   const { language, translations } = useLanguage();
   const { roles, join_at, status, active, inactive } =
     translations.general.pages.users_management;
@@ -41,21 +41,8 @@ const UserCard = ({ user, handleToggleUserStatus }) => {
       <p>
         {join_at}: {formatDateTime(user?.createdAt)}
       </p>
-      <p>
-        {status}:{" "}
-        <small
-          className={`user-status ${
-            user?.roles[0]?.isActive ? "active" : "inactive"
-          }`}
-        >
-          {user?.roles[0]?.isActive ? active : inactive}
-        </small>
-      </p>
       <div className="user-actions-btn-container">
-        <button
-          onClick={() => handleToggleUserStatus(user)}
-          className="edit-user-btn"
-        >
+        <button onClick={() => handleUserRoles(user)} className="edit-user-btn">
           <Pencil />
         </button>
       </div>
