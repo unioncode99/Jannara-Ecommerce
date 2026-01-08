@@ -137,15 +137,23 @@ namespace Jannara_Ecommerce.Business.Services
                         }
                         return new Result<UserPublicDTO>(false, userRoleResult.Message, null, userRoleResult.ErrorCode);
                     }
-                    userResult.Data.Roles.Add(new UserRoleInfoDTO(userRoleResult.Data.Id,Roles.Admin.ToString(), Roles.Admin.GetNameAr() , userRoleResult.Data.IsActive, userRoleResult.Data.CreatedAt, userRoleResult.Data.UpdatedAt));
-                    await transaction.CommitAsync();
-                    // Send Confirmation email
-                    var accountConfirmationResult = await _accountConfirmationService.SendAccountConfirmationAsync(userResult.Data);
 
-                    if (!accountConfirmationResult.IsSuccess)
+                    var markEmailAsConfirmedTask = await MarkEmailAsConfirmed(userResult.Data.Id, connection, (SqlTransaction)transaction);
+                    if (!markEmailAsConfirmedTask.IsSuccess)
                     {
-                        _logger.LogWarning("Failed to send confirmation email to {Email}", userResult.Data.Email);
-                    }                   
+                        await transaction.RollbackAsync();
+                        if (profileImageUrl != null)
+                        {
+                            _imageService.DeleteImage(profileImageUrl);
+                        }
+                        return new Result<UserPublicDTO>(false, markEmailAsConfirmedTask.Message, null, markEmailAsConfirmedTask.ErrorCode);
+                    }
+
+                    userResult.Data.Roles.Add(new UserRoleInfoDTO(userRoleResult.Data.Id, Roles.Admin.ToString(), Roles.Admin.GetNameAr(), userRoleResult.Data.IsActive, userRoleResult.Data.CreatedAt, userRoleResult.Data.UpdatedAt));
+                    await transaction.CommitAsync();
+
+
+
                     return userResult;
                 }
                 catch (Exception ex)
@@ -268,6 +276,11 @@ namespace Jannara_Ecommerce.Business.Services
             resetPasswordDTO.NewPassword =  _passwordService.HashPassword<UserDTO>(null, resetPasswordDTO.NewPassword);
             resetPasswordDTO.OldPassword =  _passwordService.HashPassword<UserDTO>(null, resetPasswordDTO.OldPassword);
             return await _repo.ResetPasswordAsync(resetPasswordDTO);
+        }
+
+        public async Task<Result<bool>> MarkEmailAsConfirmed(int id, SqlConnection conn, SqlTransaction transaction)
+        {
+            return await _repo.MarkEmailAsConfirmed(id, conn, transaction);
         }
     }
 }

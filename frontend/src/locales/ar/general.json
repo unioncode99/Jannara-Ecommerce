@@ -30,6 +30,8 @@
     "description_en": "الوصف باللغة الإنجليزية",
     "description_ar": "الوصف باللغة العربية",
     "category": "الفئة",
+    "save": "حفظ",
+    "cancel": "إلغاء",
 
     "errors": {
       "required": "هذا الحقل مطلوب",

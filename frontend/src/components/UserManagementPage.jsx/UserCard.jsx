@@ -11,16 +11,11 @@ const UserCard = ({ user, handleUserRoles }) => {
   return (
     <div className="user-card">
       <h3 className="user-name-container">
-        {!user.person.imageUrl && (
-          <span>
-            {" "}
-            <User />
-          </span>
-        )}
-
         <span className="profile-image-container">
-          {user.person.imageUrl && (
+          {user.person.imageUrl ? (
             <img src={user.person.imageUrl} alt="Profile Image" />
+          ) : (
+            <User />
           )}
         </span>
         <div>

@@ -19,7 +19,7 @@ const Modal = ({ show, onClose, title, children, footer, className }) => {
             <X />
           </Button>
         </div>
-        <div className="modal-body">{children}</div>
+        <div className="modal-body scrollable">{children}</div>
         {footer && <div className="modal-footer">{footer}</div>}
       </div>
     </div>

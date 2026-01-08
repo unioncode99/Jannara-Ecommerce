@@ -30,6 +30,8 @@
     "description_en": "Description In English",
     "description_ar": "Description In Arabic",
     "category": "Category",
+    "save": "Save",
+    "cancel": "Cancel",
     "errors": {
       "required": "This field is required",
       "invalid_email": "Please enter a valid email address",

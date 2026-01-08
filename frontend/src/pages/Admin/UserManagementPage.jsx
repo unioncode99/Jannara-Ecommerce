@@ -15,6 +15,7 @@ import { toast } from "../../components/ui/Toast";
 import UserRolesModal from "../../components/UserManagementPage.jsx/UserRolesModal";
 import UsersFilterContainer from "../../components/UserManagementPage.jsx/UsersFilterContainer";
 import Pagination from "../../components/ui/Pagination";
+import SpinnerLoader from "../../components/ui/SpinnerLoader";
 
 const UserManagementPage = () => {
   const [view, setView] = useState("table"); // 'table' or 'card'
@@ -34,6 +35,7 @@ const UserManagementPage = () => {
   const [roleId, setRoleId] = useState("");
   const [totalUsers, setTotalUsers] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isAdminAdded, setIsAdminAdded] = useState(false);
   const pageSize = 10; // Items per page
 
   const { translations } = useLanguage();
@@ -89,7 +91,14 @@ const UserManagementPage = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [debouncedSearch, roleId, sortingTerm, currentPage, pageSize]);
+  }, [
+    debouncedSearch,
+    roleId,
+    sortingTerm,
+    currentPage,
+    pageSize,
+    isAdminAdded,
+  ]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -122,7 +131,9 @@ const UserManagementPage = () => {
     setCurrentPage(page);
   };
 
-  function handeAddAdmin() {}
+  function handeAddAdmin() {
+    setIsAddUserModalOpen(true);
+  }
 
   function handleToggleUserStatus(role) {
     console.log("role -> ", role);
@@ -136,9 +147,8 @@ const UserManagementPage = () => {
     setIsManageUserRolesModalOpen(false);
     setSelectedUser(null);
     setSelectedRole(null);
+    setIsAdminAdded(false);
   };
-
-  async function AddAdmin() {}
 
   async function ToggleUserStatus() {
     try {
@@ -210,33 +220,41 @@ const UserManagementPage = () => {
         roleId={roleId}
         handleRoleIdChange={handleRoleIdChange}
       />
-      {totalUsers > 0 && (
+      {loading ? (
+        <div className="loader-container">
+          <SpinnerLoader />
+        </div>
+      ) : (
         <>
-          <Pagination
-            currentPage={currentPage}
-            totalItems={totalUsers}
-            onPageChange={handlePageChange}
-            pageSize={pageSize}
-          />
-          {view == "card" && (
-            <CardView users={users} handleUserRoles={handleUserRoles} />
+          {totalUsers > 0 && (
+            <>
+              <Pagination
+                currentPage={currentPage}
+                totalItems={totalUsers}
+                onPageChange={handlePageChange}
+                pageSize={pageSize}
+              />
+              {view == "card" && (
+                <CardView users={users} handleUserRoles={handleUserRoles} />
+              )}
+              {view == "table" && (
+                <TableView users={users} handleUserRoles={handleUserRoles} />
+              )}
+              <Pagination
+                currentPage={currentPage}
+                totalItems={totalUsers}
+                onPageChange={handlePageChange}
+                pageSize={pageSize}
+              />
+            </>
           )}
-          {view == "table" && (
-            <TableView users={users} handleUserRoles={handleUserRoles} />
-          )}
-          <Pagination
-            currentPage={currentPage}
-            totalItems={totalUsers}
-            onPageChange={handlePageChange}
-            pageSize={pageSize}
-          />
         </>
       )}
 
       <AddAdminModal
+        setIsAdminAdded={setIsAdminAdded}
         show={isAddUserModalOpen}
-        onClose={closeModal}
-        onConfirm={AddAdmin}
+        onClose={() => closeModal()}
       />
       <UserRolesModal
         show={isManageUserRolesModalOpen}

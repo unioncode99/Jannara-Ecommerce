@@ -703,8 +703,29 @@ select @@ROWCOUNT";
                 }
             }
         }
-        
-        
+
+        public async Task<Result<bool>> MarkEmailAsConfirmed(int id, SqlConnection conn, SqlTransaction transaction)
+        {
+            string query = @"
+
+UPDATE Users
+   SET is_confirmed = 1
+ WHERE Id = @id
+select @@ROWCOUNT";
+            using (SqlCommand command = new SqlCommand(query, conn, transaction))
+            {
+                command.Parameters.AddWithValue("@id", id);
+
+                object? result = await command.ExecuteScalarAsync();
+                int rowAffected = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+                if (rowAffected > 0)
+                {
+                    return new Result<bool>(true, "user_confirmed_successfully", true);
+                }
+                return new Result<bool>(false, "failed_to_confrim_user", false);
+
+            }
+        }
 
     }
 }
