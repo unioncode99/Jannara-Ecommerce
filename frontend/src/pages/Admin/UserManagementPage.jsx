@@ -13,6 +13,8 @@ import AddAdminModal from "../../components/UserManagementPage.jsx/AddAdminModal
 import { read, update } from "../../api/apiWrapper";
 import { toast } from "../../components/ui/Toast";
 import UserRolesModal from "../../components/UserManagementPage.jsx/UserRolesModal";
+import UsersFilterContainer from "../../components/UserManagementPage.jsx/UsersFilterContainer";
+import Pagination from "../../components/ui/Pagination";
 
 const UserManagementPage = () => {
   const [view, setView] = useState("table"); // 'table' or 'card'
@@ -25,6 +27,15 @@ const UserManagementPage = () => {
   const [selectedRole, setSelectedRole] = useState(null);
   const [isManageUserRolesModalOpen, setIsManageUserRolesModalOpen] =
     useState(false);
+  // Filters
+  const [searchText, setSearchText] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [sortingTerm, setSortingTerm] = useState("");
+  const [roleId, setRoleId] = useState("");
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10; // Items per page
+
   const { translations } = useLanguage();
   const {
     title,
@@ -43,11 +54,34 @@ const UserManagementPage = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const data = await read(`users?pageNumber=1&pageSize=10`); // for test
+      const queryParams = new URLSearchParams();
+      // Pagination
+      queryParams.append("pageNumber", currentPage);
+      queryParams.append("pageSize", pageSize);
+      // Optional search term
+      if (debouncedSearch && debouncedSearch.trim() !== "") {
+        queryParams.append("searchTerm", debouncedSearch.trim());
+      }
+      // Optional sort
+      if (sortingTerm && sortingTerm.trim() !== "") {
+        queryParams.append("SortBy", sortingTerm.trim());
+      }
+      // Role ID
+      if (roleId > 0) {
+        queryParams.append("roleId", parseInt(roleId));
+      }
+
+      // queryParams.append("isFavoritesOnly", false);
+      // Final URL
+      const url = `users?${queryParams.toString()}`;
+      const data = await read(url); // for test
       setUsers(data?.items);
+      setTotalUsers(data?.total);
       console.log("data", data);
+      console.log("total", data?.total);
     } catch (error) {
       console.error("Failed to fetch categories:", error);
+      setTotalUsers(0);
     } finally {
       setLoading(false);
     }
@@ -55,7 +89,38 @@ const UserManagementPage = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [debouncedSearch, roleId, sortingTerm, currentPage, pageSize]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchText);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchText]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sortingTerm]);
+
+  const handleSearchInputChange = (e) => {
+    console.log("search -> ", e.target.value);
+    setSearchText(e.target.value);
+  };
+
+  const handleSortingTermChange = (e) => {
+    console.log("Sorting Term -> ", e.target.value);
+    setSortingTerm(e.target.value);
+  };
+
+  const handleRoleIdChange = (e) => {
+    console.log("Role ID -> ", e.target.value);
+    setRoleId(e.target.value);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   function handeAddAdmin() {}
 
@@ -137,12 +202,37 @@ const UserManagementPage = () => {
         </Button>
       </header>
       <ViewSwitcher view={view} setView={setView} />
-      {view == "card" && (
-        <CardView users={users} handleUserRoles={handleUserRoles} />
+      <UsersFilterContainer
+        searchText={searchText}
+        handleSearchInputChange={handleSearchInputChange}
+        sortingTerm={sortingTerm}
+        handleSortingTermChange={handleSortingTermChange}
+        roleId={roleId}
+        handleRoleIdChange={handleRoleIdChange}
+      />
+      {totalUsers > 0 && (
+        <>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalUsers}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
+          />
+          {view == "card" && (
+            <CardView users={users} handleUserRoles={handleUserRoles} />
+          )}
+          {view == "table" && (
+            <TableView users={users} handleUserRoles={handleUserRoles} />
+          )}
+          <Pagination
+            currentPage={currentPage}
+            totalItems={totalUsers}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
+          />
+        </>
       )}
-      {view == "table" && (
-        <TableView users={users} handleUserRoles={handleUserRoles} />
-      )}
+
       <AddAdminModal
         show={isAddUserModalOpen}
         onClose={closeModal}

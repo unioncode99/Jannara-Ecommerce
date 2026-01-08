@@ -343,7 +343,10 @@
       "activate_role_error": "فشل في تفعيل الدور",
       "add_admin_success": "تمت إضافة المشرف بنجاح",
       "add_admin_error": "فشل في إضافة المشرف",
-      "manage_user_roles": "إدارة أدوار المستخدم"
+      "manage_user_roles": "إدارة أدوار المستخدم",
+      "search_label": "بحث المستخدمين",
+      "search_user_placeholder": "ابحث بالبريد الإلكتروني أو اسم المستخدم أو الاسم أو رقم الهاتف",
+      "ar": "الدور"
     }
   },
   "sidebar": {

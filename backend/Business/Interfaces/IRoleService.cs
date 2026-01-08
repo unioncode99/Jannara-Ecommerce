@@ -1,4 +1,6 @@
-﻿using Jannara_Ecommerce.DTOs.Role;
+﻿using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Role;
+using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Utilities;
 
 namespace Jannara_Ecommerce.Business.Interfaces
@@ -9,5 +11,6 @@ namespace Jannara_Ecommerce.Business.Interfaces
         public Task<Result<RoleDTO>> AddNewAsync(RoleDTO newRole);
         public Task<Result<bool>> UpdateAsync(int id, RoleDTO updatedRole);
         public Task<Result<bool>> DeleteAsync(int id);
+        public Task<Result<IEnumerable<RoleDTO>>> GetAllAsync();
     }
 }

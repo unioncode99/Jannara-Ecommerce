@@ -108,8 +108,9 @@ DECLARE @json NVARCHAR(MAX);
 select count(DISTINCT u.id) as total from users u
 left join people p
 on u.person_id = p.id
-WHERE 
+WHERE (u.id <>  @currentUserId) 
 -- SEARCH FILTER
+AND
 (
     @searchTerm IS NULL
     OR u.email LIKE '%' + @searchTerm + '%'

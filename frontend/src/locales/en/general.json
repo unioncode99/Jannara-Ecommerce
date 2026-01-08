@@ -348,7 +348,10 @@
       "activate_role_error": "Failed to activate role",
       "add_admin_success": "Admin added successfully",
       "add_admin_error": "Failed to add admin",
-      "manage_user_roles": "Manage User Roles"
+      "manage_user_roles": "Manage User Roles",
+      "search_label": "User Search",
+      "search_user_placeholder": "Search by email, username, name, or phone",
+      "role": "Role"
     }
   },
   "sidebar": {

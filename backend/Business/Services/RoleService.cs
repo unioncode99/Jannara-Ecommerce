@@ -27,6 +27,11 @@ namespace Jannara_Ecommerce.Business.Services
             return await _roleRepository.GetByIdAsync(id);
         }
 
+        public async Task<Result<IEnumerable<RoleDTO>>> GetAllAsync()
+        {
+            return await _roleRepository.GetAllAsync();
+        }
+
         public async Task<Result<bool>> UpdateAsync(int id, RoleDTO updatedRole)
         {
             return await _roleRepository.UpdateAsync(id, updatedRole);  
