@@ -37,7 +37,7 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<PagedResponseDTO<UserPublicDTO>>> GetAll([FromQuery] int pageNumber , [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResponseDTO<UserPublicDTO>>> GetAll([FromQuery] FilterUserDTO filterUserDTO)
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
 
@@ -47,12 +47,13 @@ namespace Jannara_Ecommerce.Controllers
             }
 
             int.TryParse(userIdClaim.Value, out int userId);
+            filterUserDTO.CurrentUserId = userId;
 
-            if (pageNumber == 0 || pageSize == 0)
+            if (filterUserDTO.PageNumber == 0 || filterUserDTO.PageSize == 0)
             {
                 return BadRequest(new ResponseMessage("invalid_pagination_parameters"));
             }
-            var result = await _service.GetAllAsync(pageNumber, pageSize, userId);
+            var result = await _service.GetAllAsync(filterUserDTO);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);

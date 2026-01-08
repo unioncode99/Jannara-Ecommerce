@@ -14,7 +14,7 @@ namespace Jannara_Ecommerce.Business.Interfaces
         public Task<Result<UserPublicDTO>> CreateAsync(UserCreateRequestDTO userCreateRequestDTO);
         public Task<Result<UserPublicDTO>> UpdateAsync(int id, UserUpdateDTO updatedUser);
         public Task<Result<bool>> DeleteAsync(int id);
-        public Task<Result<PagedResponseDTO<UserDetailsDTO>>> GetAllAsync(int pageNumber, int pageSize, int? currentUserId = null);
+        public Task<Result<PagedResponseDTO<UserDetailsDTO>>> GetAllAsync(FilterUserDTO filterUserDTO);
         public Task<Result<bool>> ResetPasswordAsync(int id, string newPassword, SqlConnection conn, SqlTransaction transaction);
         public Task<Result<bool>> ResetPasswordAsync(ChangePasswordDTO resetPasswordDTO);
         public Task<Result<bool>> MarkEmailAsConfirmed(int id);

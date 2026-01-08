@@ -96,7 +96,7 @@ OUTPUT inserted.*
             }
         }
 
-        public async Task<Result<PagedResponseDTO<UserDetailsDTO>>> GetAllAsync(int pageNumber = 1, int pageSize = 20, int? currentUserId = null)
+        public async Task<Result<PagedResponseDTO<UserDetailsDTO>>> GetAllAsync(FilterUserDTO filterUserDTO)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -105,7 +105,31 @@ DECLARE @isSuperAdmin BIT = 0;
 DECLARE @isAdmin BIT = 0;
 DECLARE @json NVARCHAR(MAX);
 
-select count(id) as total from users;
+select count(DISTINCT u.id) as total from users u
+left join people p
+on u.person_id = p.id
+WHERE 
+-- SEARCH FILTER
+(
+    @searchTerm IS NULL
+    OR u.email LIKE '%' + @searchTerm + '%'
+    OR u.username LIKE '%' + @searchTerm + '%'
+    OR p.first_name LIKE '%' + @searchTerm + '%'
+    OR p.last_name LIKE '%' + @searchTerm + '%'
+    OR p.phone LIKE '%' + @searchTerm + '%'
+)
+-- ROLE FILTER
+AND (
+    @roleId IS NULL
+    OR EXISTS (
+        SELECT 1
+        FROM UserRoles UR
+        JOIN Roles R ON UR.role_id = R.id
+        WHERE UR.user_id = U.id
+          AND UR.is_active = 1
+          AND R.id = @roleId
+    )
+);
 
 -- Detect current user's role
 SELECT
@@ -137,7 +161,7 @@ SELECT @json = (SELECT
         WHERE UR.user_id = U.id
         FOR JSON PATH
     ) AS Roles,
-	-- Person Info
+	-- Person
 	JSON_QUERY(
 	(
 	Select 
@@ -166,6 +190,7 @@ SELECT @json = (SELECT
 	for JSON PAth, WITHOUT_ARRAY_WRAPPER
 	)) AS Person
 FROM Users U
+LEFT JOIN People P ON P.id = U.person_id
 WHERE
 (
     -- SuperAdmin → all users (exclude himself)
@@ -187,8 +212,35 @@ WHERE
         )
     )
 )
--- Seller / Customer → condition never matches → returns 0 rows
-ORDER BY U.id
+-- SEARCH FILTER
+AND (
+    @searchTerm IS NULL
+    OR U.email LIKE '%' + @searchTerm + '%'
+    OR U.username LIKE '%' + @searchTerm + '%'
+    OR P.first_name LIKE '%' + @searchTerm + '%'
+    OR P.last_name LIKE '%' + @searchTerm + '%'
+    OR P.phone LIKE '%' + @searchTerm + '%'
+)
+-- ROLE FILTER
+AND (
+    @roleId IS NULL
+    OR EXISTS (
+        SELECT 1
+        FROM UserRoles UR
+        JOIN Roles R ON UR.role_id = R.id
+        WHERE UR.user_id = U.id
+          AND UR.is_active = 1
+          AND R.id = @roleId
+    )
+)
+-- SORTING
+ORDER BY
+    CASE WHEN @sortBy = 'newest' THEN U.id END DESC,
+    CASE WHEN @sortBy = 'oldest' THEN U.id END ASC,
+    CASE WHEN @sortBy = 'username_desc' THEN U.username END DESC,
+    CASE WHEN @sortBy = 'username_asc' THEN U.username END ASC,
+    CASE WHEN @sortBy = 'email_desc' THEN U.email END DESC,
+    CASE WHEN @sortBy = 'email_asc' THEN U.email END ASC
 OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY
 FOR JSON PATH
 );
@@ -198,11 +250,13 @@ SELEct @json as FUllJSON;
 
                 using (var command = new SqlCommand(query, connection))
                 {
-                    int offset = (pageNumber - 1) * pageSize;
+                    int offset = (filterUserDTO.PageNumber - 1) * filterUserDTO.PageSize;
                     command.Parameters.AddWithValue("@offset", offset);
-                    command.Parameters.AddWithValue("@pageSize", pageSize);
-                    command.Parameters.AddWithValue("@currentUserId", currentUserId);
-
+                    command.Parameters.AddWithValue("@pageSize", filterUserDTO.PageSize);
+                    command.Parameters.AddWithValue("@currentUserId", filterUserDTO.CurrentUserId);
+                    command.Parameters.AddWithValue("@sortBy", filterUserDTO.SortBy ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@searchTerm", filterUserDTO.SearchTerm ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@roleId", filterUserDTO.RoleId ?? (object)DBNull.Value);
 
                     try
                     {
@@ -232,13 +286,13 @@ SELEct @json as FUllJSON;
                             json,
                             new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
                         );
-                            var response = new PagedResponseDTO<UserDetailsDTO>(total, pageNumber, pageSize, users);
+                            var response = new PagedResponseDTO<UserDetailsDTO>(total, filterUserDTO.PageNumber, filterUserDTO.PageSize, users);
                             return new Result<PagedResponseDTO<UserDetailsDTO>>(true, "products_retrieved_successfully", response, 200);
                         }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to retrieve users for page {PageNumber} with page size {PageSize}", pageNumber, pageSize);
+                        _logger.LogError(ex, "Failed to retrieve users for page {PageNumber} with page size {PageSize}", filterUserDTO.PageNumber, filterUserDTO.PageSize);
                         return new Result<PagedResponseDTO<UserDetailsDTO>>(false, "internal_server_error", null, 500);
                     }
 
