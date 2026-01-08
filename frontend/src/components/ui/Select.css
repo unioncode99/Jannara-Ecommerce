@@ -4,6 +4,7 @@
   margin-bottom: 0.5rem;
   text-transform: capitalize;
   letter-spacing: var(--letter-spacing);
+  cursor: pointer;
 }
 
 .form-input {
@@ -15,7 +16,9 @@
   display: flex;
   align-items: center;
   width: 100%;
+  cursor: pointer;
 }
+
 .form-input.error,
 .form-input.error select {
   border-color: var(--alert-color);

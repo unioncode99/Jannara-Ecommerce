@@ -16,6 +16,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useAuth } from "../../hooks/useAuth";
 import Button from "./Button";
+import { useState } from "react";
+import Select from "./Select";
 
 const menus = {
   unknown_user: [
@@ -56,13 +58,24 @@ const menus = {
   ],
 };
 
-const Sidebar = (props) => {
-  let { isSibebarOpen, onClose } = props;
-  const { translations } = useLanguage();
+const Sidebar = ({ isSibebarOpen, onClose }) => {
+  const { translations, language } = useLanguage();
   const { user, logout, person } = useAuth();
   const navigate = useNavigate();
+
+  const [currentRole, setCurrentRole] = useState(
+    user?.roles?.[0]?.nameEn.toLowerCase() || "unknown_user"
+  );
+
+  const roleOptions = user?.roles?.map((role) => ({
+    value: role.nameEn.toLowerCase(),
+    label: language === "en" ? role.nameEn : role.nameAr,
+  }));
+
   console.log("translations -> ", translations.general.sidebar);
   console.log("person -> ", person);
+
+  let links = menus[currentRole] || menus.unknown_user;
 
   const handleLogout = () => {
     logout();
@@ -77,18 +90,20 @@ const Sidebar = (props) => {
     return person?.firstName + " " + person?.lastName;
   };
 
-  // const role = user?.roles[0]?.nameEn.toLowerCase();
-  const role = "admin"; // for test
-
-  let links = [];
-  if (role) {
-    links = menus[role] || [];
-  } else {
-    links = menus.unknown_user || [];
-  }
-
   function handleProfile() {
     navigate("/customer-profile");
+  }
+
+  function handleRoleChange(e) {
+    let newRole = e.target.value;
+    setCurrentRole(newRole);
+    console.log("role", newRole);
+
+    const firstLink = menus[newRole]?.[0] || menus.unknown_user[0];
+    if (firstLink) {
+      navigate(firstLink.path); // navigate to first link
+      onClose(); // optional: close sidebar
+    }
   }
 
   return (
@@ -104,7 +119,7 @@ const Sidebar = (props) => {
       <nav className="sidebar-links">
         <ul>
           {links.map((link) => (
-            <li key={link.label}>
+            <li key={link.key}>
               <NavLink
                 onClick={onClose}
                 to={link.path}
@@ -124,6 +139,7 @@ const Sidebar = (props) => {
       {/* Bottom */}
       {user ? (
         <div className="sidebar-bottom">
+          {/* Profile */}
           <button className="profile-btn" onClick={handleProfile}>
             <span className="profile-avatar">
               <img src={person?.imageUrl} alt="Profile" />
@@ -132,7 +148,7 @@ const Sidebar = (props) => {
             <span className="profile-info">
               <span className="profile-name">{getFullName()}</span>
               <span className="profile-role">
-                {translations.general.sidebar.profile.role[role]}
+                {translations.general.sidebar.profile.role[currentRole]}
               </span>
             </span>
 
@@ -140,7 +156,18 @@ const Sidebar = (props) => {
               <Settings size={18} />
             </span>
           </button>
-
+          {/* Role Switcher */}
+          {user.roles.length > 1 && (
+            <div className="role-switcher">
+              <Select
+                options={roleOptions}
+                label={language === "en" ? "Role" : "الدور"}
+                value={currentRole}
+                onChange={handleRoleChange}
+              />
+            </div>
+          )}
+          {/* Logout  */}
           <button className="logout-btn" onClick={handleLogout}>
             <span>
               <LogOut />
