@@ -349,6 +349,17 @@
       "search_label": "بحث المستخدمين",
       "search_user_placeholder": "ابحث بالبريد الإلكتروني أو اسم المستخدم أو الاسم أو رقم الهاتف",
       "ar": "الدور"
+    },
+    "admin_dashboard": {
+      "welcome_title": "مرحبًا بعودتك",
+      "welcome_description": "إدارة المنصة والمستخدمين والإشراف على جميع الأنشطة.",
+      "total_revenue": "إجمالي الإيرادات",
+      "active_sellers": "البائعون النشطون",
+      "total_customers": "إجمالي العملاء",
+      "pending_verifications": "التحقق المعلّق",
+      "platform_growth": "نمو المنصة",
+      "recent_registrations": "آخر التسجيلات",
+      "view_all_users": "عرض جميع المستخدمين"
     }
   },
   "sidebar": {

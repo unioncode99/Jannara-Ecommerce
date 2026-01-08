@@ -354,6 +354,17 @@
       "search_label": "User Search",
       "search_user_placeholder": "Search by email, username, name, or phone",
       "role": "Role"
+    },
+    "admin_dashboard": {
+      "welcome_title": "Welcome back",
+      "welcome_description": "Manage the platform, users, and oversee all activities.",
+      "total_revenue": "Total Revenue",
+      "active_sellers": "Active Sellers",
+      "total_customers": "Total Customers",
+      "pending_verifications": "Pending Verifications",
+      "platform_growth": "Platform Growth",
+      "recent_registrations": "Recent Registrations",
+      "view_all_users": "View All Users"
     }
   },
   "sidebar": {

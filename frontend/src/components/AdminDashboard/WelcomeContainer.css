@@ -1,0 +1,8 @@
+.welcome-admin-container {
+  background-color: var(--primary-200);
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+}
+.welcome-admin-container p {
+  text-align: start;
+}
