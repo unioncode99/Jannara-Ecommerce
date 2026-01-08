@@ -13,6 +13,12 @@ namespace Jannara_Ecommerce.Business.Services
         {
             _dashboardRepository = dashboardRepository;
         }
+
+        public async Task<Result<AdminDashboardResponseDTO>> GetAdminDashboardDataAsync()
+        {
+            return await _dashboardRepository.GetAdminDashboardDataAsync();
+        }
+
         public async Task<Result<CustomerDashboardResponseDTO>> GetCustomerDashboardDataAsync(int customerId)
         {
             return await _dashboardRepository.GetCustomerDashboardDataAsync(customerId);

@@ -18,9 +18,20 @@ namespace Jannara_Ecommerce.Controllers
         }
 
         [HttpGet("customer/{customerId:int}")]
-        public async Task<ActionResult> GetAll(int customerId)
+        public async Task<ActionResult> GetCustomerDashboardData(int customerId)
         {
             var result = await _service.GetCustomerDashboardDataAsync(customerId);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
+        [HttpGet("admin")]
+        public async Task<ActionResult> GetAdminDashboardData()
+        {
+            var result = await _service.GetAdminDashboardDataAsync();
             if (result.IsSuccess)
             {
                 return Ok(result.Data);

@@ -6,5 +6,6 @@ namespace Jannara_Ecommerce.Business.Interfaces
     public interface IDashboardService
     {
         Task<Result<CustomerDashboardResponseDTO>> GetCustomerDashboardDataAsync(int customerId);
+        Task<Result<AdminDashboardResponseDTO>> GetAdminDashboardDataAsync();
     }
 }
