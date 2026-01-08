@@ -23,8 +23,10 @@ namespace Jannara_Ecommerce.Business.Services
             _baseUrl = appSettings.Value.BaseUrl;
         }
         public async Task<Result<PersonDTO>> AddNewAsync(PersonCreateDTO personCreateDTO, string imageUrl, SqlConnection connection, SqlTransaction transaction)
-        {  
-            return await _repo.AddNewAsync(personCreateDTO, imageUrl, connection, transaction);
+        {
+            var personResult = await _repo.AddNewAsync(personCreateDTO, imageUrl, connection, transaction);
+            personResult.Data.ImageUrl = ImageUrlHelper.ToAbsoluteUrl(personResult.Data.ImageUrl, _baseUrl);
+            return personResult;
         }
 
         public async Task<Result<bool>> DeleteAsync(int id)

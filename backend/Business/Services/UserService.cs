@@ -27,11 +27,12 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IImageService _imageService;
         private readonly IOptions<ImageSettings> _imageSettings;
         private readonly ILogger<IUserService> _logger;
+        private readonly string _baseUrl;
         public UserService(IUserRepository repo, IPasswordService passwordService,
             IOptions<DatabaseSettings> options, IPersonService personService, 
             IUserRoleService userRoleService, IImageService imageService,
             IOptions<ImageSettings> imageSettings, ILogger<IUserService> logger, 
-            IConfirmationService accountConfirmationService)
+            IConfirmationService accountConfirmationService, IOptions<AppSettings> appSettings)
         {
             _repo = repo;
             _passwordService = passwordService;
@@ -42,6 +43,7 @@ namespace Jannara_Ecommerce.Business.Services
             _imageSettings = imageSettings;
             _logger = logger;
             _accountConfirmationService = accountConfirmationService;
+            _baseUrl = appSettings.Value.BaseUrl;
         }
 
 
@@ -197,8 +199,15 @@ namespace Jannara_Ecommerce.Business.Services
 
         public async Task<Result<PagedResponseDTO<UserDetailsDTO>>> GetAllAsync(FilterUserDTO filterUserDTO)
         {
-
-            return await _repo.GetAllAsync(filterUserDTO);
+            var usersResult = await _repo.GetAllAsync(filterUserDTO);
+            if (usersResult.IsSuccess)
+            {
+                foreach (var user in usersResult.Data.Items)
+                {
+                   user.Person.ImageUrl = ImageUrlHelper.ToAbsoluteUrl(user.Person.ImageUrl, _baseUrl);
+                }
+            }
+            return usersResult;
         }
 
         public async Task<Result<UserPublicDTO>> UpdateAsync(int id, UserUpdateDTO updatedUser)
