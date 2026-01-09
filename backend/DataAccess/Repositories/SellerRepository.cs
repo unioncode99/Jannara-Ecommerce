@@ -1,5 +1,6 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Role;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
@@ -232,6 +233,126 @@ select @@ROWCOUNT";
 
                 }
             }
+        }
+    
+        public async Task<Result<RoleDTO>> BecomeACustomer(int userId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+-- VARIABLES
+DECLARE @RoleId INT;
+
+BEGIN TRANSACTION;
+
+BEGIN TRY
+
+    -- Validate user exists
+    IF NOT EXISTS (SELECT 1 FROM Users WHERE Id = @UserId)
+        THROW 51001, 'User does not exist.', 1;
+
+    -- Validate customer role exists
+    SELECT 
+        @RoleId = Id,
+        @RoleNameEn = NameEn,
+        @RoleNameAr = NameAr
+    FROM Roles
+    WHERE NameEn = 'customer';
+
+    IF @RoleId IS NULL
+        THROW 51002, 'Customer role not found.', 1;
+
+    -- Validate not already customer
+    IF EXISTS (SELECT 1 FROM Customers WHERE UserId = @UserId)
+        THROW 51003, 'User is already a customer.', 1;
+
+    -- Validate role not already assigned
+    IF EXISTS (
+        SELECT 1 
+        FROM UserRoles 
+        WHERE UserId = @UserId AND RoleId = @RoleId
+    )
+        THROW 51004, 'Customer role already assigned.', 1;
+
+    -- Insert into Customers
+    INSERT INTO Customers (UserId)
+    VALUES (@UserId);
+
+    -- Assign role
+    INSERT INTO UserRoles (UserId, RoleId)
+    VALUES (@UserId, @RoleId);
+
+    COMMIT TRANSACTION;
+
+    -- Return role data
+    SELECT 
+        * from userRoles
+ where user_id = @UserId AND role_id = @RoleId;
+
+END TRY
+BEGIN CATCH
+    ROLLBACK TRANSACTION;
+    THROW;
+END CATCH
+";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    try
+                    {
+                        await connection.OpenAsync();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                var role = new RoleDTO
+                                (
+                                    reader.GetInt32(reader.GetOrdinal("id")),
+                                    reader.GetString(reader.GetOrdinal("name_en")),
+                                    reader.GetString(reader.GetOrdinal("name_ar")),
+                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                                );
+
+                                return new Result<RoleDTO>(
+                                    true,
+                                    "customer_role_added_successfully",
+                                    role
+                                );
+                            }
+
+                            return new Result<RoleDTO>(
+                                false,
+                                "failed_to_add_customer_role",
+                                null,
+                                500
+                            );
+                        }
+                    }
+                    catch (SqlException sqlEx)
+                    {
+                        string message = sqlEx.Number switch
+                        {
+                            51001 => "user_not_found",
+                            51002 => "customer_role_not_found",
+                            51003 => "already_customer",
+                            51004 => "role_already_assigned",
+                            _ => "internal_server_error"
+                        };
+
+                        _logger.LogError(sqlEx, "SQL error in BecomeCustomer");
+                        return new Result<RoleDTO>(false, message, null, 400);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Unexpected error in BecomeCustomer");
+                        return new Result<RoleDTO>(false, "internal_server_error", null, 500);
+                    }
+                }
+            }
+
         }
     }
 }

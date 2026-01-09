@@ -4,6 +4,7 @@ using Jannara_Ecommerce.DTOs;
 using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Person;
+using Jannara_Ecommerce.DTOs.Role;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.DTOs.UserRole;
@@ -291,5 +292,6 @@ namespace Jannara_Ecommerce.Business.Services
         {
             return await _repo.MarkEmailAsConfirmed(id, conn, transaction);
         }
+
     }
 }

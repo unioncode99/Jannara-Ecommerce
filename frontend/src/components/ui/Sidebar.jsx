@@ -77,6 +77,8 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
 
   let links = menus[currentRole] || menus.unknown_user;
 
+  user.roles.length = 1; // for test
+
   const handleLogout = () => {
     logout();
     onClose();
@@ -157,7 +159,7 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
             </span>
           </button>
           {/* Role Switcher */}
-          {user.roles.length > 1 && (
+          {user.roles.length > 1 ? (
             <div className="role-switcher">
               <Select
                 options={roleOptions}
@@ -166,6 +168,10 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
                 onChange={handleRoleChange}
               />
             </div>
+          ) : (
+            <Button className="btn btn-primary btn-block">
+              Become a Seller
+            </Button>
           )}
           {/* Logout  */}
           <button className="logout-btn" onClick={handleLogout}>

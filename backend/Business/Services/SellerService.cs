@@ -3,6 +3,7 @@ using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Person;
+using Jannara_Ecommerce.DTOs.Role;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Mappers;
@@ -174,6 +175,11 @@ namespace Jannara_Ecommerce.Business.Services
         public Task<Result<PagedResponseDTO<SellerDTO>>> GetAllAsync(int pageNumber, int pageSize)
         {
             return _repo.GetAllAsync(pageNumber, pageSize);
+        }
+
+        public async Task<Result<RoleDTO>> BecomeACustomer(int userId)
+        {
+            return await _repo.BecomeACustomer(userId);
         }
     }
 }

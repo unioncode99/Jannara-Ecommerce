@@ -1,5 +1,6 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Role;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -60,6 +61,25 @@ namespace Jannara_Ecommerce.Controllers
             if (result.IsSuccess)
             {
                 return Ok(updatedSellerDTO);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
+        public async Task<ActionResult<RoleDTO>> BecomeACustomer()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+
+            var result = await _service.BecomeACustomer(userId);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
             }
             return StatusCode(result.ErrorCode, result.Message);
         }
