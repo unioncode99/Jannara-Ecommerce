@@ -1,5 +1,7 @@
 ﻿using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Role;
+using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 
@@ -13,5 +15,6 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
         public Task<Result<CustomerDTO>> AddNewAsync(int userId, SqlConnection connection, SqlTransaction transaction);
         public Task<Result<bool>> UpdateAsync(int id, CustomerDTO updatedCustomer);
         public Task<Result<bool>> DeleteAsync(int id);
+        public Task<Result<RoleDTO>> BecomeASeller(BecomeSellerDTO becomeSellerDTO);
     }
 }

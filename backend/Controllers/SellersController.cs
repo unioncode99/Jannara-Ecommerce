@@ -65,6 +65,7 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
+        [HttpPost("become-customer")]
         public async Task<ActionResult<RoleDTO>> BecomeACustomer()
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);

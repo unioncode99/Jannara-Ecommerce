@@ -1,6 +1,8 @@
 ﻿using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Role;
+using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
@@ -216,6 +218,140 @@ select @@ROWCOUNT";
 
                 }
             }
+        }
+
+        public async Task<Result<RoleDTO>> BecomeASeller(BecomeSellerDTO becomeSellerDTO)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+-- VARIABLES
+DECLARE @RoleId INT;
+DECLARE @RoleNameEn NVARCHAR(50);
+DECLARE @RoleNameAr NVARCHAR(50);
+DECLARE @SellerId INT;
+
+BEGIN TRANSACTION;
+
+BEGIN TRY
+
+    -- Validate user exists
+    IF NOT EXISTS (SELECT 1 FROM Users WHERE Id = @UserId)
+        THROW 52001, 'User does not exist.', 1;
+
+    -- Validate seller role exists
+    SELECT 
+        @RoleId = Id,
+    FROM Roles
+    WHERE name_en = 'seller';
+
+    IF @RoleId IS NULL
+        THROW 52002, 'Seller role not found.', 1;
+
+    -- Validate not already seller
+    IF EXISTS (SELECT 1 FROM Sellers WHERE UserId = @UserId)
+        THROW 52003, 'User is already a seller.', 1;
+
+    -- Validate role not already assigned
+    IF EXISTS (
+        SELECT 1 
+        FROM UserRoles 
+        WHERE UserId = @UserId AND RoleId = @RoleId
+    )
+        THROW 52004, 'Seller role already assigned.', 1;
+
+
+    -- Insert into Sellers
+    INSERT INTO Sellers (user_id, business_name, website_url)
+    VALUES (@UserId, @BusinessName, @WebsiteUrl);
+
+    SET @SellerId = SCOPE_IDENTITY();
+
+    -- Assign role
+    INSERT INTO UserRoles (UserId, RoleId)
+    VALUES (@UserId, @RoleId);
+
+    COMMIT TRANSACTION;
+
+    -- Return role data
+    SELECT 
+        * from userRoles
+ where user_id = @UserId AND role_id = @RoleId;
+
+END TRY
+BEGIN CATCH
+    ROLLBACK TRANSACTION;
+    THROW;
+END CATCH
+";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", becomeSellerDTO.UserId);
+                    command.Parameters.AddWithValue("@BusinessName", becomeSellerDTO.BusinessName);
+                    command.Parameters.AddWithValue("@WebsiteUrl",
+                        string.IsNullOrWhiteSpace(becomeSellerDTO.WebsiteUrl)
+                            ? (object)DBNull.Value
+                            : becomeSellerDTO.WebsiteUrl
+                    );
+
+                    try
+                    {
+                        await connection.OpenAsync();
+
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                var role = new RoleDTO
+                                (
+                                    reader.GetInt32(reader.GetOrdinal("id")),
+                                    reader.GetString(reader.GetOrdinal("name_en")),
+                                    reader.GetString(reader.GetOrdinal("name_ar")),
+                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                                );
+
+                                return new Result<RoleDTO>(
+                                    true,
+                                    "seller_role_added_successfully",
+                                    role
+                                );
+                            }
+
+                            return new Result<RoleDTO>(
+                                false,
+                                "failed_to_add_seller_role",
+                                null,
+                                500
+                            );
+                        }
+                    }
+                    catch (SqlException sqlEx)
+                    {
+                        string message = sqlEx.Number switch
+                        {
+                            52001 => "user_not_found",
+                            52002 => "seller_role_not_found",
+                            52003 => "already_seller",
+                            52004 => "role_already_assigned",
+                            52005 => "business_name_required",
+                            52006 => "invalid_website_url",
+                            _ => "internal_server_error"
+                        };
+
+                        _logger.LogError(sqlEx, "SQL error in BecomeSeller");
+                        return new Result<RoleDTO>(false, message, null, 400);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Unexpected error in BecomeSeller");
+                        return new Result<RoleDTO>(false, "internal_server_error", null, 500);
+                    }
+                }
+            }
+
+
         }
     }
 }

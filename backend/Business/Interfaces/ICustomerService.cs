@@ -1,5 +1,7 @@
 ﻿using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Role;
+using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 
@@ -13,5 +15,6 @@ namespace Jannara_Ecommerce.Business.Interfaces
         public Task<Result<bool>> DeleteAsync(int id);
         public Task<Result<CustomerDTO>> CreateAsync(CustomerCreateRequestDTO customerCreateRequestDTO);
         public Task<Result<PagedResponseDTO<CustomerDTO>>> GetAllAsync(int pageNumber, int pageSize);
+        public Task<Result<RoleDTO>> BecomeASeller(BecomeSellerDTO becomeSellerDTO);
     }
 }

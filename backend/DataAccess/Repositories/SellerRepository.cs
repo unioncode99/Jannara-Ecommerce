@@ -254,10 +254,8 @@ BEGIN TRY
     -- Validate customer role exists
     SELECT 
         @RoleId = Id,
-        @RoleNameEn = NameEn,
-        @RoleNameAr = NameAr
     FROM Roles
-    WHERE NameEn = 'customer';
+    WHERE name_en = 'customer';
 
     IF @RoleId IS NULL
         THROW 51002, 'Customer role not found.', 1;

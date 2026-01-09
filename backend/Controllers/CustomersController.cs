@@ -1,6 +1,8 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DTOs.Customer;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Role;
+using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -62,6 +64,29 @@ namespace Jannara_Ecommerce.Controllers
             }
             return StatusCode(result.ErrorCode, result.Message);
         }
+
+        [HttpPost("become-seller")]
+        public async Task<ActionResult<RoleDTO>> BecomeASeller([FromBody] BecomeSellerDTO becomeSellerDTO)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+
+            becomeSellerDTO.UserId = userId;
+
+            var result = await _service.BecomeASeller(becomeSellerDTO);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
