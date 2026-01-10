@@ -253,7 +253,7 @@ BEGIN TRY
 
     -- Validate customer role exists
     SELECT 
-        @RoleId = Id,
+        @RoleId = id
     FROM Roles
     WHERE name_en = 'customer';
 
@@ -261,31 +261,31 @@ BEGIN TRY
         THROW 51002, 'Customer role not found.', 1;
 
     -- Validate not already customer
-    IF EXISTS (SELECT 1 FROM Customers WHERE UserId = @UserId)
+    IF EXISTS (SELECT 1 FROM Customers WHERE user_id = @UserId)
         THROW 51003, 'User is already a customer.', 1;
 
     -- Validate role not already assigned
     IF EXISTS (
         SELECT 1 
         FROM UserRoles 
-        WHERE UserId = @UserId AND RoleId = @RoleId
+        WHERE user_id = @UserId AND role_id = @RoleId
     )
         THROW 51004, 'Customer role already assigned.', 1;
 
     -- Insert into Customers
-    INSERT INTO Customers (UserId)
+    INSERT INTO Customers (user_id)
     VALUES (@UserId);
 
     -- Assign role
-    INSERT INTO UserRoles (UserId, RoleId)
+    INSERT INTO UserRoles (user_id, role_id)
     VALUES (@UserId, @RoleId);
 
     COMMIT TRANSACTION;
 
     -- Return role data
     SELECT 
-        * from userRoles
- where user_id = @UserId AND role_id = @RoleId;
+        * from roles
+ where id = @RoleId;
 
 END TRY
 BEGIN CATCH

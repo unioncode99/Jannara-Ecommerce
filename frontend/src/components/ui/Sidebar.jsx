@@ -69,7 +69,7 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
     setIsBecomeCustomerConfirmModalOpen,
   ] = useState(false);
   const { translations, language } = useLanguage();
-  const { user, logout, person } = useAuth();
+  const { user, logout, person, setUser } = useAuth();
   const navigate = useNavigate();
 
   const [currentRole, setCurrentRole] = useState(
@@ -80,7 +80,14 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
     setCurrentRole(user?.roles?.[0]?.nameEn.toLowerCase() || "unknown_user");
   }, [user]);
 
-  const { become_seller } = translations.general.sidebar;
+  const {
+    become_seller,
+    become_customer_confirm,
+    become_customer_error,
+    become_customer_success,
+    become_customer,
+    cancel_text,
+  } = translations.general.sidebar;
 
   console.log("currentRole", currentRole);
   console.log("user", user);
@@ -139,13 +146,17 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
   async function becomeCustomer() {
     try {
       let result = await create(`sellers/become-customer`);
+      setUser((prev) => ({
+        ...prev,
+        roles: [...(prev.roles || []), result],
+      }));
       if (translations.general.server_messages[result?.message?.message]) {
         toast.show(
           translations.general.server_messages[result?.message?.message],
           "success"
         );
       } else {
-        toast.show("add_admin_success", "success");
+        toast.show(become_customer_success, "success");
       }
     } catch (error) {
       console.error(error);
@@ -155,7 +166,7 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
           "error"
         );
       } else {
-        toast.show("add_admin_error", "error");
+        toast.show(become_customer_error, "error");
       }
     } finally {
       closeModal();
@@ -235,7 +246,7 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
                 onClick={() => setIsBecomeCustomerConfirmModalOpen(true)}
                 className="btn btn-primary btn-block"
               >
-                Become a Customer
+                {become_customer}
               </Button>
             )}
             {/* Logout  */}
@@ -260,9 +271,9 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
         show={isBecomeCustomerConfirmModalOpen}
         onClose={() => closeModal()}
         onConfirm={() => becomeCustomer()}
-        title={"confirm_activate"}
-        cancelLabel={"cancel"}
-        confirmLabel={"activate_role"}
+        title={become_customer_confirm}
+        cancelLabel={cancel_text}
+        confirmLabel={become_customer}
       />
       <BecomeSellerModal
         onClose={() => closeModal()}

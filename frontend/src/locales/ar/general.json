@@ -386,7 +386,11 @@
     "become_seller": "كن بائعًا",
     "cancel_text": "إلغاء",
     "become_seller_success": "أصبحت بائعًا الآن",
-    "become_seller_error": "فشل التحول إلى بائع"
+    "become_seller_error": "فشل التحول إلى بائع",
+    "become_customer": "كن عميلًا",
+    "become_customer_success": "أصبحت عميلًا الآن",
+    "become_customer_error": "فشل التحول إلى عميل",
+    "become_customer_confirm": "هل أنت متأكد أنك تريد تفعيل دور العميل؟"
   },
   "order_statuses": {
     "pending": "قيد الانتظار",

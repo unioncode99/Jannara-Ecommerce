@@ -391,7 +391,11 @@
     "become_seller": "Become a Seller",
     "cancel_text": "Cancel",
     "become_seller_success": "You are now a seller",
-    "become_seller_error": "Failed to become a seller"
+    "become_seller_error": "Failed to become a seller",
+    "become_customer": "Become a Customer",
+    "become_customer_success": "You are now a customer",
+    "become_customer_error": "Failed to become a customer",
+    "become_customer_confirm": "Are you sure you want to activate the Customer role?"
   },
   "order_statuses": {
     "pending": "Pending",
