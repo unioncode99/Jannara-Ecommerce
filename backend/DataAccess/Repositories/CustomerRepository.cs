@@ -236,12 +236,12 @@ BEGIN TRANSACTION;
 BEGIN TRY
 
     -- Validate user exists
-    IF NOT EXISTS (SELECT 1 FROM Users WHERE Id = @UserId)
+    IF NOT EXISTS (SELECT 1 FROM Users WHERE id = @UserId)
         THROW 52001, 'User does not exist.', 1;
 
     -- Validate seller role exists
     SELECT 
-        @RoleId = Id,
+        @RoleId = id
     FROM Roles
     WHERE name_en = 'seller';
 
@@ -249,14 +249,14 @@ BEGIN TRY
         THROW 52002, 'Seller role not found.', 1;
 
     -- Validate not already seller
-    IF EXISTS (SELECT 1 FROM Sellers WHERE UserId = @UserId)
+    IF EXISTS (SELECT 1 FROM Sellers WHERE user_id = @UserId)
         THROW 52003, 'User is already a seller.', 1;
 
     -- Validate role not already assigned
     IF EXISTS (
         SELECT 1 
         FROM UserRoles 
-        WHERE UserId = @UserId AND RoleId = @RoleId
+        WHERE user_id = @UserId AND role_id = @RoleId
     )
         THROW 52004, 'Seller role already assigned.', 1;
 
@@ -268,15 +268,15 @@ BEGIN TRY
     SET @SellerId = SCOPE_IDENTITY();
 
     -- Assign role
-    INSERT INTO UserRoles (UserId, RoleId)
+    INSERT INTO UserRoles (user_id, role_id)
     VALUES (@UserId, @RoleId);
 
     COMMIT TRANSACTION;
 
     -- Return role data
     SELECT 
-        * from userRoles
- where user_id = @UserId AND role_id = @RoleId;
+        * from Roles
+ where id = @RoleId;
 
 END TRY
 BEGIN CATCH

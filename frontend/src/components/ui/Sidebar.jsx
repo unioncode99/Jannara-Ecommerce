@@ -16,8 +16,12 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useAuth } from "../../hooks/useAuth";
 import Button from "./Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "./Select";
+import ConfirmModal from "./ConfirmModal";
+import { create } from "../../api/apiWrapper";
+import { toast } from "./Toast";
+import BecomeSellerModal from "../Sidebar.jsx/BecomeSellerModal";
 
 const menus = {
   unknown_user: [
@@ -59,12 +63,31 @@ const menus = {
 };
 
 const Sidebar = ({ isSibebarOpen, onClose }) => {
+  const [isBecomeSellerModalOpen, setIsBecomeSellerModalOpen] = useState(false);
+  const [
+    isBecomeCustomerConfirmModalOpen,
+    setIsBecomeCustomerConfirmModalOpen,
+  ] = useState(false);
   const { translations, language } = useLanguage();
   const { user, logout, person } = useAuth();
   const navigate = useNavigate();
 
   const [currentRole, setCurrentRole] = useState(
     user?.roles?.[0]?.nameEn.toLowerCase() || "unknown_user"
+  );
+
+  useEffect(() => {
+    setCurrentRole(user?.roles?.[0]?.nameEn.toLowerCase() || "unknown_user");
+  }, [user]);
+
+  const { become_seller } = translations.general.sidebar;
+
+  console.log("currentRole", currentRole);
+  console.log("user", user);
+  console.log("person", person);
+  console.log(
+    "user?.roles?.[0]?.nameEn.toLowerCase()",
+    user?.roles?.[0]?.nameEn.toLowerCase()
   );
 
   const roleOptions = user?.roles?.map((role) => ({
@@ -77,7 +100,7 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
 
   let links = menus[currentRole] || menus.unknown_user;
 
-  user.roles.length = 1; // for test
+  // user.roles?.length = 1; // for test
 
   const handleLogout = () => {
     logout();
@@ -108,89 +131,144 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
     }
   }
 
+  const closeModal = () => {
+    setIsBecomeCustomerConfirmModalOpen(false);
+    setIsBecomeSellerModalOpen(false);
+  };
+
+  async function becomeCustomer() {
+    try {
+      let result = await create(`sellers/become-customer`);
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show("add_admin_success", "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show("add_admin_error", "error");
+      }
+    } finally {
+      closeModal();
+    }
+  }
+
   return (
-    <aside className={`sidebar ${isSibebarOpen ? "" : "close"}`}>
-      {/* Top */}
-      <div className="sidebar-top">
-        <div className="logo">{translations.general.form.login_title}</div>
-        <button onClick={onClose}>
-          <X />
-        </button>
-      </div>
-      {/* Links */}
-      <nav className="sidebar-links">
-        <ul>
-          {links.map((link) => (
-            <li key={link.key}>
-              <NavLink
-                onClick={onClose}
-                to={link.path}
-                className={({ isActive }) =>
-                  `sidebar-link ${isActive ? "active" : ""}`
-                }
-              >
-                <span className="icon">{link.icon}</span>
-                <span className="text">
-                  {translations.general.sidebar[link.key]}
-                </span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
-      {/* Bottom */}
-      {user ? (
-        <div className="sidebar-bottom">
-          {/* Profile */}
-          <button className="profile-btn" onClick={handleProfile}>
-            <span className="profile-avatar">
-              <img src={person?.imageUrl} alt="Profile" />
-            </span>
-
-            <span className="profile-info">
-              <span className="profile-name">{getFullName()}</span>
-              <span className="profile-role">
-                {translations.general.sidebar.profile.role[currentRole]}
+    <>
+      <aside className={`sidebar ${isSibebarOpen ? "" : "close"}`}>
+        {/* Top */}
+        <div className="sidebar-top">
+          <div className="logo">{translations.general.form.login_title}</div>
+          <button onClick={onClose}>
+            <X />
+          </button>
+        </div>
+        {/* Links */}
+        <nav className="sidebar-links">
+          <ul>
+            {links.map((link) => (
+              <li key={link.key}>
+                <NavLink
+                  onClick={onClose}
+                  to={link.path}
+                  className={({ isActive }) =>
+                    `sidebar-link ${isActive ? "active" : ""}`
+                  }
+                >
+                  <span className="icon">{link.icon}</span>
+                  <span className="text">
+                    {translations.general.sidebar[link.key]}
+                  </span>
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        {/* Bottom */}
+        {user ? (
+          <div className="sidebar-bottom">
+            {/* Profile */}
+            <button className="profile-btn" onClick={handleProfile}>
+              <span className="profile-avatar">
+                <img src={person?.imageUrl} alt="Profile" />
               </span>
-            </span>
 
-            <span className="profile-settings">
-              <Settings size={18} />
-            </span>
-          </button>
-          {/* Role Switcher */}
-          {user.roles.length > 1 ? (
-            <div className="role-switcher">
-              <Select
-                options={roleOptions}
-                label={language === "en" ? "Role" : "الدور"}
-                value={currentRole}
-                onChange={handleRoleChange}
-              />
-            </div>
-          ) : (
-            <Button className="btn btn-primary btn-block">
-              Become a Seller
+              <span className="profile-info">
+                <span className="profile-name">{getFullName()}</span>
+                <span className="profile-role">
+                  {translations.general.sidebar.profile.role[currentRole]}
+                </span>
+              </span>
+
+              <span className="profile-settings">
+                <Settings size={18} />
+              </span>
+            </button>
+            {/* Role Switcher */}
+            {user.roles.length > 1 ? (
+              <div className="role-switcher">
+                <Select
+                  options={roleOptions}
+                  label={language === "en" ? "Role" : "الدور"}
+                  value={currentRole}
+                  onChange={handleRoleChange}
+                />
+              </div>
+            ) : currentRole == "customer" ? (
+              <Button
+                onClick={() => setIsBecomeSellerModalOpen(true)}
+                className="btn btn-primary btn-block"
+              >
+                {become_seller}
+              </Button>
+            ) : (
+              <Button
+                onClick={() => setIsBecomeCustomerConfirmModalOpen(true)}
+                className="btn btn-primary btn-block"
+              >
+                Become a Customer
+              </Button>
+            )}
+            {/* Logout  */}
+            <button className="logout-btn" onClick={handleLogout}>
+              <span>
+                <LogOut />
+              </span>
+              <span className="logo-text">
+                {translations.general.sidebar.logout}
+              </span>
+            </button>
+          </div>
+        ) : (
+          <div className="sidebar-bottom">
+            <Button className="btn btn-primary btn-block" onClick={handleLogin}>
+              {translations.general.form.login_button}
             </Button>
-          )}
-          {/* Logout  */}
-          <button className="logout-btn" onClick={handleLogout}>
-            <span>
-              <LogOut />
-            </span>
-            <span className="logo-text">
-              {translations.general.sidebar.logout}
-            </span>
-          </button>
-        </div>
-      ) : (
-        <div className="sidebar-bottom">
-          <Button className="btn btn-primary btn-block" onClick={handleLogin}>
-            {translations.general.form.login_button}
-          </Button>
-        </div>
-      )}
-    </aside>
+          </div>
+        )}
+      </aside>
+      <ConfirmModal
+        show={isBecomeCustomerConfirmModalOpen}
+        onClose={() => closeModal()}
+        onConfirm={() => becomeCustomer()}
+        title={"confirm_activate"}
+        cancelLabel={"cancel"}
+        confirmLabel={"activate_role"}
+      />
+      <BecomeSellerModal
+        onClose={() => closeModal()}
+        show={isBecomeSellerModalOpen}
+      />
+    </>
   );
 };
 export default Sidebar;

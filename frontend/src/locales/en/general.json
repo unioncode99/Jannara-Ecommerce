@@ -387,7 +387,11 @@
         "admin": "Admin",
         "superadmin": "Super Admin"
       }
-    }
+    },
+    "become_seller": "Become a Seller",
+    "cancel_text": "Cancel",
+    "become_seller_success": "You are now a seller",
+    "become_seller_error": "Failed to become a seller"
   },
   "order_statuses": {
     "pending": "Pending",
