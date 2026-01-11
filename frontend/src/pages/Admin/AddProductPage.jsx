@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { create } from "../../api/apiWrapper.js";
 import ProductInfo from "../../components/AddProductPage/ProductInfo";
 import Variations from "../../components/AddProductPage/Variations.jsx";
@@ -11,6 +11,7 @@ import Header from "../../components/AddProductPage/Header.jsx";
 import Tabs from "../../components/AddProductPage/Tabs.jsx";
 import StepNavigation from "../../components/AddProductPage/StepNavigation.jsx";
 import { useLanguage } from "../../hooks/useLanguage.jsx";
+import { isImageValid } from "../../utils/utils.jsx";
 
 const intialFormData = {
   BrandId: "",
@@ -27,18 +28,42 @@ const intialFormData = {
 const AddProductPage = () => {
   const [step, setStep] = useState(1);
   const [productData, setProductData] = useState(intialFormData);
+  const [errors, setErrors] = useState({});
 
-  const handleNext = () => setStep(Math.min(step + 1, steps.length));
+  const handleNext = () => {
+    if (step == 1 && !validateGeneralStep()) {
+      return;
+    }
+
+    setStep(Math.min(step + 1, steps.length));
+  };
   const handlePrevious = () => setStep(Math.max(step - 1, 1));
 
-  const { translations } = useLanguage();
-  const { general, variations, items } = translations.general.pages.add_product;
+  const { translations, language } = useLanguage();
+  const {
+    general,
+    variations,
+    items,
+    general_nameEn_error,
+    general_nameAr_error,
+    general_descriptionEn_error,
+    general_descriptionAr_error,
+    general_weightKg_error,
+    general_brand_error,
+    general_defaultImage_error,
+  } = translations.general.pages.add_product;
 
   const steps = [
     { id: 1, name: general },
     { id: 2, name: variations },
     { id: 3, name: items },
   ];
+
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      validateGeneralStep();
+    }
+  }, [language]);
 
   const handleSubmit = async () => {
     try {
@@ -84,15 +109,47 @@ const AddProductPage = () => {
     }
   };
 
+  const validateGeneralStep = () => {
+    let newErrors = {};
+
+    // if (!productData.BrandId || productData.BrandId <= 0) {
+    //   newErrors.BrandId = general_brand_error;
+    // }
+
+    if (!productData.NameEn.trim()) {
+      newErrors.NameEn = general_nameEn_error;
+    }
+    if (!productData.NameAr.trim()) {
+      newErrors.NameAr = general_nameAr_error;
+    }
+    // if (!productData.DescriptionEn.trim()) {
+    //   newErrors.DescriptionEn = general_descriptionEn_error;
+    // }
+    // if (!productData.DescriptionAr.trim()) {
+    //   newErrors.DescriptionAr = general_descriptionAr_error;
+    // }
+
+    if (!productData.WeightKg || productData.WeightKg < 0) {
+      newErrors.WeightKg = general_weightKg_error;
+    }
+
+    if (!isImageValid(productData.DefaultImageFile)) {
+      newErrors.DefaultImageFile = general_defaultImage_error;
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // true = valid
+  };
+
   return (
     <div className="add-product-container">
       <Header />
       <Tabs steps={steps} selectedStep={step} setStep={setStep} />
-      <h2>step {step}</h2>
       {step == 1 && (
         <ProductInfo
           productData={productData}
           setProductData={setProductData}
+          errors={errors}
         />
       )}
       {step == 2 && (

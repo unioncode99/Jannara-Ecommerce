@@ -9,6 +9,9 @@ const BrandsDropdown = ({
   required = false,
   disabled = false,
   errorMessage = "",
+  label,
+  showLabel = false,
+  name,
 }) => {
   const [productCategories, setProductCategories] = useState([]);
   const { language } = useLanguage();
@@ -33,8 +36,10 @@ const BrandsDropdown = ({
 
   return (
     <Select
+      name={name}
+      showLabel={showLabel}
       options={productCategories}
-      label={language == "en" ? "Category" : "التصنيف"}
+      label={label}
       value={value}
       onChange={onChange}
       required={required}

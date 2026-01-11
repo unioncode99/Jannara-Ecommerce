@@ -377,9 +377,9 @@
       "variations": "Variations",
       "items": "Items",
 
-      "general_brandId_label": "Brand Id",
-      "general_brandId_placeholder": "Enter brand id",
-      "general_brandId_error": "Brand is required",
+      "general_brand_label": "Brand",
+      "general_brand_placeholder": "Enter brand",
+      "general_brand_error": "Brand is required",
 
       "general_nameEn_label": "Product Name (EN)",
       "general_nameEn_placeholder": "Enter product name in English",
@@ -389,13 +389,13 @@
       "general_nameAr_placeholder": "Enter product name in Arabic",
       "general_nameAr_error": "Product name (AR) is required",
 
-      "general_descriptionEn_label": "Description (EN)",
+      "general_descriptionEn_label": "Description (English)",
       "general_descriptionEn_placeholder": "Enter description in English",
-      "general_descriptionEn_error": "",
+      "general_descriptionEn_error": "English description is required",
 
-      "general_descriptionAr_label": "Description (AR)",
+      "general_descriptionAr_label": "Description (Arabic)",
       "general_descriptionAr_placeholder": "Enter description in Arabic",
-      "general_descriptionAr_error": "",
+      "general_descriptionAr_error": "Arabic description is required",
 
       "general_weightKg_label": "Weight (kg)",
       "general_weightKg_placeholder": "Enter weight in kilograms",

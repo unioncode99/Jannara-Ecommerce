@@ -60,3 +60,19 @@ export function formatDateTime(
 
   return new Intl.DateTimeFormat(locale, dateOptions).format(dt);
 }
+
+export function isImageValid(file) {
+  if (!file) {
+    return false;
+  }
+  if (!file.type.startsWith("image/")) {
+    return false;
+  }
+  const maxSize = 2 * 1024 * 1024;
+
+  if (file.size > maxSize) {
+    return false;
+  }
+
+  return true;
+}

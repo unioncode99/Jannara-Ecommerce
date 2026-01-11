@@ -14,13 +14,16 @@ const TextArea = ({
   errorMessage = "",
   rows = 4, // Default rows
   cols = 50, // Default columns
+  showLabel,
   ...props
 }) => {
   return (
     <div className={`form-row ${className}`}>
       {label && (
         <label htmlFor={name} className="form-label">
-          <span className="visually-hidden">{label}</span>
+          <span className={`${!showLabel ? "visually-hidden" : ""}`}>
+            {label}
+          </span>
         </label>
       )}
       <textarea

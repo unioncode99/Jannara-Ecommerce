@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 import Input from "../ui/Input";
+import TextArea from "../ui/TextArea";
 import { Camera, Upload, X } from "lucide-react";
 import "./ProductInfo.css";
 import BrandsDropdown from "../BrandsDropdown";
+import { isImageValid } from "../../utils/utils";
 
-const ProductInfo = ({ productData, setProductData }) => {
+const ProductInfo = ({ productData, setProductData, errors }) => {
   const [productImagePreview, setProductImagePreview] = useState(null);
-  const { translations, language } = useLanguage();
+  const { translations } = useLanguage();
   const {
-    general_brandId_label,
-    general_brandId_placeholder,
+    general_brand_label,
     general_nameEn_label,
     general_nameEn_placeholder,
     general_nameAr_label,
@@ -37,7 +38,8 @@ const ProductInfo = ({ productData, setProductData }) => {
 
   const handleProductImageChange = (e) => {
     const file = e.target.files[0];
-    if (!file) {
+
+    if (!isImageValid(file)) {
       return;
     }
 
@@ -52,21 +54,16 @@ const ProductInfo = ({ productData, setProductData }) => {
     setProductImagePreview(null);
   }
 
-  const errors = {};
-
   return (
     <div className="product-info-container">
-      <Input
-        label={general_brandId_label}
+      <BrandsDropdown
         name="BrandId"
-        placeholder={general_brandId_placeholder}
-        value={productData.BrandId}
         onChange={handleChange}
-        errorMessage={errors?.BrandId}
+        label={general_brand_label}
         showLabel={true}
+        value={productData.BrandId}
+        errorMessage={errors?.BrandId}
       />
-
-      <BrandsDropdown value={productData.BrandId} onChange={handleChange} />
 
       <Input
         label={general_nameEn_label}
@@ -86,7 +83,8 @@ const ProductInfo = ({ productData, setProductData }) => {
         errorMessage={errors?.NameAr}
         showLabel={true}
       />
-      <Input
+
+      <TextArea
         label={general_descriptionEn_label}
         name="DescriptionEn"
         placeholder={general_descriptionEn_placeholder}
@@ -95,7 +93,7 @@ const ProductInfo = ({ productData, setProductData }) => {
         errorMessage={errors?.DescriptionEn}
         showLabel={true}
       />
-      <Input
+      <TextArea
         label={general_descriptionAr_label}
         name="DescriptionAr"
         placeholder={general_descriptionAr_placeholder}
@@ -138,6 +136,9 @@ const ProductInfo = ({ productData, setProductData }) => {
           </div>
         )}
       </div>
+      {errors.DefaultImageFile && (
+        <div className="form-alert">{errors.DefaultImageFile}</div>
+      )}
     </div>
   );
 };

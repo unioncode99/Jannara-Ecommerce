@@ -372,9 +372,9 @@
       "variations": "الاختلافات",
       "items": "العناصر",
 
-      "general_brandId_label": "معرّف العلامة التجارية",
-      "general_brandId_placeholder": "أدخل معرّف العلامة التجارية",
-      "general_brandId_error": "العلامة التجارية مطلوبة",
+      "general_brand_label": "العلامة التجارية",
+      "general_brand_placeholder": "أدخل العلامة التجارية",
+      "general_brand_error": "العلامة التجارية مطلوبة",
 
       "general_nameEn_label": "اسم المنتج (بالإنجليزية)",
       "general_nameEn_placeholder": "أدخل اسم المنتج بالإنجليزية",
@@ -386,11 +386,11 @@
 
       "general_descriptionEn_label": "الوصف (بالإنجليزية)",
       "general_descriptionEn_placeholder": "أدخل الوصف بالإنجليزية",
-      "general_descriptionEn_error": "",
+      "general_descriptionEn_error": "الوصف بالإنجليزية مطلوب",
 
       "general_descriptionAr_label": "الوصف (بالعربية)",
       "general_descriptionAr_placeholder": "أدخل الوصف بالعربية",
-      "general_descriptionAr_error": "",
+      "general_descriptionAr_error": "الوصف بالعربية مطلوب",
 
       "general_weightKg_label": "الوزن (كجم)",
       "general_weightKg_placeholder": "أدخل الوزن بالكيلوجرام",
