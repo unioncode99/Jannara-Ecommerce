@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 import Input from "../ui/Input";
 import TextArea from "../ui/TextArea";
-import { Camera, Upload, X } from "lucide-react";
+import { Camera, Globe, Upload, X } from "lucide-react";
 import "./ProductInfo.css";
 import BrandsDropdown from "../BrandsDropdown";
 import { isImageValid } from "../../utils/utils";
@@ -22,6 +22,7 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
     general_descriptionAr_placeholder,
     general_weightKg_label,
     general_weightKg_placeholder,
+    general_info,
   } = translations.general.pages.add_product;
 
   const handleChange = (e) => {
@@ -56,6 +57,12 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
 
   return (
     <div className="product-info-container">
+      <h3>
+        {" "}
+        <h3 className="step-title">
+          <Globe /> {general_info}
+        </h3>
+      </h3>
       <BrandsDropdown
         name="BrandId"
         onChange={handleChange}

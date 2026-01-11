@@ -435,7 +435,21 @@
 
       "items_productImage_label": "Product Image",
       "items_productImage_placeholder": "",
-      "items_productImage_error": "Product image is required"
+      "items_productImage_error": "Product image is required",
+
+      "variations_header": "Product Variations",
+      "variation_name_en": "Enter Variation Name (English)",
+      "variation_name_ar": "Enter Variation Name (Arabic)",
+      "add_variation_button": "Add Variation",
+
+      "options_header": "Options",
+      "option_name_en": "Enter Option Name (English)",
+      "option_name_ar": "Enter Option Name (Arabic)",
+      "add_option_button": "Add Option",
+
+      "general_info": "General Info",
+
+      "at_least_one_option": "Each variation must have at least one option"
     }
   },
   "sidebar": {

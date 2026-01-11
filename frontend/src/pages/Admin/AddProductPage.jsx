@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { create } from "../../api/apiWrapper.js";
 import ProductInfo from "../../components/AddProductPage/ProductInfo";
-import Variations from "../../components/AddProductPage/Variations.jsx";
+import Variations from "../../components/AddProductPage/Variations/Variations.jsx";
 import ProductItems from "../../components/AddProductPage/ProductItems.jsx";
 import "./AddProductPage.css";
 import { Link } from "react-router-dom";
@@ -12,6 +12,7 @@ import Tabs from "../../components/AddProductPage/Tabs.jsx";
 import StepNavigation from "../../components/AddProductPage/StepNavigation.jsx";
 import { useLanguage } from "../../hooks/useLanguage.jsx";
 import { isImageValid } from "../../utils/utils.jsx";
+import { toast } from "../../components/ui/Toast";
 
 const intialFormData = {
   BrandId: "",
@@ -30,15 +31,6 @@ const AddProductPage = () => {
   const [productData, setProductData] = useState(intialFormData);
   const [errors, setErrors] = useState({});
 
-  const handleNext = () => {
-    if (step == 1 && !validateGeneralStep()) {
-      return;
-    }
-
-    setStep(Math.min(step + 1, steps.length));
-  };
-  const handlePrevious = () => setStep(Math.max(step - 1, 1));
-
   const { translations, language } = useLanguage();
   const {
     general,
@@ -46,11 +38,12 @@ const AddProductPage = () => {
     items,
     general_nameEn_error,
     general_nameAr_error,
-    general_descriptionEn_error,
-    general_descriptionAr_error,
+    // general_descriptionEn_error,
+    // general_descriptionAr_error,
     general_weightKg_error,
-    general_brand_error,
+    // general_brand_error,
     general_defaultImage_error,
+    at_least_one_option,
   } = translations.general.pages.add_product;
 
   const steps = [
@@ -58,6 +51,68 @@ const AddProductPage = () => {
     { id: 2, name: variations },
     { id: 3, name: items },
   ];
+
+  function validateGeneralStep() {
+    let newErrors = {};
+
+    // if (!productData.BrandId || productData.BrandId <= 0) {
+    //   newErrors.BrandId = general_brand_error;
+    // }
+
+    if (!productData.NameEn.trim()) {
+      newErrors.NameEn = general_nameEn_error;
+    }
+    if (!productData.NameAr.trim()) {
+      newErrors.NameAr = general_nameAr_error;
+    }
+    // if (!productData.DescriptionEn.trim()) {
+    //   newErrors.DescriptionEn = general_descriptionEn_error;
+    // }
+    // if (!productData.DescriptionAr.trim()) {
+    //   newErrors.DescriptionAr = general_descriptionAr_error;
+    // }
+
+    if (!productData.WeightKg || productData.WeightKg < 0) {
+      newErrors.WeightKg = general_weightKg_error;
+    }
+
+    if (!isImageValid(productData.DefaultImageFile)) {
+      newErrors.DefaultImageFile = general_defaultImage_error;
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // true = valid
+  }
+
+  function validateVariationStep() {
+    const variations = productData?.Variations;
+
+    if (!variations || variations.length === 0) {
+      return false;
+    }
+
+    for (let i = 0; i < variations.length; i++) {
+      if (!variations[i].options || variations[i].options.length === 0) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  const handleNext = () => {
+    if (step == 1 && !validateGeneralStep()) {
+      return;
+    }
+
+    if (step == 2 && !validateVariationStep()) {
+      toast.show(at_least_one_option, "error");
+      return;
+    }
+
+    setStep(Math.min(step + 1, steps.length));
+  };
+  const handlePrevious = () => setStep(Math.max(step - 1, 1));
 
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
@@ -109,37 +164,9 @@ const AddProductPage = () => {
     }
   };
 
-  const validateGeneralStep = () => {
-    let newErrors = {};
-
-    // if (!productData.BrandId || productData.BrandId <= 0) {
-    //   newErrors.BrandId = general_brand_error;
-    // }
-
-    if (!productData.NameEn.trim()) {
-      newErrors.NameEn = general_nameEn_error;
-    }
-    if (!productData.NameAr.trim()) {
-      newErrors.NameAr = general_nameAr_error;
-    }
-    // if (!productData.DescriptionEn.trim()) {
-    //   newErrors.DescriptionEn = general_descriptionEn_error;
-    // }
-    // if (!productData.DescriptionAr.trim()) {
-    //   newErrors.DescriptionAr = general_descriptionAr_error;
-    // }
-
-    if (!productData.WeightKg || productData.WeightKg < 0) {
-      newErrors.WeightKg = general_weightKg_error;
-    }
-
-    if (!isImageValid(productData.DefaultImageFile)) {
-      newErrors.DefaultImageFile = general_defaultImage_error;
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // true = valid
-  };
+  useEffect(() => {
+    console.log("productData -> ", productData);
+  }, [productData]);
 
   return (
     <div className="add-product-container">

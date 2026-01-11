@@ -4,6 +4,9 @@
   width: fit-content;
   padding: 0.5rem;
   border-radius: var(--border-radius);
+  width: 100%;
+  max-width: var(--fixed-width);
+  margin: 1rem auto;
 }
 
 .steps-container .btn {

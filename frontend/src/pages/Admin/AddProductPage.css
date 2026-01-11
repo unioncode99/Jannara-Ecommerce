@@ -1,1 +1,8 @@
-
+.step-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.step-title svg {
+  color: var(--primary-500);
+}

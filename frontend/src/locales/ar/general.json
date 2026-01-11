@@ -430,7 +430,21 @@
 
       "items_productImage_label": "صورة المنتج",
       "items_productImage_placeholder": "",
-      "items_productImage_error": "صورة المنتج مطلوبة"
+      "items_productImage_error": "صورة المنتج مطلوبة",
+
+      "variations_header": "متغيرات المنتج",
+      "variation_name_en": "أدخل اسم المتغير (إنجليزي)",
+      "variation_name_ar": "أدخل اسم المتغير (عربي)",
+      "add_variation_button": "أضف متغير",
+
+      "options_header": "الخيارات",
+      "option_name_en": "أدخل اسم الخيار (إنجليزي)",
+      "option_name_ar": "أدخل اسم الخيار (عربي)",
+      "add_option_button": "أضف خيار",
+
+      "general_info": "المعلومات العامة",
+
+      "at_least_one_option": "يجب أن يحتوي كل متغير على خيار واحد على الأقل"
     }
   },
   "sidebar": {

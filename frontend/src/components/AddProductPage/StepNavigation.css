@@ -2,7 +2,9 @@
   display: flex;
   align-content: center;
   justify-content: space-between;
-  margin-top: 1rem;
+  width: 100%;
+  max-width: var(--fixed-width);
+  margin: 1rem auto;
 }
 
 .step-navigation-container.one {

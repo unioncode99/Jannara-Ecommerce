@@ -1,0 +1,23 @@
+.add-variations-container > header .add-variation-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+}
+
+@media (max-width: 768px) {
+  .add-variations-container > header .add-variation-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-variations-container > header .add-variation-inputs button {
+    align-self: self-start;
+  }
+}
+
+.add-variations-container header .add-variation-inputs > div {
+  flex: 1;
+  margin: 0;
+}

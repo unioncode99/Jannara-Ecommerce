@@ -1,4 +1,4 @@
-.add-product-container header {
+.add-product-container > header {
   display: flex;
   align-items: center;
   justify-content: space-between;

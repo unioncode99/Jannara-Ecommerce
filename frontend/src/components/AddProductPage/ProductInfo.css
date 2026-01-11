@@ -3,6 +3,9 @@
   box-shadow: var(--shadow-2);
   border-radius: var(--border-radius);
   padding: 1rem;
+  width: 100%;
+  max-width: var(--fixed-width);
+  margin: 0 auto;
 }
 
 .product-image-container {

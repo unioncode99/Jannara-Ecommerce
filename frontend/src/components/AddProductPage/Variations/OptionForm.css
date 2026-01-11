@@ -1,0 +1,24 @@
+.add-option-inputs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.add-option-inputs > div {
+  flex: 1;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .add-option-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-option-inputs button {
+    width: fit-content;
+    align-self: flex-start;
+  }
+}
