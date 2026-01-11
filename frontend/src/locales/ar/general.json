@@ -360,6 +360,77 @@
       "platform_growth": "نمو المنصة",
       "recent_registrations": "آخر التسجيلات",
       "view_all_users": "عرض جميع المستخدمين"
+    },
+    "add_product": {
+      "title": "إضافة منتج",
+      "cancel_text": "إلغاء",
+      "save": "حفظ",
+      "previous": "السابق",
+      "next": "التالي",
+      "submit_product": "إرسال المنتج",
+      "general": "عام",
+      "variations": "الاختلافات",
+      "items": "العناصر",
+
+      "general_brandId_label": "معرّف العلامة التجارية",
+      "general_brandId_placeholder": "أدخل معرّف العلامة التجارية",
+      "general_brandId_error": "العلامة التجارية مطلوبة",
+
+      "general_nameEn_label": "اسم المنتج (بالإنجليزية)",
+      "general_nameEn_placeholder": "أدخل اسم المنتج بالإنجليزية",
+      "general_nameEn_error": "اسم المنتج (بالإنجليزية) مطلوب",
+
+      "general_nameAr_label": "اسم المنتج (بالعربية)",
+      "general_nameAr_placeholder": "أدخل اسم المنتج بالعربية",
+      "general_nameAr_error": "اسم المنتج (بالعربية) مطلوب",
+
+      "general_descriptionEn_label": "الوصف (بالإنجليزية)",
+      "general_descriptionEn_placeholder": "أدخل الوصف بالإنجليزية",
+      "general_descriptionEn_error": "",
+
+      "general_descriptionAr_label": "الوصف (بالعربية)",
+      "general_descriptionAr_placeholder": "أدخل الوصف بالعربية",
+      "general_descriptionAr_error": "",
+
+      "general_weightKg_label": "الوزن (كجم)",
+      "general_weightKg_placeholder": "أدخل الوزن بالكيلوجرام",
+      "general_weightKg_error": "الوزن مطلوب ويجب أن يكون رقم",
+
+      "general_defaultImage_label": "الصورة الافتراضية",
+      "general_defaultImage_placeholder": "",
+      "general_defaultImage_error": "الصورة الافتراضية مطلوبة",
+
+      "variations_variationNameEn_label": "اسم الاختلاف (بالإنجليزية)",
+      "variations_variationNameEn_placeholder": "أدخل اسم الاختلاف بالإنجليزية",
+      "variations_variationNameEn_error": "اسم الاختلاف (بالإنجليزية) مطلوب",
+
+      "variations_variationNameAr_label": "اسم الاختلاف (بالعربية)",
+      "variations_variationNameAr_placeholder": "أدخل اسم الاختلاف بالعربية",
+      "variations_variationNameAr_error": "اسم الاختلاف (بالعربية) مطلوب",
+
+      "variations_optionValueEn_label": "قيمة الخيار (بالإنجليزية)",
+      "variations_optionValueEn_placeholder": "أدخل قيمة الخيار بالإنجليزية",
+      "variations_optionValueEn_error": "قيمة الخيار (بالإنجليزية) مطلوبة",
+
+      "variations_optionValueAr_label": "قيمة الخيار (بالعربية)",
+      "variations_optionValueAr_placeholder": "أدخل قيمة الخيار بالعربية",
+      "variations_optionValueAr_error": "قيمة الخيار (بالعربية) مطلوبة",
+
+      "items_sku_label": "SKU",
+      "items_sku_placeholder": "أدخل SKU",
+      "items_sku_error": "SKU مطلوب",
+
+      "items_optionValueEn_label": "قيمة الخيار (بالإنجليزية)",
+      "items_optionValueEn_placeholder": "أدخل قيمة الخيار بالإنجليزية",
+      "items_optionValueEn_error": "قيمة الخيار (بالإنجليزية) مطلوبة",
+
+      "items_optionValueAr_label": "قيمة الخيار (بالعربية)",
+      "items_optionValueAr_placeholder": "أدخل قيمة الخيار بالعربية",
+      "items_optionValueAr_error": "قيمة الخيار (بالعربية) مطلوبة",
+
+      "items_productImage_label": "صورة المنتج",
+      "items_productImage_placeholder": "",
+      "items_productImage_error": "صورة المنتج مطلوبة"
     }
   },
   "sidebar": {

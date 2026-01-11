@@ -1,0 +1,21 @@
+.steps-container {
+  margin: 1rem 0;
+  background-color: var(--grey-200);
+  width: fit-content;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+}
+
+.steps-container .btn {
+  background-color: transparent;
+
+  color: var(--grey-900);
+  border-radius: none;
+}
+.steps-container .btn:hover {
+  color: var(--text-color);
+}
+.steps-container .btn.active {
+  color: var(--text-color);
+  background-color: var(--grey-100);
+}

@@ -1,0 +1,21 @@
+.add-product-container header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--card-background);
+  box-shadow: var(--shadow-2);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+}
+
+.add-product-container header > div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.add-product-container header .save-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

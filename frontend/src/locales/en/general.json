@@ -365,6 +365,77 @@
       "platform_growth": "Platform Growth",
       "recent_registrations": "Recent Registrations",
       "view_all_users": "View All Users"
+    },
+    "add_product": {
+      "title": "Add Product",
+      "cancel_text": "Cancel",
+      "save": "Save",
+      "previous": "Previous",
+      "next": "Next",
+      "submit_product": "Submit Product",
+      "general": "General",
+      "variations": "Variations",
+      "items": "Items",
+
+      "general_brandId_label": "Brand Id",
+      "general_brandId_placeholder": "Enter brand id",
+      "general_brandId_error": "Brand is required",
+
+      "general_nameEn_label": "Product Name (EN)",
+      "general_nameEn_placeholder": "Enter product name in English",
+      "general_nameEn_error": "Product name (EN) is required",
+
+      "general_nameAr_label": "Product Name (AR)",
+      "general_nameAr_placeholder": "Enter product name in Arabic",
+      "general_nameAr_error": "Product name (AR) is required",
+
+      "general_descriptionEn_label": "Description (EN)",
+      "general_descriptionEn_placeholder": "Enter description in English",
+      "general_descriptionEn_error": "",
+
+      "general_descriptionAr_label": "Description (AR)",
+      "general_descriptionAr_placeholder": "Enter description in Arabic",
+      "general_descriptionAr_error": "",
+
+      "general_weightKg_label": "Weight (kg)",
+      "general_weightKg_placeholder": "Enter weight in kilograms",
+      "general_weightKg_error": "Weight is required and must be a number",
+
+      "general_defaultImage_label": "Default Image",
+      "general_defaultImage_placeholder": "",
+      "general_defaultImage_error": "Default image is required",
+
+      "variations_variationNameEn_label": "Variation Name (EN)",
+      "variations_variationNameEn_placeholder": "Enter variation name in English",
+      "variations_variationNameEn_error": "Variation name (EN) is required",
+
+      "variations_variationNameAr_label": "Variation Name (AR)",
+      "variations_variationNameAr_placeholder": "Enter variation name in Arabic",
+      "variations_variationNameAr_error": "Variation name (AR) is required",
+
+      "variations_optionValueEn_label": "Option Value (EN)",
+      "variations_optionValueEn_placeholder": "Enter option value in English",
+      "variations_optionValueEn_error": "Option value (EN) is required",
+
+      "variations_optionValueAr_label": "Option Value (AR)",
+      "variations_optionValueAr_placeholder": "Enter option value in Arabic",
+      "variations_optionValueAr_error": "Option value (AR) is required",
+
+      "items_sku_label": "SKU",
+      "items_sku_placeholder": "Enter SKU",
+      "items_sku_error": "SKU is required",
+
+      "items_optionValueEn_label": "Option Value (EN)",
+      "items_optionValueEn_placeholder": "Enter option value in English",
+      "items_optionValueEn_error": "Option value (EN) is required",
+
+      "items_optionValueAr_label": "Option Value (AR)",
+      "items_optionValueAr_placeholder": "Enter option value in Arabic",
+      "items_optionValueAr_error": "Option value (AR) is required",
+
+      "items_productImage_label": "Product Image",
+      "items_productImage_placeholder": "",
+      "items_productImage_error": "Product image is required"
     }
   },
   "sidebar": {
