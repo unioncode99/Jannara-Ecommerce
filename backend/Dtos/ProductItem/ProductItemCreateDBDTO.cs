@@ -3,11 +3,10 @@ using Jannara_Ecommerce.DTOs.VariationOption;
 
 namespace Jannara_Ecommerce.DTOs.ProductItem
 {
-    public class ProductItemCreateDTO
+    public class ProductItemCreateDBDTO
     {
-        public string Sku {  get; set; }
+        public string Sku { get; set; }
         public IEnumerable<VariationOptionCreateDTO> VariationOptions { get; set; }
-        public IEnumerable<ProductItemImageCreateDTO> ProductItemImages { get; set; }
-  
+        public IEnumerable<ProductItemImageCreateDBDTO> ProductItemImages { get; set; }
     }
 }

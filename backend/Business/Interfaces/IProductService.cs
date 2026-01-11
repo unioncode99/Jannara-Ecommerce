@@ -10,5 +10,6 @@ namespace Jannara_Ecommerce.Business.Interfaces
     {
         public Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(FilterProductDTO filter);
         public Task<Result<ProductDetailDTO>> FindAsync(Guid publicId, int? customerId);
+        Task<Result<bool>> CreateAsync(ProductCreateDTO productCreateDTO);
     }
 }

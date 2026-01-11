@@ -47,6 +47,32 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
-    
+
+        [HttpPost]
+        public async Task<IActionResult> Create([FromForm] ProductCreateDTO productCreateDTO)
+        {
+            if (productCreateDTO == null)
+            {
+                return BadRequest(new { success = false, message = "Product data is required" });
+            }
+
+            // Validate required fields
+            if (string.IsNullOrWhiteSpace(productCreateDTO.NameEn) || string.IsNullOrWhiteSpace(productCreateDTO.NameAr))
+            {
+                return BadRequest(new { success = false, message = "Product name is required" });
+            }
+
+            if (productCreateDTO.WeightKg <= 0)
+            {
+                return BadRequest(new { success = false, message = "Product weight must be greater than 0" });
+            }
+            var result = await _productService.CreateAsync(productCreateDTO);
+
+            if (!result.IsSuccess)
+                return StatusCode(result.ErrorCode, new { success = false, message = result.Message });
+
+            return Ok(new { success = true, message = "Product created successfully" });
+        }
+
     }
 }

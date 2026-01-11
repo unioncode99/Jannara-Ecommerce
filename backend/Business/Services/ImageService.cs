@@ -89,7 +89,7 @@ namespace Jannara_Ecommerce.Business.Services
             return new Result<string>(true, "image_saved", relativePath);
         }
         // ===================== DELETE =====================
-        public Result<bool> DeleteImage(string relativePath)
+        public async Task<Result<bool>> DeleteImage(string relativePath)
         {
             if (string.IsNullOrWhiteSpace(relativePath))
             {
@@ -106,7 +106,7 @@ namespace Jannara_Ecommerce.Business.Services
                     return new Result<bool>(true, "file_already_deleted", true);
                 }
 
-                File.Delete(fullPath);
+                 await Task.Run(() => File.Delete(fullPath));
                 return new Result<bool>(true, "image_deleted", true);
             }
             catch (SecurityException)
@@ -127,7 +127,7 @@ namespace Jannara_Ecommerce.Business.Services
             // Delete old image first
             if (!string.IsNullOrWhiteSpace(oldRelativePath))
             {
-                var deleteResult = DeleteImage(oldRelativePath);
+                var deleteResult = await DeleteImage(oldRelativePath);
                 if (!deleteResult.IsSuccess)
                     return new Result<string>(false, deleteResult.Message, null, deleteResult.ErrorCode);
             }

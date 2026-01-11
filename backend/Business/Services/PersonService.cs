@@ -34,7 +34,7 @@ namespace Jannara_Ecommerce.Business.Services
             var findResult = await FindAsync(id);
             if (!findResult.IsSuccess) 
                 return new Result<bool>(false, findResult.Message, false, findResult.ErrorCode);
-            var deleteImageResult =  _imageService.DeleteImage(findResult.Data.ImageUrl);
+            var deleteImageResult = await _imageService.DeleteImage(findResult.Data.ImageUrl);
             if (!deleteImageResult.IsSuccess)
                 return new Result<bool>(false, deleteImageResult.Message, false, deleteImageResult.ErrorCode);
             return await _repo.DeleteAsync(id);
@@ -60,7 +60,7 @@ namespace Jannara_Ecommerce.Business.Services
             // Handle delete-only request
             if (updatedPerson.DeleteProfileImage && !string.IsNullOrWhiteSpace(finalImageUrl))
             {
-                var deleteResult = _imageService.DeleteImage(finalImageUrl);
+                var deleteResult = await _imageService.DeleteImage(finalImageUrl);
                 if (!deleteResult.IsSuccess)
                 {
                     return new Result<PersonDTO>(false, deleteResult.Message, null, deleteResult.ErrorCode);
@@ -74,7 +74,7 @@ namespace Jannara_Ecommerce.Business.Services
                 // Delete old image if it exists (after deleteProfileImage handled)
                 if (!string.IsNullOrWhiteSpace(finalImageUrl))
                 {
-                    var deleteOld = _imageService.DeleteImage(finalImageUrl);
+                    var deleteOld = await _imageService.DeleteImage(finalImageUrl);
                     if (!deleteOld.IsSuccess)
                     {
                         return new Result<PersonDTO>(false, deleteOld.Message, null, deleteOld.ErrorCode);
