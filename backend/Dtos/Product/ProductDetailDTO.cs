@@ -20,7 +20,7 @@ namespace Jannara_Ecommerce.DTOs.Product
         public bool? IsFavorite { get; set; }
         public decimal? AverageRating { get; set; }
         public int? RatingCount { get; set; }
-        public BrandDetailDTO? Brand { get; set; }
+        public BrandDTO? Brand { get; set; }
         public List<VariationDetailDTO> Variations { get; set; }
         public List<ProductItemDetailDTO> ProductItems { get; set; }
     }

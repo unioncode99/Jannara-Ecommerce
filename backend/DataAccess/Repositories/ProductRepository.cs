@@ -246,7 +246,7 @@ SELECT @json = (
 JSON_QUERY(
 (
     SELECT 
-        b.id AS BrandId,
+        b.id AS Id,
         b.name_en AS NameEn,
         b.name_ar AS NameAr,
         b.logo_url AS LogoUrl,
