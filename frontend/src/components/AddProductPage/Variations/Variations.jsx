@@ -64,21 +64,21 @@ const Variations = ({ productData, setProductData }) => {
 
   // Add new option to variation
   const addOption = (variationIndex) => {
-    const optionEn = newOptions[variationIndex]?.nameEn || "";
-    const optionAr = newOptions[variationIndex]?.nameAr || "";
+    const optionEn = newOptions[variationIndex]?.ValueEn || "";
+    const optionAr = newOptions[variationIndex]?.ValueAr || "";
     if (!optionEn.trim() || !optionAr.trim()) return;
 
     const updatedVariations = [...productData.Variations];
     updatedVariations[variationIndex].options.push({
-      nameEn: optionEn,
-      nameAr: optionAr,
+      ValueEn: optionEn,
+      ValueAr: optionAr,
     });
     setProductData({ ...productData, Variations: updatedVariations });
 
     // Clear input
     setNewOptions({
       ...newOptions,
-      [variationIndex]: { nameEn: "", nameAr: "" },
+      [variationIndex]: { ValueEn: "", ValueAr: "" },
     });
   };
 
@@ -103,7 +103,7 @@ const Variations = ({ productData, setProductData }) => {
           updateOption={updateOption}
           removeOption={removeOption}
           addOption={addOption}
-          newOption={newOptions[idx] || { nameEn: "", nameAr: "" }}
+          newOption={newOptions[idx] || { ValueEn: "", ValueAr: "" }}
           updateOptionInput={updateOptionInput}
         />
       ))}

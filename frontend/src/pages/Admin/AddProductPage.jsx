@@ -22,7 +22,25 @@ const intialFormData = {
   DescriptionAr: "",
   WeightKg: 0,
   DefaultImageFile: null,
-  Variations: [],
+  // Variations: [],
+  Variations: [
+    {
+      nameEn: "Color",
+      nameAr: "اللون",
+      options: [
+        { ValueEn: "Red", ValueAr: "أحمر" },
+        { ValueEn: "Blue", ValueAr: "أزرق" },
+      ],
+    },
+    {
+      nameEn: "Size",
+      nameAr: "الحجم",
+      options: [
+        { ValueEn: "S", ValueAr: "ص" },
+        { ValueEn: "M", ValueAr: "م" },
+      ],
+    },
+  ],
   ProductItems: [],
 };
 
@@ -44,6 +62,10 @@ const AddProductPage = () => {
     // general_brand_error,
     general_defaultImage_error,
     at_least_one_option,
+    product_item_sku_error,
+    product_item_price_error,
+    product_item_stock_error,
+    product_item_images_error,
   } = translations.general.pages.add_product;
 
   const steps = [
@@ -100,6 +122,40 @@ const AddProductPage = () => {
     return true;
   }
 
+  function validateProductItemsStep() {
+    const itemsErrors = {};
+    let hasError = false;
+
+    if (!productData.ProductItems || productData.ProductItems.length === 0) {
+      toast.show(at_least_one_option, "error");
+      return false;
+    }
+
+    productData.ProductItems.forEach((item, index) => {
+      itemsErrors[index] = {};
+
+      if (!item.sku.trim()) {
+        itemsErrors[index].sku = product_item_sku_error;
+        hasError = true;
+      }
+      if (!item.price || Number(item.price) <= 0) {
+        itemsErrors[index].price = product_item_price_error;
+        hasError = true;
+      }
+      if (!item.stock || Number(item.stock) < 0) {
+        itemsErrors[index].stock = product_item_stock_error;
+        hasError = true;
+      }
+      if (!item.images || item.images.length == 0) {
+        itemsErrors[index].images = product_item_images_error;
+        hasError = true;
+      }
+    });
+
+    setErrors((prev) => ({ ...prev, ProductItems: itemsErrors }));
+    return !hasError;
+  }
+
   const handleNext = () => {
     if (step == 1 && !validateGeneralStep()) {
       return;
@@ -117,10 +173,15 @@ const AddProductPage = () => {
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
       validateGeneralStep();
+      validateProductItemsStep();
     }
   }, [language]);
 
   const handleSubmit = async () => {
+    if (!validateProductItemsStep()) {
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("BrandId", productData.BrandId);
@@ -186,6 +247,7 @@ const AddProductPage = () => {
         <ProductItems
           productData={productData}
           setProductData={setProductData}
+          errors={errors}
         />
       )}
       <StepNavigation

@@ -449,7 +449,11 @@
 
       "general_info": "General Info",
 
-      "at_least_one_option": "Each variation must have at least one option"
+      "at_least_one_option": "Each variation must have at least one option",
+      "product_item_sku_error": "SKU is required",
+      "product_item_price_error": "Price must be greater than 0",
+      "product_item_stock_error": "Stock must be 0 or more",
+      "product_item_images_error": "At least one image is required"
     }
   },
   "sidebar": {

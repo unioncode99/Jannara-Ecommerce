@@ -444,7 +444,11 @@
 
       "general_info": "المعلومات العامة",
 
-      "at_least_one_option": "يجب أن يحتوي كل متغير على خيار واحد على الأقل"
+      "at_least_one_option": "يجب أن يحتوي كل متغير على خيار واحد على الأقل",
+      "product_item_sku_error": "مطلوب إدخال رمز المنتج (SKU)",
+      "product_item_price_error": "يجب أن تكون السعر أكبر من 0",
+      "product_item_stock_error": "يجب أن يكون المخزون 0 أو أكثر",
+      "product_item_images_error": "يجب إضافة صورة واحدة على الأقل"
     }
   },
   "sidebar": {
