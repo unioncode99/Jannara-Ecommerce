@@ -100,6 +100,7 @@ namespace Jannara_Ecommerce.Business.Services
                 var dbProduct = new ProductCreateDBDTO
                 {
                     BrandId = productCreateDTO.BrandId,
+                    CategoryId = productCreateDTO.CategoryId,
                     DefaultImageUrl = defaultImageUrl,
                     NameEn = productCreateDTO.NameEn,
                     NameAr = productCreateDTO.NameAr,

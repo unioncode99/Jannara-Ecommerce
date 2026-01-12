@@ -387,10 +387,11 @@ SELECT @json AS FullJson;
 -- Insert Product
 DECLARE @ProductId INT;
 
-INSERT INTO Products (brand_id, default_image_url, name_en, name_ar, description_en, description_ar, weight_kg)
+INSERT INTO Products (brand_id, category_id, default_image_url, name_en, name_ar, description_en, description_ar, weight_kg)
 OUTPUT INSERTED.id INTO @ProductId
 SELECT 
     TRY_CAST(JSON_VALUE(@json, '$.BrandId') AS INT), 
+    TRY_CAST(JSON_VALUE(@json, '$.CategoryId') AS INT), 
     JSON_VALUE(@json, '$.DefaultImageUrl'),        
     JSON_VALUE(@json, '$.NameEn'),
     JSON_VALUE(@json, '$.NameAr'),

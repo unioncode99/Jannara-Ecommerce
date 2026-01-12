@@ -6,6 +6,7 @@ namespace Jannara_Ecommerce.DTOs.Product
     public class ProductCreateDBDTO
     {
         public int? BrandId { get; set; }
+        public int CategoryId { get; set; }
         public string DefaultImageUrl { get; set; }
         public string NameEn { get; set; }
         public string NameAr { get; set; }
