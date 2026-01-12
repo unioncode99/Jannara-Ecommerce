@@ -25,16 +25,16 @@ const OptionItem = ({
     <div className="option-container">
       <Input
         placeholder={option_name_en}
-        value={option.nameEn}
+        value={option.ValueEn}
         onChange={(e) =>
-          handleNonEmptyUpdate(e.target.value, option.nameEn, "nameEn")
+          handleNonEmptyUpdate(e.target.value, option.ValueEn, "ValueEn")
         }
       />
       <Input
         placeholder={option_name_ar}
-        value={option.nameAr}
+        value={option.ValueAr}
         onChange={(e) =>
-          handleNonEmptyUpdate(e.target.value, option.nameAr, "nameAr")
+          handleNonEmptyUpdate(e.target.value, option.ValueAr, "ValueAr")
         }
       />
       <Button
