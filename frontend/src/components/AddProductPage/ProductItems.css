@@ -22,6 +22,35 @@
   gap: 0.5rem;
 }
 
+.product-item-row {
+  background-color: var(--background-color);
+  box-shadow: var(--shadow-2);
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.product-item-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.remove-item-btn {
+  background: transparent;
+  border: none;
+  color: var(--grey-500);
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+.remove-item-btn:hover {
+  color: red;
+}
+
 .upload-product-image-container {
   width: 6rem;
   height: 6rem;

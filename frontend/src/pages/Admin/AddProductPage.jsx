@@ -22,40 +22,30 @@ const intialFormData = {
   descriptionAr: "",
   weightKg: 0,
   defaultImageFile: null,
-  // Variations: [],
-  variations: [
-    // for test
-    {
-      nameEn: "Color",
-      nameAr: "اللون",
-      variationOptions: [
-        { valueEn: "Red", valueAr: "أحمر" },
-        { valueEn: "Blue", valueAr: "أزرق" },
-      ],
-    },
-    {
-      nameEn: "Size",
-      nameAr: "الحجم",
-      variationOptions: [
-        { valueEn: "S", valueAr: "ص" },
-        { valueEn: "M", valueAr: "م" },
-      ],
-    },
-  ],
+  variations: [],
   productItems: [],
 };
 
 // db
-// let variations = [
-//       {
-//       nameEn: "Color",
-//       nameAr: "اللون",
-//       variationOptions: [
-//         { valueEn: "Red", valueAr: "أحمر" },
-//         { valueEn: "Blue", valueAr: "أزرق" },
-//       ],
-//     },
-// ]
+// variations: [
+//   // for test
+//   {
+//     nameEn: "Color",
+//     nameAr: "اللون",
+//     variationOptions: [
+//       { valueEn: "Red", valueAr: "أحمر" },
+//       { valueEn: "Blue", valueAr: "أزرق" },
+//     ],
+//   },
+//   {
+//     nameEn: "Size",
+//     nameAr: "الحجم",
+//     variationOptions: [
+//       { valueEn: "S", valueAr: "ص" },
+//       { valueEn: "M", valueAr: "م" },
+//     ],
+//   },
+// ],
 
 // let ProductItems = [
 //   {
@@ -214,10 +204,11 @@ const AddProductPage = () => {
       return;
     }
 
-    if (!validateGeneralStep()) {
+    if (!validateVariationStep()) {
       return;
     }
-    if (!validateVariationStep()) {
+
+    if (!validateGeneralStep()) {
       return;
     }
 

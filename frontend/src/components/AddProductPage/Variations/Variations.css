@@ -10,8 +10,9 @@
 
 .variation-container {
   background-color: var(--background-color);
-  background-color: var(--grey-200);
+  background-color: var(--background-color);
   border-radius: var(--border-radius);
+  box-shadow: var(--shadow-2);
   margin: 1rem 0;
   padding: 0.5rem;
 }

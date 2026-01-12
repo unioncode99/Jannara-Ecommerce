@@ -1,4 +1,4 @@
-import { Box, Star, Upload, WandSparkles, X } from "lucide-react";
+import { Box, Star, Trash2, Upload, WandSparkles, X } from "lucide-react";
 import "./ProductItems.css";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
@@ -102,6 +102,12 @@ const ProductItems = ({ productData, setProductData, errors }) => {
     return URL.createObjectURL(file);
   };
 
+  const removeItem = (itemIndex) => {
+    const items = [...productData.productItems];
+    items.splice(itemIndex, 1); // remove the whole item
+    setProductData({ ...productData, productItems: items });
+  };
+
   return (
     <div className="product-items-container">
       <header>
@@ -114,6 +120,15 @@ const ProductItems = ({ productData, setProductData, errors }) => {
       </header>
       {productData?.productItems?.map((item, index) => (
         <div key={index} className="product-item-row">
+          <div className="product-item-row-header">
+            <Button
+              className="remove-item-btn"
+              onClick={() => removeItem(index)}
+            >
+              <Trash2 />
+            </Button>
+          </div>
+
           {/* Options only */}
           <div className="product-variants">
             <small>{variant_label}</small>
