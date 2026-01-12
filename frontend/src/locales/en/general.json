@@ -464,7 +464,10 @@
       "stock_label": "Stock",
       "stock_placeholder": "Stock",
       "upload_images": "Click to upload images",
-      "upload": "Upload"
+      "upload": "Upload",
+      "general_category_label": "Category",
+      "general_category_placeholder": "Enter category",
+      "general_category_error": "Category is required"
     }
   },
   "sidebar": {

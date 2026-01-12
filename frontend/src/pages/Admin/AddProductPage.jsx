@@ -15,6 +15,7 @@ import { isImageValid } from "../../utils/utils.jsx";
 import { toast } from "../../components/ui/Toast";
 
 const intialFormData = {
+  categoryId: "",
   brandId: "",
   nameEn: "",
   nameAr: "",
@@ -85,6 +86,7 @@ const AddProductPage = () => {
     product_item_price_error,
     product_item_stock_error,
     product_item_images_error,
+    general_category_error,
   } = translations.general.pages.add_product;
 
   const steps = [
@@ -99,6 +101,10 @@ const AddProductPage = () => {
     // if (!productData.brandId || productData.brandId <= 0) {
     //   newErrors.brandId = general_brand_error;
     // }
+
+    if (!productData.categoryId) {
+      newErrors.categoryId = general_category_error;
+    }
 
     if (!productData.nameEn.trim()) {
       newErrors.nameEn = general_nameEn_error;
@@ -194,8 +200,13 @@ const AddProductPage = () => {
 
   useEffect(() => {
     if (Object.keys(errors).length > 0) {
-      validateGeneralStep();
-      validateProductItemsStep();
+      if (step == 1) {
+        validateGeneralStep();
+      }
+
+      if (step == 3) {
+        validateProductItemsStep();
+      }
     }
   }, [language]);
 

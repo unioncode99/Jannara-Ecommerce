@@ -459,7 +459,10 @@
       "stock_label": "الكمية",
       "stock_placeholder": "الكمية",
       "upload_images": "انقر لتحميل الصور",
-      "upload": "رفع"
+      "upload": "رفع",
+      "general_category_label": "الفئة",
+      "general_category_placeholder": "أدخل الفئة",
+      "general_category_error": "الفئة مطلوبة"
     }
   },
   "sidebar": {

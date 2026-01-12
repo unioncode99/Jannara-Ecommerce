@@ -5,6 +5,7 @@ import TextArea from "../ui/TextArea";
 import { Camera, Globe, Upload, X } from "lucide-react";
 import "./ProductInfo.css";
 import BrandsDropdown from "../BrandsDropdown";
+import ProductCategoriesDropdown from "../ProductCategoriesDropdown";
 import { isImageValid } from "../../utils/utils";
 
 const ProductInfo = ({ productData, setProductData, errors }) => {
@@ -24,6 +25,7 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
     general_weightKg_placeholder,
     general_info,
     upload,
+    general_category_label,
   } = translations.general.pages.add_product;
 
   const handleChange = (e) => {
@@ -59,11 +61,20 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
   return (
     <div className="product-info-container">
       <h3>
-        {" "}
         <h3 className="step-title">
           <Globe /> {general_info}
         </h3>
       </h3>
+
+      <ProductCategoriesDropdown
+        name="categoryId"
+        value={productData.categoryId}
+        onChange={handleChange}
+        label={general_category_label}
+        showLabel={true}
+        errorMessage={errors?.categoryId}
+      />
+
       <BrandsDropdown
         name="brandId"
         onChange={handleChange}
