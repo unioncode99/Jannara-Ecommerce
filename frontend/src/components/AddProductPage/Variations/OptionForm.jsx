@@ -18,16 +18,16 @@ const OptionForm = ({
     <div className="add-option-inputs">
       <Input
         placeholder={option_name_en}
-        value={newOption.ValueEn}
+        value={newOption.valueEn}
         onChange={(e) =>
-          updateOptionInput(variationIndex, "ValueEn", e.target.value)
+          updateOptionInput(variationIndex, "valueEn", e.target.value)
         }
       />
       <Input
         placeholder={option_name_ar}
-        value={newOption.ValueAr}
+        value={newOption.valueAr}
         onChange={(e) =>
-          updateOptionInput(variationIndex, "ValueAr", e.target.value)
+          updateOptionInput(variationIndex, "valueAr", e.target.value)
         }
       />
       <Button

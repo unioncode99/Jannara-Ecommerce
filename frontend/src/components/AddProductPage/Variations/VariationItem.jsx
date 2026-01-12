@@ -53,7 +53,7 @@ const VariationItem = ({
       </div>
 
       <h4>{options_header}</h4>
-      {variation.options?.map((option, idx) => (
+      {variation.variationOptions?.map((option, idx) => (
         <OptionItem
           key={idx}
           option={option}

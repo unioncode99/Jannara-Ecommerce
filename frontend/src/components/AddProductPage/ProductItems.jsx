@@ -9,7 +9,10 @@ const computeCombinations = (variations) => {
   if (!variations?.length) return [];
 
   const optionGroups = variations.map((v) =>
-    v.options.map((o) => ({ valueEn: o.ValueEn, valueAr: o.ValueAr }))
+    v?.variationOptions?.map((o) => ({
+      valueEn: o.valueEn,
+      valueAr: o.valueAr,
+    }))
   );
 
   return optionGroups.reduce((acc, group) => {
@@ -35,25 +38,25 @@ const ProductItems = ({ productData, setProductData, errors }) => {
   } = translations.general.pages.add_product;
 
   const generateItems = () => {
-    const combos = computeCombinations(productData.Variations);
-    const items = combos.map((options) => ({
-      sku: options
+    const combos = computeCombinations(productData?.variations);
+    const items = combos.map((variationOptions) => ({
+      sku: variationOptions
         .map((o) => o.valueEn)
         .join("-")
         .toUpperCase(),
-      options,
+      variationOptions,
       price: "",
       stock: "",
       images: [],
     }));
 
-    setProductData({ ...productData, ProductItems: items });
+    setProductData({ ...productData, productItems: items });
   };
 
   const updateItem = (index, field, value) => {
-    const items = [...productData.ProductItems];
+    const items = [...productData.productItems];
     items[index][field] = value;
-    setProductData({ ...productData, ProductItems: items });
+    setProductData({ ...productData, productItems: items });
   };
 
   const addImages = (index, files) => {
@@ -61,7 +64,7 @@ const ProductItems = ({ productData, setProductData, errors }) => {
       .filter((file) => isImageValid(file))
       .map((file) => ({ file, isPrimary: false }));
 
-    const items = [...productData.ProductItems];
+    const items = [...productData.productItems];
     if (!items[index].images) {
       items[index].images = [];
     }
@@ -71,11 +74,11 @@ const ProductItems = ({ productData, setProductData, errors }) => {
     }
 
     items[index].images.push(...validFiles);
-    setProductData({ ...productData, ProductItems: items });
+    setProductData({ ...productData, productItems: items });
   };
 
   const removeImage = (itemIndex, imageIndex) => {
-    const items = [...productData.ProductItems];
+    const items = [...productData.productItems];
 
     const removedImage = items[itemIndex].images.splice(imageIndex, 1)[0];
 
@@ -83,16 +86,16 @@ const ProductItems = ({ productData, setProductData, errors }) => {
       items[itemIndex].images[0].isPrimary = true;
     }
 
-    setProductData({ ...productData, ProductItems: items });
+    setProductData({ ...productData, productItems: items });
   };
 
   const setPrimaryImage = (itemIndex, imgIndex) => {
-    const items = [...productData.ProductItems];
+    const items = [...productData.productItems];
     items[itemIndex].images = items[itemIndex].images.map((img, i) => ({
       ...img,
       isPrimary: i === imgIndex,
     }));
-    setProductData({ ...productData, ProductItems: items });
+    setProductData({ ...productData, productItems: items });
   };
 
   const getImagePrview = (file) => {
@@ -109,12 +112,12 @@ const ProductItems = ({ productData, setProductData, errors }) => {
           <WandSparkles /> {generate_items}
         </Button>
       </header>
-      {productData?.ProductItems?.map((item, index) => (
+      {productData?.productItems?.map((item, index) => (
         <div key={index} className="product-item-row">
           {/* Options only */}
           <div className="product-variants">
             <small>{variant_label}</small>
-            {item.options.map((opt, i) => (
+            {item.variationOptions.map((opt, i) => (
               <small className="variant" key={i}>
                 {language == "en" ? opt.valueEn : opt.valueAr}
               </small>
@@ -127,7 +130,7 @@ const ProductItems = ({ productData, setProductData, errors }) => {
             placeholder={sku_placeholder}
             value={item.sku}
             onChange={(e) => updateItem(index, "sku", e.target.value)}
-            errorMessage={errors?.ProductItems?.[index]?.sku}
+            errorMessage={errors?.productItems?.[index]?.sku}
           />
 
           {/* Price */}
@@ -138,7 +141,7 @@ const ProductItems = ({ productData, setProductData, errors }) => {
             type="number"
             value={item.price}
             onChange={(e) => updateItem(index, "price", e.target.value)}
-            errorMessage={errors?.ProductItems?.[index]?.price}
+            errorMessage={errors?.productItems?.[index]?.price}
           />
 
           {/* Stock */}
@@ -149,7 +152,7 @@ const ProductItems = ({ productData, setProductData, errors }) => {
             type="number"
             value={item.stock}
             onChange={(e) => updateItem(index, "stock", e.target.value)}
-            errorMessage={errors?.ProductItems?.[index]?.stock}
+            errorMessage={errors?.productItems?.[index]?.stock}
           />
 
           {/* Images */}
@@ -192,9 +195,9 @@ const ProductItems = ({ productData, setProductData, errors }) => {
             ))}
           </div>
 
-          {errors?.ProductItems?.[index]?.images && (
+          {errors?.productItems?.[index]?.images && (
             <div className="form-alert">
-              {errors.ProductItems[index].images}
+              {errors.productItems[index].images}
             </div>
           )}
         </div>

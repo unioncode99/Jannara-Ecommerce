@@ -463,7 +463,8 @@
       "price_placeholder": "Price",
       "stock_label": "Stock",
       "stock_placeholder": "Stock",
-      "upload_images": "Click to upload images"
+      "upload_images": "Click to upload images",
+      "upload": "Upload"
     }
   },
   "sidebar": {

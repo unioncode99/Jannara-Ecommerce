@@ -458,7 +458,8 @@
       "price_placeholder": "السعر",
       "stock_label": "الكمية",
       "stock_placeholder": "الكمية",
-      "upload_images": "انقر لتحميل الصور"
+      "upload_images": "انقر لتحميل الصور",
+      "upload": "رفع"
     }
   },
   "sidebar": {

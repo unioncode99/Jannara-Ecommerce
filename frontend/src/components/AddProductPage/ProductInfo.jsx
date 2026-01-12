@@ -23,6 +23,7 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
     general_weightKg_label,
     general_weightKg_placeholder,
     general_info,
+    upload,
   } = translations.general.pages.add_product;
 
   const handleChange = (e) => {
@@ -34,7 +35,7 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
   };
 
   const handleFileChange = (e) => {
-    setProductData({ ...productData, DefaultImageFile: e.target.files[0] });
+    setProductData({ ...productData, defaultImageFile: e.target.files[0] });
   };
 
   const handleProductImageChange = (e) => {
@@ -51,7 +52,7 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
   };
 
   function cancelUpload() {
-    setProductData({ ...productData, DefaultImageFile: null });
+    setProductData({ ...productData, defaultImageFile: null });
     setProductImagePreview(null);
   }
 
@@ -64,65 +65,65 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
         </h3>
       </h3>
       <BrandsDropdown
-        name="BrandId"
+        name="brandId"
         onChange={handleChange}
         label={general_brand_label}
         showLabel={true}
-        value={productData.BrandId}
-        errorMessage={errors?.BrandId}
+        value={productData.brandId}
+        errorMessage={errors?.brandId}
       />
 
       <Input
         label={general_nameEn_label}
-        name="NameEn"
+        name="nameEn"
         placeholder={general_nameEn_placeholder}
-        value={productData.NameEn}
+        value={productData.nameEn}
         onChange={handleChange}
-        errorMessage={errors?.NameEn}
+        errorMessage={errors?.nameEn}
         showLabel={true}
       />
       <Input
         label={general_nameAr_label}
-        name="NameAr"
+        name="nameAr"
         placeholder={general_nameAr_placeholder}
-        value={productData.NameAr}
+        value={productData.nameAr}
         onChange={handleChange}
-        errorMessage={errors?.NameAr}
+        errorMessage={errors?.nameAr}
         showLabel={true}
       />
 
       <TextArea
         label={general_descriptionEn_label}
-        name="DescriptionEn"
+        name="descriptionEn"
         placeholder={general_descriptionEn_placeholder}
-        value={productData.DescriptionEn}
+        value={productData.descriptionEn}
         onChange={handleChange}
-        errorMessage={errors?.DescriptionEn}
+        errorMessage={errors?.descriptionEn}
         showLabel={true}
       />
       <TextArea
         label={general_descriptionAr_label}
-        name="DescriptionAr"
+        name="descriptionAr"
         placeholder={general_descriptionAr_placeholder}
-        value={productData.DescriptionAr}
+        value={productData.descriptionAr}
         onChange={handleChange}
-        errorMessage={errors?.DescriptionAr}
+        errorMessage={errors?.descriptionAr}
         showLabel={true}
       />
       <Input
         label={general_weightKg_label}
-        name="WeightKg"
+        name="weightKg"
         type="number"
         placeholder={general_weightKg_placeholder}
-        value={productData.WeightKg}
+        value={productData.weightKg}
         onChange={handleChange}
-        errorMessage={errors?.WeightKg}
+        errorMessage={errors?.weightKg}
         showLabel={true}
       />
       <div className="form-row product-image-container">
         <label className="upload-product-image-container">
           <Upload className="upload-icon" />
-          <span>Upload</span>
+          <span>{upload}</span>
           <input
             type="file"
             accept="image/*"
@@ -143,8 +144,8 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
           </div>
         )}
       </div>
-      {errors.DefaultImageFile && (
-        <div className="form-alert">{errors.DefaultImageFile}</div>
+      {errors.defaultImageFile && (
+        <div className="form-alert">{errors.defaultImageFile}</div>
       )}
     </div>
   );

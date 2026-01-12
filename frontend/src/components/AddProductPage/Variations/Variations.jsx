@@ -16,20 +16,20 @@ const Variations = ({ productData, setProductData }) => {
     const newVariation = {
       nameEn: nameEn,
       nameAr: nameAr,
-      options: [],
+      variationOptions: [],
     };
     setProductData({
       ...productData,
-      Variations: [...(productData.Variations || []), newVariation],
+      variations: [...(productData.variations || []), newVariation],
     });
     return true;
   };
 
   // Remove a variation
   const removeVariation = (index) => {
-    const updatedVariations = [...productData.Variations];
+    const updatedVariations = [...productData.variations];
     updatedVariations.splice(index, 1);
-    setProductData({ ...productData, Variations: updatedVariations });
+    setProductData({ ...productData, variations: updatedVariations });
 
     // Remove corresponding new option input
     const updatedNewOptions = { ...newOptions };
@@ -39,16 +39,17 @@ const Variations = ({ productData, setProductData }) => {
 
   // Update variation name
   const updateVariationName = (index, field, value) => {
-    const updatedVariations = [...productData.Variations];
+    const updatedVariations = [...productData.variations];
     updatedVariations[index][field] = value;
-    setProductData({ ...productData, Variations: updatedVariations });
+    setProductData({ ...productData, variations: updatedVariations });
   };
 
   // Update option value
   const updateOption = (variationIndex, optionIndex, field, value) => {
-    const updatedVariations = [...productData.Variations];
-    updatedVariations[variationIndex].options[optionIndex][field] = value;
-    setProductData({ ...productData, Variations: updatedVariations });
+    const updatedVariations = [...productData.variations];
+    updatedVariations[variationIndex].variationOptions[optionIndex][field] =
+      value;
+    setProductData({ ...productData, variations: updatedVariations });
   };
 
   // Update new option input
@@ -64,36 +65,36 @@ const Variations = ({ productData, setProductData }) => {
 
   // Add new option to variation
   const addOption = (variationIndex) => {
-    const optionEn = newOptions[variationIndex]?.ValueEn || "";
-    const optionAr = newOptions[variationIndex]?.ValueAr || "";
+    const optionEn = newOptions[variationIndex]?.valueEn || "";
+    const optionAr = newOptions[variationIndex]?.valueAr || "";
     if (!optionEn.trim() || !optionAr.trim()) return;
 
-    const updatedVariations = [...productData.Variations];
-    updatedVariations[variationIndex].options.push({
-      ValueEn: optionEn,
-      ValueAr: optionAr,
+    const updatedVariations = [...productData.variations];
+    updatedVariations[variationIndex].variationOptions.push({
+      valueEn: optionEn,
+      valueAr: optionAr,
     });
-    setProductData({ ...productData, Variations: updatedVariations });
+    setProductData({ ...productData, variations: updatedVariations });
 
     // Clear input
     setNewOptions({
       ...newOptions,
-      [variationIndex]: { ValueEn: "", ValueAr: "" },
+      [variationIndex]: { valueEn: "", valueAr: "" },
     });
   };
 
   // Remove an option
   const removeOption = (variationIndex, optionIndex) => {
-    const updatedVariations = [...productData.Variations];
-    updatedVariations[variationIndex].options.splice(optionIndex, 1);
-    setProductData({ ...productData, Variations: updatedVariations });
+    const updatedVariations = [...productData.variations];
+    updatedVariations[variationIndex].variationOptions.splice(optionIndex, 1);
+    setProductData({ ...productData, variations: updatedVariations });
   };
 
   return (
     <div className="add-variations-container">
       <VariationForm addVariation={addVariation} />
 
-      {productData?.Variations?.map((variation, idx) => (
+      {productData?.variations?.map((variation, idx) => (
         <VariationItem
           key={idx}
           variation={variation}
@@ -103,7 +104,7 @@ const Variations = ({ productData, setProductData }) => {
           updateOption={updateOption}
           removeOption={removeOption}
           addOption={addOption}
-          newOption={newOptions[idx] || { ValueEn: "", ValueAr: "" }}
+          newOption={newOptions[idx] || { valueEn: "", valueAr: "" }}
           updateOptionInput={updateOptionInput}
         />
       ))}

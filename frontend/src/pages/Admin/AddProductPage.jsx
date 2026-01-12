@@ -15,59 +15,59 @@ import { isImageValid } from "../../utils/utils.jsx";
 import { toast } from "../../components/ui/Toast";
 
 const intialFormData = {
-  BrandId: "",
-  NameEn: "",
-  NameAr: "",
-  DescriptionEn: "",
-  DescriptionAr: "",
-  WeightKg: 0,
-  DefaultImageFile: null,
+  brandId: "",
+  nameEn: "",
+  nameAr: "",
+  descriptionEn: "",
+  descriptionAr: "",
+  weightKg: 0,
+  defaultImageFile: null,
   // Variations: [],
-  Variations: [
+  variations: [
     // for test
     {
       nameEn: "Color",
       nameAr: "اللون",
-      options: [
-        { ValueEn: "Red", ValueAr: "أحمر" },
-        { ValueEn: "Blue", ValueAr: "أزرق" },
+      variationOptions: [
+        { valueEn: "Red", valueAr: "أحمر" },
+        { valueEn: "Blue", valueAr: "أزرق" },
       ],
     },
     {
       nameEn: "Size",
       nameAr: "الحجم",
-      options: [
-        { ValueEn: "S", ValueAr: "ص" },
-        { ValueEn: "M", ValueAr: "م" },
+      variationOptions: [
+        { valueEn: "S", valueAr: "ص" },
+        { valueEn: "M", valueAr: "م" },
       ],
     },
   ],
-  ProductItems: [],
+  productItems: [],
 };
 
 // db
-// let Variations = [
+// let variations = [
 //       {
 //       nameEn: "Color",
 //       nameAr: "اللون",
-//       VariationOptions: [
-//         { ValueEn: "Red", ValueAr: "أحمر" },
-//         { ValueEn: "Blue", ValueAr: "أزرق" },
+//       variationOptions: [
+//         { valueEn: "Red", valueAr: "أحمر" },
+//         { valueEn: "Blue", valueAr: "أزرق" },
 //       ],
 //     },
 // ]
 
 // let ProductItems = [
 //   {
-//     Sku: "ddd",
-//     VariationOptions: [
-//       { ValueEn: "Red", ValueAr: "أحمر" },
-//       { ValueEn: "Blue", ValueAr: "أزرق" },
+//     sku: "ddd",
+//     variationOptions: [
+//       { valueEn: "Red", valueAr: "أحمر" },
+//       { valueEn: "Blue", valueAr: "أزرق" },
 //     ],
-//     ProductItemImages: [
+//     productItemImages: [
 //       {
-//         ImageFile: null,
-//         IsPrimary: false,
+//         imageFile: null,
+//         isPrimary: false,
 //       },
 //     ],
 //   },
@@ -106,29 +106,29 @@ const AddProductPage = () => {
   function validateGeneralStep() {
     let newErrors = {};
 
-    // if (!productData.BrandId || productData.BrandId <= 0) {
-    //   newErrors.BrandId = general_brand_error;
+    // if (!productData.brandId || productData.brandId <= 0) {
+    //   newErrors.brandId = general_brand_error;
     // }
 
-    if (!productData.NameEn.trim()) {
-      newErrors.NameEn = general_nameEn_error;
+    if (!productData.nameEn.trim()) {
+      newErrors.nameEn = general_nameEn_error;
     }
-    if (!productData.NameAr.trim()) {
-      newErrors.NameAr = general_nameAr_error;
+    if (!productData.nameAr.trim()) {
+      newErrors.nameAr = general_nameAr_error;
     }
-    // if (!productData.DescriptionEn.trim()) {
-    //   newErrors.DescriptionEn = general_descriptionEn_error;
+    // if (!productData.descriptionEn.trim()) {
+    //   newErrors.descriptionEn = general_descriptionEn_error;
     // }
-    // if (!productData.DescriptionAr.trim()) {
-    //   newErrors.DescriptionAr = general_descriptionAr_error;
+    // if (!productData.descriptionAr.trim()) {
+    //   newErrors.descriptionAr = general_descriptionAr_error;
     // }
 
-    if (!productData.WeightKg || productData.WeightKg < 0) {
-      newErrors.WeightKg = general_weightKg_error;
+    if (!productData.weightKg || productData.weightKg < 0) {
+      newErrors.weightKg = general_weightKg_error;
     }
 
-    if (!isImageValid(productData.DefaultImageFile)) {
-      newErrors.DefaultImageFile = general_defaultImage_error;
+    if (!isImageValid(productData.defaultImageFile)) {
+      newErrors.defaultImageFile = general_defaultImage_error;
     }
 
     setErrors(newErrors);
@@ -136,14 +136,17 @@ const AddProductPage = () => {
   }
 
   function validateVariationStep() {
-    const variations = productData?.Variations;
+    const variations = productData?.variations;
 
     if (!variations || variations.length === 0) {
       return false;
     }
 
     for (let i = 0; i < variations.length; i++) {
-      if (!variations[i].options || variations[i].options.length === 0) {
+      if (
+        !variations[i].variationOptions ||
+        variations[i].variationOptions.length === 0
+      ) {
         return false;
       }
     }
@@ -155,12 +158,12 @@ const AddProductPage = () => {
     const itemsErrors = {};
     let hasError = false;
 
-    if (!productData.ProductItems || productData.ProductItems.length === 0) {
+    if (!productData.productItems || productData.productItems.length === 0) {
       toast.show(at_least_one_option, "error");
       return false;
     }
 
-    productData.ProductItems.forEach((item, index) => {
+    productData.productItems.forEach((item, index) => {
       itemsErrors[index] = {};
 
       if (!item.sku.trim()) {
@@ -181,7 +184,7 @@ const AddProductPage = () => {
       }
     });
 
-    setErrors((prev) => ({ ...prev, ProductItems: itemsErrors }));
+    setErrors((prev) => ({ ...prev, productItems: itemsErrors }));
     return !hasError;
   }
 
@@ -211,37 +214,44 @@ const AddProductPage = () => {
       return;
     }
 
+    if (!validateGeneralStep()) {
+      return;
+    }
+    if (!validateVariationStep()) {
+      return;
+    }
+
     try {
       const formData = new FormData();
-      formData.append("BrandId", productData.BrandId);
-      formData.append("NameEn", productData.NameEn);
-      formData.append("NameAr", productData.NameAr);
-      formData.append("DescriptionEn", productData.DescriptionEn || "");
-      formData.append("DescriptionAr", productData.DescriptionAr || "");
-      formData.append("WeightKg", productData.WeightKg);
+      formData.append("brandId", productData.brandId);
+      formData.append("nameEn", productData.nameEn);
+      formData.append("nameAr", productData.nameAr);
+      formData.append("descriptionEn", productData.descriptionEn || "");
+      formData.append("descriptionAr", productData.descriptionAr || "");
+      formData.append("weightKg", productData.weightKg);
 
-      if (productData.DefaultImageFile) {
-        formData.append("DefaultImageFile", productData.DefaultImageFile);
+      if (productData.defaultImageFile) {
+        formData.append("defaultImageFile", productData.defaultImageFile);
       }
 
-      formData.append("Variations", JSON.stringify(productData.Variations));
+      formData.append("variations", JSON.stringify(productData.variations));
 
-      const productItems = productData.ProductItems.map((item) => {
+      const productItems = productData.productItems.map((item) => {
         return {
           ...item,
-          ProductItemImages: item.ProductItemImages.map((img) => ({
+          productItemImages: item.productItemImages.map((img) => ({
             IsPrimary: img.IsPrimary,
           })),
         };
       });
-      formData.append("ProductItems", JSON.stringify(productItems));
+      formData.append("productItems", JSON.stringify(productItems));
 
-      productData.ProductItems.forEach((item, iIndex) => {
-        item.ProductItemImages.forEach((img, imgIndex) => {
-          if (img.ImageFile) {
+      productData.productItems.forEach((item, iIndex) => {
+        item.productItemImages.forEach((img, imgIndex) => {
+          if (img.imageFile) {
             formData.append(
-              `ProductItems[${iIndex}][ProductItemImages][${imgIndex}][ImageFile]`,
-              img.ImageFile
+              `productItems[${iIndex}][productItemImages][${imgIndex}][imageFile]`,
+              img.imageFile
             );
           }
         });
