@@ -448,7 +448,17 @@
       "product_item_sku_error": "مطلوب إدخال رمز المنتج (SKU)",
       "product_item_price_error": "يجب أن تكون السعر أكبر من 0",
       "product_item_stock_error": "يجب أن يكون المخزون 0 أو أكثر",
-      "product_item_images_error": "يجب إضافة صورة واحدة على الأقل"
+      "product_item_images_error": "يجب إضافة صورة واحدة على الأقل",
+      "product_items": "عناصر المنتج",
+      "generate_items": "توليد العناصر",
+      "variant_label": "المتغير",
+      "sku_label": "SKU",
+      "sku_placeholder": "SKU",
+      "price_label": "السعر",
+      "price_placeholder": "السعر",
+      "stock_label": "الكمية",
+      "stock_placeholder": "الكمية",
+      "upload_images": "انقر لتحميل الصور"
     }
   },
   "sidebar": {

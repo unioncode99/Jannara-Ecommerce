@@ -19,7 +19,21 @@ const computeCombinations = (variations) => {
 };
 
 const ProductItems = ({ productData, setProductData, errors }) => {
-  const { language } = useLanguage();
+  const { language, translations } = useLanguage();
+
+  const {
+    product_items,
+    generate_items,
+    variant_label,
+    sku_label,
+    sku_placeholder,
+    price_label,
+    price_placeholder,
+    stock_label,
+    stock_placeholder,
+    upload_images,
+  } = translations.general.pages.add_product;
+
   const generateItems = () => {
     const combos = computeCombinations(productData.Variations);
     const items = combos.map((options) => ({
@@ -66,17 +80,17 @@ const ProductItems = ({ productData, setProductData, errors }) => {
     <div className="product-items-container">
       <header>
         <h3 className="step-title">
-          <Box /> {"Product Items"}
+          <Box /> {product_items}
         </h3>
         <Button className="btn btn-primary" onClick={generateItems}>
-          <WandSparkles /> Generate Items
+          <WandSparkles /> {generate_items}
         </Button>
       </header>
       {productData?.ProductItems?.map((item, index) => (
         <div key={index} className="product-item-row">
           {/* Options only */}
           <div className="product-variants">
-            <small>Variant</small>
+            <small>{variant_label}</small>
             {item.options.map((opt, i) => (
               <small className="variant" key={i}>
                 {language == "en" ? opt.valueEn : opt.valueAr}
@@ -86,8 +100,8 @@ const ProductItems = ({ productData, setProductData, errors }) => {
           {/* SKU */}
           <Input
             showLabel={true}
-            label="SKU"
-            placeholder="SKU"
+            label={sku_label}
+            placeholder={sku_placeholder}
             value={item.sku}
             onChange={(e) => updateItem(index, "sku", e.target.value)}
             errorMessage={errors?.ProductItems?.[index]?.sku}
@@ -96,8 +110,8 @@ const ProductItems = ({ productData, setProductData, errors }) => {
           {/* Price */}
           <Input
             showLabel={true}
-            label="Price"
-            placeholder="Price"
+            label={price_label}
+            placeholder={price_placeholder}
             type="number"
             value={item.price}
             onChange={(e) => updateItem(index, "price", e.target.value)}
@@ -107,8 +121,8 @@ const ProductItems = ({ productData, setProductData, errors }) => {
           {/* Stock */}
           <Input
             showLabel={true}
-            label="Stock"
-            placeholder="Stock"
+            label={stock_label}
+            placeholder={stock_placeholder}
             type="number"
             value={item.stock}
             onChange={(e) => updateItem(index, "stock", e.target.value)}
@@ -119,7 +133,7 @@ const ProductItems = ({ productData, setProductData, errors }) => {
 
           <label className="upload-product-image-container">
             <Upload className="upload-icon" />
-            <span>Click to upload images</span>
+            <span>{upload_images}</span>
             <input
               type="file"
               accept="image/*"

@@ -453,7 +453,17 @@
       "product_item_sku_error": "SKU is required",
       "product_item_price_error": "Price must be greater than 0",
       "product_item_stock_error": "Stock must be 0 or more",
-      "product_item_images_error": "At least one image is required"
+      "product_item_images_error": "At least one image is required",
+      "product_items": "Product Items",
+      "generate_items": "Generate Items",
+      "variant_label": "Variant",
+      "sku_label": "SKU",
+      "sku_placeholder": "SKU",
+      "price_label": "Price",
+      "price_placeholder": "Price",
+      "stock_label": "Stock",
+      "stock_placeholder": "Stock",
+      "upload_images": "Click to upload images"
     }
   },
   "sidebar": {
