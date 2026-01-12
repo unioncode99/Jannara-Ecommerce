@@ -1,4 +1,4 @@
-import { Box, Upload, WandSparkles, X } from "lucide-react";
+import { Box, Star, Upload, WandSparkles, X } from "lucide-react";
 import "./ProductItems.css";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
@@ -57,18 +57,41 @@ const ProductItems = ({ productData, setProductData, errors }) => {
   };
 
   const addImages = (index, files) => {
-    const validFiles = Array.from(files).filter((file) => isImageValid(file));
+    const validFiles = Array.from(files)
+      .filter((file) => isImageValid(file))
+      .map((file) => ({ file, isPrimary: false }));
+
     const items = [...productData.ProductItems];
     if (!items[index].images) {
       items[index].images = [];
     }
+
+    if (items[index].images.length === 0 && validFiles.length > 0) {
+      validFiles[0].isPrimary = true;
+    }
+
     items[index].images.push(...validFiles);
     setProductData({ ...productData, ProductItems: items });
   };
 
   const removeImage = (itemIndex, imageIndex) => {
     const items = [...productData.ProductItems];
-    items[itemIndex].images.splice(imageIndex, 1);
+
+    const removedImage = items[itemIndex].images.splice(imageIndex, 1)[0];
+
+    if (removedImage?.isPrimary && items[itemIndex].images.length > 0) {
+      items[itemIndex].images[0].isPrimary = true;
+    }
+
+    setProductData({ ...productData, ProductItems: items });
+  };
+
+  const setPrimaryImage = (itemIndex, imgIndex) => {
+    const items = [...productData.ProductItems];
+    items[itemIndex].images = items[itemIndex].images.map((img, i) => ({
+      ...img,
+      isPrimary: i === imgIndex,
+    }));
     setProductData({ ...productData, ProductItems: items });
   };
 
@@ -145,12 +168,23 @@ const ProductItems = ({ productData, setProductData, errors }) => {
 
           <div className="sku-images">
             {item?.images?.map((img, imgIndex) => (
-              <div key={imgIndex} className="product-preview-container">
+              <div
+                key={imgIndex}
+                className={`product-preview-container ${
+                  img?.isPrimary ? "primary-image" : ""
+                } `}
+              >
                 <img
-                  src={getImagePrview(img)}
+                  src={getImagePrview(img?.file)}
                   alt="Product Image"
                   className="product-img"
+                  onClick={() => setPrimaryImage(index, imgIndex)}
                 />
+                {img.isPrimary && (
+                  <span className="primary-badge">
+                    <Star />
+                  </span>
+                )}
                 <button onClick={() => removeImage(index, imgIndex)}>
                   <X />
                 </button>

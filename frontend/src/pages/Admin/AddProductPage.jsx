@@ -24,6 +24,7 @@ const intialFormData = {
   DefaultImageFile: null,
   // Variations: [],
   Variations: [
+    // for test
     {
       nameEn: "Color",
       nameAr: "اللون",
@@ -43,6 +44,34 @@ const intialFormData = {
   ],
   ProductItems: [],
 };
+
+// db
+// let Variations = [
+//       {
+//       nameEn: "Color",
+//       nameAr: "اللون",
+//       VariationOptions: [
+//         { ValueEn: "Red", ValueAr: "أحمر" },
+//         { ValueEn: "Blue", ValueAr: "أزرق" },
+//       ],
+//     },
+// ]
+
+// let ProductItems = [
+//   {
+//     Sku: "ddd",
+//     VariationOptions: [
+//       { ValueEn: "Red", ValueAr: "أحمر" },
+//       { ValueEn: "Blue", ValueAr: "أزرق" },
+//     ],
+//     ProductItemImages: [
+//       {
+//         ImageFile: null,
+//         IsPrimary: false,
+//       },
+//     ],
+//   },
+// ];
 
 const AddProductPage = () => {
   const [step, setStep] = useState(1);

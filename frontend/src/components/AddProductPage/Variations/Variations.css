@@ -3,7 +3,7 @@
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-2);
   padding: 1rem;
-  width: 95vw;
+  width: 100%;
   max-width: var(--fixed-width);
   margin: 1rem auto;
 }
