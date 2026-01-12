@@ -1,10 +1,12 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DataAccess.Interfaces;
+using Jannara_Ecommerce.DataAccess.Repositories;
 using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Product;
 using Jannara_Ecommerce.DTOs.ProductItem;
 using Jannara_Ecommerce.DTOs.ProductItemImage;
 using Jannara_Ecommerce.DTOs.Seller;
+using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.DTOs.Variation;
 using Jannara_Ecommerce.DTOs.VariationOption;
 using Jannara_Ecommerce.Utilities;
@@ -24,26 +26,45 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IOptions<ImageSettings> _imageSettings;
         private readonly string _connectionString;
         private readonly ILogger<IProductService> _logger;
+        private readonly string _baseUrl;
 
         public ProductService(IProductRepository productRepository, IImageService imageService,
             IOptions<ImageSettings> imageSettings, IOptions<DatabaseSettings> options,
-            ILogger<IProductService> logger)
+            ILogger<IProductService> logger, IOptions<AppSettings> appSettings)
         {
             _productRepository = productRepository;
             _imageSettings = imageSettings;
             _imageService = imageService;
             _connectionString = options.Value.DefaultConnection;
             _logger = logger;
+            _baseUrl = appSettings.Value.BaseUrl;
         }
 
         public async Task<Result<ProductDetailDTO>> FindAsync(Guid publicId, int? customerId)
         {
-            return await _productRepository.GetByPublicIdAsync(publicId, customerId);
+            var ProductResult = await _productRepository.GetByPublicIdAsync(publicId, customerId);
+            
+            if (ProductResult.IsSuccess)
+            {
+                ProductResult.Data.DefaultImageUrl = ImageUrlHelper.ToAbsoluteUrl(ProductResult.Data.DefaultImageUrl, _baseUrl);
+            }
+
+            return ProductResult;
         }
 
         public async Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(FilterProductDTO filter)
         {
-            return await _productRepository.GetAllAsync(filter);
+            var ProductsResult = await _productRepository.GetAllAsync(filter);
+            if (ProductsResult.IsSuccess)
+            {
+                foreach (var product in ProductsResult.Data.Items)
+                {
+                    product.DefaultImageUrl = ImageUrlHelper.ToAbsoluteUrl(product.DefaultImageUrl, _baseUrl);
+                }
+            }
+
+
+            return ProductsResult;
         }
 
         public async Task<Result<bool>> CreateAsync(ProductCreateDTO productCreateDTO)
@@ -130,10 +151,20 @@ namespace Jannara_Ecommerce.Business.Services
                     }).ToList()
                 };
                 // Serialize DB DTO to JSON
-                string json = JsonSerializer.Serialize(productCreateDTO);
-                var addResult = await _productRepository.AddNewAsync(json, connection, transaction);
+                //string json = JsonSerializer.Serialize(dbProduct);
+                var addResult = await _productRepository.AddNewAsync(dbProduct, connection, transaction);
+                if (!addResult.IsSuccess)
+                {
+                    transaction.Rollback();
+                    foreach (var path in savedImages)
+                    {
+                        await _imageService.DeleteImage(path);
+                    }
+                    return new Result<bool>(false, addResult.Message, false, addResult.ErrorCode);   
+                }
                 transaction.Commit();
-                return new Result<bool>(true, addResult.Message, false, addResult.ErrorCode);
+                return new Result<bool>(true, addResult.Message, true, addResult.ErrorCode);
+
             }
             catch (Exception ex)
             {

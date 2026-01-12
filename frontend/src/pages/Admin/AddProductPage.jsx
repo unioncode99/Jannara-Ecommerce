@@ -27,42 +27,50 @@ const intialFormData = {
   productItems: [],
 };
 
-// db
-// variations: [
-//   // for test
-//   {
-//     nameEn: "Color",
-//     nameAr: "اللون",
-//     variationOptions: [
-//       { valueEn: "Red", valueAr: "أحمر" },
-//       { valueEn: "Blue", valueAr: "أزرق" },
-//     ],
-//   },
-//   {
-//     nameEn: "Size",
-//     nameAr: "الحجم",
-//     variationOptions: [
-//       { valueEn: "S", valueAr: "ص" },
-//       { valueEn: "M", valueAr: "م" },
-//     ],
-//   },
-// ],
-
-// let ProductItems = [
-//   {
-//     sku: "ddd",
-//     variationOptions: [
-//       { valueEn: "Red", valueAr: "أحمر" },
-//       { valueEn: "Blue", valueAr: "أزرق" },
-//     ],
-//     productItemImages: [
-//       {
-//         imageFile: null,
-//         isPrimary: false,
-//       },
-//     ],
-//   },
-// ];
+// const intialFormData = {
+//   categoryId: "",
+//   brandId: "",
+//   nameEn: "",
+//   nameAr: "",
+//   descriptionEn: "",
+//   descriptionAr: "",
+//   weightKg: 0,
+//   defaultImageFile: null,
+//   variations: [
+//     // for test
+//     {
+//       nameEn: "Color",
+//       nameAr: "اللون",
+//       variationOptions: [
+//         { valueEn: "Red", valueAr: "أحمر" },
+//         { valueEn: "Blue", valueAr: "أزرق" },
+//       ],
+//     },
+//     {
+//       nameEn: "Size",
+//       nameAr: "الحجم",
+//       variationOptions: [
+//         { valueEn: "S", valueAr: "ص" },
+//         { valueEn: "M", valueAr: "م" },
+//       ],
+//     },
+//   ],
+//   productItems: [
+//     {
+//       sku: "ddd",
+//       variationOptions: [
+//         { valueEn: "Red", valueAr: "أحمر" },
+//         { valueEn: "Blue", valueAr: "أزرق" },
+//       ],
+//       productItemImages: [
+//         {
+//           imageFile: null,
+//           isPrimary: false,
+//         },
+//       ],
+//     },
+//   ],
+// };
 
 const AddProductPage = () => {
   const [step, setStep] = useState(1);
@@ -174,8 +182,8 @@ const AddProductPage = () => {
         itemsErrors[index].stock = product_item_stock_error;
         hasError = true;
       }
-      if (!item.images || item.images.length == 0) {
-        itemsErrors[index].images = product_item_images_error;
+      if (!item.productItemImages || item.productItemImages.length == 0) {
+        itemsErrors[index].productItemImages = product_item_images_error;
         hasError = true;
       }
     });
@@ -223,8 +231,62 @@ const AddProductPage = () => {
       return;
     }
 
+    await uploadProduct();
+  };
+
+  // async function uploadProduct() {
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("brandId", productData.brandId);
+  //     formData.append("nameEn", productData.nameEn);
+  //     formData.append("nameAr", productData.nameAr);
+  //     formData.append("descriptionEn", productData.descriptionEn || "");
+  //     formData.append("descriptionAr", productData.descriptionAr || "");
+  //     formData.append("weightKg", productData.weightKg);
+
+  //     if (productData.defaultImageFile) {
+  //       formData.append("defaultImageFile", productData.defaultImageFile);
+  //     }
+
+  //     formData.append("variations", JSON.stringify(productData.variations));
+
+  //     const productItemsMeta = productData?.productItems?.map((item) => ({
+  //       sku: item.sku,
+  //       variationOptions: item?.variationOptions,
+  //       productItemImages: item?.productItemImages?.map((img) => ({
+  //         isPrimary: img.isPrimary,
+  //       })),
+  //     }));
+
+  //     formData.append("productItems", JSON.stringify(productItemsMeta));
+
+  //     productData?.productItems?.forEach((item, iIndex) => {
+  //       item.productItemImages.forEach((img, imgIndex) => {
+  //         if (img.imageFile) {
+  //           formData.append(
+  //             `productItems[${iIndex}][productItemImages][${imgIndex}][imageFile]`,
+  //             img.imageFile
+  //           );
+
+  //           formData.append(
+  //             `productItems[${iIndex}][productItemImages][${imgIndex}][isPrimary]`,
+  //             img.isPrimary ? "true" : "false"
+  //           );
+  //         }
+  //       });
+  //     });
+
+  //     const data = await create(`products`, formData);
+  //     console.log("data -> ", data);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // }
+
+  async function uploadProduct() {
     try {
       const formData = new FormData();
+      formData.append("categoryId", productData.categoryId);
       formData.append("brandId", productData.brandId);
       formData.append("nameEn", productData.nameEn);
       formData.append("nameAr", productData.nameAr);
@@ -235,27 +297,51 @@ const AddProductPage = () => {
       if (productData.defaultImageFile) {
         formData.append("defaultImageFile", productData.defaultImageFile);
       }
+      // variations
+      productData.variations.forEach((v, vi) => {
+        formData.append(`variations[${vi}].nameEn`, v.nameEn);
+        formData.append(`variations[${vi}].nameAr`, v.nameAr);
 
-      formData.append("variations", JSON.stringify(productData.variations));
-
-      const productItems = productData.productItems.map((item) => {
-        return {
-          ...item,
-          productItemImages: item.productItemImages.map((img) => ({
-            IsPrimary: img.IsPrimary,
-          })),
-        };
+        v.variationOptions.forEach((opt, oi) => {
+          formData.append(
+            `variations[${vi}].variationOptions[${oi}].valueEn`,
+            opt.valueEn
+          );
+          formData.append(
+            `variations[${vi}].variationOptions[${oi}].valueAr`,
+            opt.valueAr
+          );
+        });
       });
-      formData.append("productItems", JSON.stringify(productItems));
 
-      productData.productItems.forEach((item, iIndex) => {
-        item.productItemImages.forEach((img, imgIndex) => {
+      // Product Items
+      productData.productItems.forEach((pi, piIndex) => {
+        formData.append(`productItems[${piIndex}].sku`, pi.sku);
+
+        // Variation options of product item
+        pi.variationOptions.forEach((opt, oi) => {
+          formData.append(
+            `productItems[${piIndex}].variationOptions[${oi}].valueEn`,
+            opt.valueEn
+          );
+          formData.append(
+            `productItems[${piIndex}].variationOptions[${oi}].valueAr`,
+            opt.valueAr
+          );
+        });
+
+        // Product item images
+        pi.productItemImages.forEach((img, ii) => {
           if (img.imageFile) {
             formData.append(
-              `productItems[${iIndex}][productItemImages][${imgIndex}][imageFile]`,
+              `productItems[${piIndex}].productItemImages[${ii}].imageFile`,
               img.imageFile
             );
           }
+          formData.append(
+            `productItems[${piIndex}].productItemImages[${ii}].isPrimary`,
+            img.isPrimary ? "true" : "false"
+          );
         });
       });
 
@@ -264,7 +350,7 @@ const AddProductPage = () => {
     } catch (err) {
       console.error(err);
     }
-  };
+  }
 
   useEffect(() => {
     console.log("productData -> ", productData);

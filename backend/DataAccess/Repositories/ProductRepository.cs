@@ -3,6 +3,8 @@ using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Product;
 using Jannara_Ecommerce.DTOs.Seller;
+using Jannara_Ecommerce.DTOs.Variation;
+using Jannara_Ecommerce.DTOs.VariationOption;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -379,85 +381,196 @@ SELECT @json AS FullJson;
         }
 
 
-        public async Task<Result<bool>> AddNewAsync(string productJson, SqlConnection connection, SqlTransaction transaction)
+        public async Task<Result<bool>> AddNewAsync(ProductCreateDBDTO product, SqlConnection connection, SqlTransaction transaction)
         {
             try
             {
-                string query = @"
--- Insert Product
-DECLARE @ProductId INT;
+                //                string query = @"
+                //-- Insert Product
+                //DECLARE @ProductId INT;
 
-INSERT INTO Products (brand_id, category_id, default_image_url, name_en, name_ar, description_en, description_ar, weight_kg)
-OUTPUT INSERTED.id INTO @ProductId
-SELECT 
-    TRY_CAST(JSON_VALUE(@json, '$.BrandId') AS INT), 
-    TRY_CAST(JSON_VALUE(@json, '$.CategoryId') AS INT), 
-    JSON_VALUE(@json, '$.DefaultImageUrl'),        
-    JSON_VALUE(@json, '$.NameEn'),
-    JSON_VALUE(@json, '$.NameAr'),
-    JSON_VALUE(@json, '$.DescriptionEn'),       
-    JSON_VALUE(@json, '$.DescriptionAr'),       
-    CAST(JSON_VALUE(@json, '$.WeightKg') AS decimal(18,2));
+                //INSERT INTO Products (brand_id, category_id, default_image_url, 
+                //name_en, name_ar, description_en, 
+                //description_ar, weight_kg)
+                //Values( 
+                //    TRY_CAST(JSON_VALUE(@json, '$.BrandId') AS INT), 
+                //    TRY_CAST(JSON_VALUE(@json, '$.CategoryId') AS INT), 
+                //    JSON_VALUE(@json, '$.DefaultImageUrl'),        
+                //    JSON_VALUE(@json, '$.NameEn'),
+                //    JSON_VALUE(@json, '$.NameAr'),
+                //    JSON_VALUE(@json, '$.DescriptionEn'),       
+                //    JSON_VALUE(@json, '$.DescriptionAr'),       
+                //    CAST(JSON_VALUE(@json, '$.WeightKg') AS decimal(18,2));
+                //)
 
--- Insert Variations
+                //SET @ProductId = SCOPE_IDENTITY();
+
+                //-- Insert Variations
+                //INSERT INTO Variations (product_id, name_en, name_ar)
+                //SELECT 
+                //    @ProductId,
+                //    v.NameEn,
+                //    v.NameAr
+                //FROM OPENJSON(@json, '$.Variations')
+                //WITH (
+                //    NameEn NVARCHAR(200) '$.NameEn',
+                //    NameAr NVARCHAR(200) '$.NameAr'
+                //) AS v;
+
+                //-- Insert ProductItems
+                //INSERT INTO ProductItems (product_id, sku)
+                //SELECT 
+                //    @ProductId,
+                //    JSON_VALUE(items.value, '$.Sku')
+                //FROM OPENJSON(@json, '$.ProductItems')
+                //--WITH (Sku NVARCHAR(100) '$.Sku') AS pi;
+
+                //-- Insert ProductItemImages and ProductItemVariationOptions using CROSS APPLY
+                //INSERT INTO ProductItemImages (product_item_id, image_url, is_primary)
+                //SELECT 
+                //    pi.id,
+                //    img.ImageUrl,
+                //    img.IsPrimary
+                //FROM OPENJSON(@json, '$.ProductItems') AS items
+                //Join ProductItems pi on pi.
+                //CROSS APPLY OPENJSON(items.value, '$.ProductItemImages')
+                //WITH (
+                //    ImageUrl NVARCHAR(500) '$.ImageUrl',
+                //    IsPrimary BIT '$.IsPrimary',
+                //    Sku NVARCHAR(100) '$.Sku'
+                //) AS img
+                //WHERE pi.sku = img.Sku;
+
+                //-- Insert ProductItemVariationOptions
+                //INSERT INTO ProductItemVariationOptions (product_item_id, variation_option_id)
+                //SELECT 
+                //    pi.id,
+                //    TRY_CAST(vo.Id AS INT)
+                //FROM ProductItems pi
+                //JOIN OPENJSON(@json, '$.ProductItems') AS items
+                //CROSS APPLY OPENJSON(items.value, '$.VariationOptions')
+                //WITH (
+                //    Id INT '$.Id',
+                //    Sku NVARCHAR(100) '$.Sku'
+                //) AS vo
+                //WHERE pi.sku = vo.Sku;
+                //";
+
+
+
+                // 1. Insert Product
+                string insertProductQuery = @"
+INSERT INTO Products
+    (brand_id, category_id, default_image_url, name_en, name_ar, description_en, description_ar, weight_kg)
+VALUES
+    (@BrandId, @CategoryId, @DefaultImageUrl, @NameEn, @NameAr, @DescriptionEn, @DescriptionAr, @WeightKg);
+SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+                int productId;
+                using (var cmd = new SqlCommand(insertProductQuery, connection, transaction))
+                {
+                    cmd.Parameters.AddWithValue("@BrandId", (object?)product.BrandId ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@CategoryId", (object?)product.CategoryId ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@DefaultImageUrl", (object?)product.DefaultImageUrl ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@NameEn", product.NameEn);
+                    cmd.Parameters.AddWithValue("@NameAr", product.NameAr);
+                    cmd.Parameters.AddWithValue("@DescriptionEn", (object?)product.DescriptionEn ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@DescriptionAr", (object?)product.DescriptionAr ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@WeightKg", product.WeightKg);
+
+                    productId = (int)await cmd.ExecuteScalarAsync();
+                }
+
+                // 2. Insert Variations
+                var variationMap = new Dictionary<VariationCreateDTO, int>();
+                foreach (var v in product.Variations)
+                {
+                    string sql = @"
 INSERT INTO Variations (product_id, name_en, name_ar)
-SELECT 
-    @ProductId,
-    v.NameEn,
-    v.NameAr
-FROM OPENJSON(@json, '$.Variations')
-WITH (
-    NameEn NVARCHAR(200) '$.NameEn',
-    NameAr NVARCHAR(200) '$.NameAr'
-) AS v;
+VALUES (@ProductId, @NameEn, @NameAr);
+SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
--- Insert ProductItems
+                    using var cmd = new SqlCommand(sql, connection, transaction);
+                    cmd.Parameters.AddWithValue("@ProductId", productId);
+                    cmd.Parameters.AddWithValue("@NameEn", v.NameEn);
+                    cmd.Parameters.AddWithValue("@NameAr", v.NameAr);
+                    int variationId = (int)await cmd.ExecuteScalarAsync();
+                    variationMap[v] = variationId;
+                }
+
+                // 3. Insert VariationOptions
+                var variationOptionMap = new Dictionary<VariationOptionCreateDTO, int>();
+                foreach (var v in product.Variations)
+                {
+                    int variationId = variationMap[v];
+                    foreach (var opt in v.VariationOptions)
+                    {
+                        string sql = @"
+INSERT INTO VariationOptions (variation_id, value_en, value_ar)
+VALUES (@VariationId, @ValueEn, @ValueAr);
+SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+                        using var cmd = new SqlCommand(sql, connection, transaction);
+                        cmd.Parameters.AddWithValue("@VariationId", variationId);
+                        cmd.Parameters.AddWithValue("@ValueEn", opt.ValueEn);
+                        cmd.Parameters.AddWithValue("@ValueAr", opt.ValueAr);
+                        int optId = (int)await cmd.ExecuteScalarAsync();
+                        variationOptionMap[opt] = optId;
+                    }
+                }
+
+                // 4. Insert ProductItems
+                foreach (var pi in product.ProductItems)
+                {
+                    string sql = @"
 INSERT INTO ProductItems (product_id, sku)
-SELECT 
-    @ProductId,
-    pi.Sku
-FROM OPENJSON(@json, '$.ProductItems')
-WITH (Sku NVARCHAR(100) '$.Sku') AS pi;
+VALUES (@ProductId, @Sku);
+SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
--- Insert ProductItemImages and ProductItemVariationOptions using CROSS APPLY
+                    int productItemId;
+                    using (var cmd = new SqlCommand(sql, connection, transaction))
+                    {
+                        cmd.Parameters.AddWithValue("@ProductId", productId);
+                        cmd.Parameters.AddWithValue("@Sku", pi.Sku);
+                        productItemId = (int)await cmd.ExecuteScalarAsync();
+                    }
+
+                    // 5. Insert ProductItemImages
+                    foreach (var img in pi.ProductItemImages)
+                    {
+                        string imgSql = @"
 INSERT INTO ProductItemImages (product_item_id, image_url, is_primary)
-SELECT 
-    pi.id,
-    img.ImageUrl,
-    img.IsPrimary
-FROM ProductItems pi
-JOIN OPENJSON(@json, '$.ProductItems') AS items
-CROSS APPLY OPENJSON(items.value, '$.ProductItemImages')
-WITH (
-    ImageUrl NVARCHAR(500) '$.ImageUrl',
-    IsPrimary BIT '$.IsPrimary',
-    Sku NVARCHAR(100) '$.Sku'
-) AS img
-WHERE pi.sku = img.Sku;
+VALUES (@ProductItemId, @ImageUrl, @IsPrimary);";
 
--- Insert ProductItemVariationOptions
+                        using var imgCmd = new SqlCommand(imgSql, connection, transaction);
+                        imgCmd.Parameters.AddWithValue("@ProductItemId", productItemId);
+                        imgCmd.Parameters.AddWithValue("@ImageUrl", img.ImageUrl);
+                        imgCmd.Parameters.AddWithValue("@IsPrimary", img.IsPrimary);
+                        await imgCmd.ExecuteNonQueryAsync();
+                    }
+
+                    // 6. Insert ProductItemVariationOptions
+                    foreach (var opt in pi.VariationOptions)
+                    {
+                        if (!variationOptionMap.TryGetValue(opt, out int variationOptionId))
+                            continue; // skip if option not found
+
+                        string sqlVarOpt = @"
 INSERT INTO ProductItemVariationOptions (product_item_id, variation_option_id)
-SELECT 
-    pi.id,
-    TRY_CAST(vo.Id AS INT)
-FROM ProductItems pi
-JOIN OPENJSON(@json, '$.ProductItems') AS items
-CROSS APPLY OPENJSON(items.value, '$.VariationOptions')
-WITH (
-    Id INT '$.Id',
-    Sku NVARCHAR(100) '$.Sku'
-) AS vo
-WHERE pi.sku = vo.Sku;
-";
+VALUES (@ProductItemId, @VariationOptionId);";
 
-                using var command = new SqlCommand(query, connection, transaction);
-                command.Parameters.AddWithValue("@json", productJson);
-                await command.ExecuteNonQueryAsync();
+                        using var cmdVarOpt = new SqlCommand(sqlVarOpt, connection, transaction);
+                        cmdVarOpt.Parameters.AddWithValue("@ProductItemId", productItemId);
+                        cmdVarOpt.Parameters.AddWithValue("@VariationOptionId", variationOptionId);
+                        await cmdVarOpt.ExecuteNonQueryAsync();
+                    }
+                }
 
                 return new Result<bool>(true, "Product inserted successfully", true);
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error inserting product: {ex}");
                 return new Result<bool>(false, $"Error inserting product: {ex.Message}", false, 500);
             }
         }

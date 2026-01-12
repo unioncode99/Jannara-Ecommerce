@@ -5,6 +5,7 @@ using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace Jannara_Ecommerce.Controllers
 {
@@ -51,6 +52,9 @@ namespace Jannara_Ecommerce.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] ProductCreateDTO productCreateDTO)
         {
+            //Console.WriteLine($"productCreateDTO: {JsonSerializer.Serialize(productCreateDTO)}");
+            //Console.WriteLine($"ProductItems: {JsonSerializer.Serialize(productCreateDTO?.ProductItems)}");
+            //Console.WriteLine($"Variations: {JsonSerializer.Serialize(productCreateDTO?.Variations)}");
             if (productCreateDTO == null)
             {
                 return BadRequest(new { success = false, message = "Product data is required" });

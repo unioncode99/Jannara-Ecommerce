@@ -47,7 +47,7 @@ const ProductItems = ({ productData, setProductData, errors }) => {
       variationOptions,
       price: "",
       stock: "",
-      images: [],
+      productItemImages: [],
     }));
 
     setProductData({ ...productData, productItems: items });
@@ -62,28 +62,34 @@ const ProductItems = ({ productData, setProductData, errors }) => {
   const addImages = (index, files) => {
     const validFiles = Array.from(files)
       .filter((file) => isImageValid(file))
-      .map((file) => ({ file, isPrimary: false }));
+      .map((file) => ({ imageFile: file, isPrimary: false }));
 
     const items = [...productData.productItems];
-    if (!items[index].images) {
-      items[index].images = [];
+    if (!items[index].productItemImages) {
+      items[index].productItemImages = [];
     }
 
-    if (items[index].images.length === 0 && validFiles.length > 0) {
+    if (items[index].productItemImages.length === 0 && validFiles.length > 0) {
       validFiles[0].isPrimary = true;
     }
 
-    items[index].images.push(...validFiles);
+    items[index].productItemImages.push(...validFiles);
     setProductData({ ...productData, productItems: items });
   };
 
   const removeImage = (itemIndex, imageIndex) => {
     const items = [...productData.productItems];
 
-    const removedImage = items[itemIndex].images.splice(imageIndex, 1)[0];
+    const removedImage = items[itemIndex].productItemImages.splice(
+      imageIndex,
+      1
+    )[0];
 
-    if (removedImage?.isPrimary && items[itemIndex].images.length > 0) {
-      items[itemIndex].images[0].isPrimary = true;
+    if (
+      removedImage?.isPrimary &&
+      items[itemIndex].productItemImages.length > 0
+    ) {
+      items[itemIndex].productItemImages[0].isPrimary = true;
     }
 
     setProductData({ ...productData, productItems: items });
@@ -91,10 +97,12 @@ const ProductItems = ({ productData, setProductData, errors }) => {
 
   const setPrimaryImage = (itemIndex, imgIndex) => {
     const items = [...productData.productItems];
-    items[itemIndex].images = items[itemIndex].images.map((img, i) => ({
-      ...img,
-      isPrimary: i === imgIndex,
-    }));
+    items[itemIndex].productItemImages = items[itemIndex].productItemImages.map(
+      (img, i) => ({
+        ...img,
+        isPrimary: i === imgIndex,
+      })
+    );
     setProductData({ ...productData, productItems: items });
   };
 
@@ -185,7 +193,7 @@ const ProductItems = ({ productData, setProductData, errors }) => {
           </label>
 
           <div className="sku-images">
-            {item?.images?.map((img, imgIndex) => (
+            {item?.productItemImages?.map((img, imgIndex) => (
               <div
                 key={imgIndex}
                 className={`product-preview-container ${
@@ -193,7 +201,7 @@ const ProductItems = ({ productData, setProductData, errors }) => {
                 } `}
               >
                 <img
-                  src={getImagePrview(img?.file)}
+                  src={getImagePrview(img?.imageFile)}
                   alt="Product Image"
                   className="product-img"
                   onClick={() => setPrimaryImage(index, imgIndex)}
@@ -210,9 +218,9 @@ const ProductItems = ({ productData, setProductData, errors }) => {
             ))}
           </div>
 
-          {errors?.productItems?.[index]?.images && (
+          {errors?.productItems?.[index]?.productItemImages && (
             <div className="form-alert">
-              {errors.productItems[index].images}
+              {errors.productItems[index].productItemImages}
             </div>
           )}
         </div>
