@@ -1,3 +1,4 @@
+import { Loader2 } from "lucide-react";
 import { useLanguage } from "../../hooks/useLanguage";
 import Button from "../ui/Button";
 import "./StepNavigation.css";
@@ -8,6 +9,7 @@ const StepNavigation = ({
   handlePrevious,
   handleNext,
   handleSubmit,
+  loading,
 }) => {
   const { translations } = useLanguage();
   const { previous, next, submit_product } =
@@ -16,18 +18,30 @@ const StepNavigation = ({
   return (
     <div className={`step-navigation-container ${step == 1 ? "one" : ""}`}>
       {step > 1 && (
-        <Button onClick={handlePrevious} className="btn btn-primary">
+        <Button
+          disabled={loading}
+          onClick={handlePrevious}
+          className="btn btn-primary"
+        >
           {previous}
         </Button>
       )}
       {step < stepsLength && (
-        <Button onClick={handleNext} className="btn btn-primary">
+        <Button
+          disabled={loading}
+          onClick={handleNext}
+          className="btn btn-primary"
+        >
           {next}
         </Button>
       )}
       {step === stepsLength && (
-        <Button onClick={handleSubmit} className="btn btn-primary">
-          {submit_product}
+        <Button
+          disabled={loading}
+          onClick={handleSubmit}
+          className="btn btn-primary"
+        >
+          {loading ? <Loader2 className="animate-spin" /> : { submit_product }}
         </Button>
       )}
     </div>

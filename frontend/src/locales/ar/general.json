@@ -462,7 +462,15 @@
       "upload": "رفع",
       "general_category_label": "الفئة",
       "general_category_placeholder": "أدخل الفئة",
-      "general_category_error": "الفئة مطلوبة"
+      "general_category_error": "الفئة مطلوبة",
+      "product_add_success": "تمت إضافة المنتج بنجاح!",
+      "product_add_failed": "فشل في إضافة المنتج. يرجى المحاولة مرة أخرى.",
+      "product_image_failed": "فشل في رفع صورة المنتج.",
+      "variation_add_failed": "فشل في إضافة خيارات المنتج.",
+      "variation_option_add_failed": "فشل في إضافة خيار المنتج.",
+      "product_item_add_failed": "فشل في إضافة عنصر المنتج.",
+      "product_item_image_add_failed": "فشل في إضافة صورة عنصر المنتج.",
+      "product_item_variation_option_add_failed": "فشل في إضافة خيار تباين عنصر المنتج."
     }
   },
   "sidebar": {

@@ -7,8 +7,10 @@ export default function ProductHeader({ product, onToggleFavorite }) {
   return (
     <div className="product-header">
       <div>
-        <p>{language === "en" ? product.brand.nameEn : product.brand.nameAr}</p>
-        <h1>{language === "en" ? product.nameEn : product.nameAr}</h1>
+        <p>
+          {language === "en" ? product?.brand?.nameEn : product?.brand?.nameAr}
+        </p>
+        <h1>{language === "en" ? product?.nameEn : product?.nameAr}</h1>
       </div>
       <div>
         <button

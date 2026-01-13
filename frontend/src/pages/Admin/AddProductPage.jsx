@@ -4,7 +4,7 @@ import ProductInfo from "../../components/AddProductPage/ProductInfo";
 import Variations from "../../components/AddProductPage/Variations/Variations.jsx";
 import ProductItems from "../../components/AddProductPage/ProductItems.jsx";
 import "./AddProductPage.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Save } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Header from "../../components/AddProductPage/Header.jsx";
@@ -76,6 +76,8 @@ const AddProductPage = () => {
   const [step, setStep] = useState(1);
   const [productData, setProductData] = useState(intialFormData);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const { translations, language } = useLanguage();
   const {
@@ -95,6 +97,8 @@ const AddProductPage = () => {
     product_item_stock_error,
     product_item_images_error,
     general_category_error,
+    product_add_success,
+    product_add_failed,
   } = translations.general.pages.add_product;
 
   const steps = [
@@ -285,6 +289,7 @@ const AddProductPage = () => {
 
   async function uploadProduct() {
     try {
+      setLoading(true);
       const formData = new FormData();
       formData.append("categoryId", productData.categoryId);
       formData.append("brandId", productData.brandId);
@@ -345,10 +350,27 @@ const AddProductPage = () => {
         });
       });
 
-      const data = await create(`products`, formData);
-      console.log("data -> ", data);
+      const result = await create(`products`, formData);
+      console.log("result -> ", result);
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_add_success, "success");
+      }
+      navigate("/products");
     } catch (err) {
+      if (translations.general.server_messages[err.message]) {
+        toast.show(translations.general.server_messages[err.message], "error");
+      } else {
+        toast.show(product_add_failed, "error");
+      }
       console.error(err);
+      setProductData(intialFormData);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -359,7 +381,12 @@ const AddProductPage = () => {
   return (
     <div className="add-product-container">
       <Header />
-      <Tabs steps={steps} selectedStep={step} setStep={setStep} />
+      <Tabs
+        loading={loading}
+        steps={steps}
+        selectedStep={step}
+        setStep={setStep}
+      />
       {step == 1 && (
         <ProductInfo
           productData={productData}
@@ -380,6 +407,7 @@ const AddProductPage = () => {
       <StepNavigation
         step={step}
         stepsLength={steps.length}
+        loading={loading}
         handlePrevious={handlePrevious}
         handleNext={handleNext}
         handleSubmit={handleSubmit}

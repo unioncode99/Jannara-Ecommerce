@@ -467,7 +467,15 @@
       "upload": "Upload",
       "general_category_label": "Category",
       "general_category_placeholder": "Enter category",
-      "general_category_error": "Category is required"
+      "general_category_error": "Category is required",
+      "product_add_success": "Product added successfully!",
+      "product_add_failed": "Failed to add product. Please try again.",
+      "product_image_failed": "Failed to upload product image.",
+      "variation_add_failed": "Failed to add product variation.",
+      "variation_option_add_failed": "Failed to add product variation option.",
+      "product_item_add_failed": "Failed to add product item.",
+      "product_item_image_add_failed": "Failed to add product item image.",
+      "product_item_variation_option_add_failed": "Failed to add product item variation option."
     }
   },
   "sidebar": {
