@@ -13,6 +13,7 @@ using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Intrinsics.Arm;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
@@ -27,10 +28,20 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly string _connectionString;
         private readonly ILogger<IProductService> _logger;
         private readonly string _baseUrl;
+        private readonly IVariationService _variationService;
+        private readonly IVariationOptionService _variationOptionService;
+        private readonly IProductItemService _productItemService;
+        private readonly IProductItemImageService _productItemImageService;
+        private readonly IProductItemVariationOptionService _productItemVariationOptionService;
 
         public ProductService(IProductRepository productRepository, IImageService imageService,
             IOptions<ImageSettings> imageSettings, IOptions<DatabaseSettings> options,
-            ILogger<IProductService> logger, IOptions<AppSettings> appSettings)
+            ILogger<IProductService> logger, IOptions<AppSettings> appSettings,
+            IProductItemImageService productItemImageService, 
+            IVariationService variationService,
+            IVariationOptionService variationOptionService,
+            IProductItemService productItemService, 
+            IProductItemVariationOptionService productItemVariationOptionService)
         {
             _productRepository = productRepository;
             _imageSettings = imageSettings;
@@ -38,6 +49,11 @@ namespace Jannara_Ecommerce.Business.Services
             _connectionString = options.Value.DefaultConnection;
             _logger = logger;
             _baseUrl = appSettings.Value.BaseUrl;
+            _productItemImageService = productItemImageService;
+            _variationService = variationService;
+            _variationOptionService = variationOptionService;
+            _productItemService = productItemService;
+            _productItemVariationOptionService = productItemVariationOptionService;
         }
 
         public async Task<Result<ProductDetailDTO>> FindAsync(Guid publicId, int? customerId)
@@ -51,6 +67,8 @@ namespace Jannara_Ecommerce.Business.Services
 
             return ProductResult;
         }
+
+
 
         public async Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(FilterProductDTO filter)
         {
@@ -67,6 +85,119 @@ namespace Jannara_Ecommerce.Business.Services
             return ProductsResult;
         }
 
+        //public async Task<Result<bool>> CreateAsync(ProductCreateDTO productCreateDTO)
+        //{
+        //    using var connection = new SqlConnection(_connectionString);
+        //    await connection.OpenAsync();
+        //    using var transaction = connection.BeginTransaction();
+        //    var savedImages = new List<string>(); // for rollback
+        //    try
+        //    {
+        //        // Save default product image
+        //        string defaultImageUrl = string.Empty;
+        //        if (productCreateDTO.DefaultImageFile != null)
+        //        {
+        //            var imageResult = await _imageService.SaveImageAsync(productCreateDTO.DefaultImageFile, _imageSettings.Value.ProductFolder);
+        //            if (!imageResult.IsSuccess)
+        //            {
+        //                 return new Result<bool>(false, imageResult.Message, false, imageResult.ErrorCode);
+        //            }
+
+        //            defaultImageUrl = imageResult.Data;
+        //            savedImages.Add(defaultImageUrl);
+        //        }
+
+        //        // Save ProductItem images
+        //        var imageMap = new Dictionary<string, List<ProductItemImageCreateDBDTO>>();
+        //        foreach (var item in productCreateDTO.ProductItems)
+        //        {
+        //            var images = new List<ProductItemImageCreateDBDTO>();
+        //            foreach (var img in item.ProductItemImages)
+        //            {
+        //                var imageSaveResult = await _imageService.SaveImageAsync(img.ImageFile, _imageSettings.Value.ProductFolder);
+        //                if (!imageSaveResult.IsSuccess)
+        //                {
+        //                    foreach (var path in savedImages)
+        //                    {
+        //                        await _imageService.DeleteImage(path);
+
+        //                    }
+        //                    return new Result<bool>(false, imageSaveResult.Message, false, imageSaveResult.ErrorCode);
+        //                }
+        //                savedImages.Add(imageSaveResult.Data);
+
+        //                images.Add(new ProductItemImageCreateDBDTO
+        //                {
+        //                    ImageUrl = imageSaveResult.Data,
+        //                    IsPrimary = img.IsPrimary
+        //                });
+        //            }
+        //            imageMap[item.Sku] = images;
+        //        }
+
+        //        // Map API DTO to DB DTO
+        //        var dbProduct = new ProductCreateDBDTO
+        //        {
+        //            BrandId = productCreateDTO.BrandId,
+        //            CategoryId = productCreateDTO.CategoryId,
+        //            DefaultImageUrl = defaultImageUrl,
+        //            NameEn = productCreateDTO.NameEn,
+        //            NameAr = productCreateDTO.NameAr,
+        //            DescriptionEn = productCreateDTO.DescriptionEn,
+        //            DescriptionAr = productCreateDTO.DescriptionAr,
+        //            WeightKg = productCreateDTO.WeightKg,
+        //            Variations = productCreateDTO.Variations.Select(v => new VariationCreateDTO
+        //            {
+        //                NameEn = v.NameEn,
+        //                NameAr = v.NameAr,
+        //                VariationOptions = v.VariationOptions.Select(o => new VariationOptionCreateDTO
+        //                {
+        //                    ValueEn = o.ValueEn,
+        //                    ValueAr = o.ValueAr
+        //                }).ToList()
+        //            }).ToList(),
+
+        //            ProductItems = productCreateDTO.ProductItems.Select(pi => new ProductItemCreateDBDTO
+        //            {
+        //                Sku = pi.Sku,
+        //                VariationOptions = pi.VariationOptions.Select(o => new VariationOptionCreateDTO
+        //                {
+        //                    ValueEn = o.ValueEn,
+        //                    ValueAr = o.ValueAr
+        //                }).ToList(),
+        //                ProductItemImages = imageMap[pi.Sku]
+        //            }).ToList()
+        //        };
+        //        // Serialize DB DTO to JSON
+        //        //string json = JsonSerializer.Serialize(dbProduct);
+        //        var addResult = await _productRepository.AddNewAsync(dbProduct, connection, transaction);
+        //        if (!addResult.IsSuccess)
+        //        {
+        //            transaction.Rollback();
+        //            foreach (var path in savedImages)
+        //            {
+        //                await _imageService.DeleteImage(path);
+        //            }
+        //            return new Result<bool>(false, addResult.Message, false, addResult.ErrorCode);   
+        //        }
+        //        transaction.Commit();
+        //        return new Result<bool>(true, addResult.Message, true, addResult.ErrorCode);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        transaction.Rollback();
+        //        foreach (var path in savedImages)
+        //        {
+        //            await _imageService.DeleteImage(path);
+        //        }
+
+        //        _logger.LogError(ex, "CreateProductWithImagesAsync failed");
+        //        return new Result<bool>(false, "Error creating product", false, 500);
+
+        //    }
+        //}
+       
         public async Task<Result<bool>> CreateAsync(ProductCreateDTO productCreateDTO)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -117,8 +248,8 @@ namespace Jannara_Ecommerce.Business.Services
                     imageMap[item.Sku] = images;
                 }
 
-                // Map API DTO to DB DTO
-                var dbProduct = new ProductCreateDBDTO
+                // Product
+                var productDTO = new ProductCreateDBDTO
                 {
                     BrandId = productCreateDTO.BrandId,
                     CategoryId = productCreateDTO.CategoryId,
@@ -128,56 +259,125 @@ namespace Jannara_Ecommerce.Business.Services
                     DescriptionEn = productCreateDTO.DescriptionEn,
                     DescriptionAr = productCreateDTO.DescriptionAr,
                     WeightKg = productCreateDTO.WeightKg,
-                    Variations = productCreateDTO.Variations.Select(v => new VariationCreateDTO
-                    {
-                        NameEn = v.NameEn,
-                        NameAr = v.NameAr,
-                        VariationOptions = v.VariationOptions.Select(o => new VariationOptionCreateDTO
-                        {
-                            ValueEn = o.ValueEn,
-                            ValueAr = o.ValueAr
-                        }).ToList()
-                    }).ToList(),
-
-                    ProductItems = productCreateDTO.ProductItems.Select(pi => new ProductItemCreateDBDTO
-                    {
-                        Sku = pi.Sku,
-                        VariationOptions = pi.VariationOptions.Select(o => new VariationOptionCreateDTO
-                        {
-                            ValueEn = o.ValueEn,
-                            ValueAr = o.ValueAr
-                        }).ToList(),
-                        ProductItemImages = imageMap[pi.Sku]
-                    }).ToList()
                 };
-                // Serialize DB DTO to JSON
-                //string json = JsonSerializer.Serialize(dbProduct);
-                var addResult = await _productRepository.AddNewAsync(dbProduct, connection, transaction);
-                if (!addResult.IsSuccess)
+
+                var addProductResult = await AddNewAsync(productDTO, connection, transaction);
+                if (!addProductResult.IsSuccess)
                 {
-                    transaction.Rollback();
-                    foreach (var path in savedImages)
-                    {
-                        await _imageService.DeleteImage(path);
-                    }
-                    return new Result<bool>(false, addResult.Message, false, addResult.ErrorCode);   
+                    return await RollbackAndFail(transaction, savedImages);
                 }
+
+                int productId = addProductResult.Data.Id;
+
+                // Variations
+                // for item options
+                var variationOptionMap = new Dictionary<string, int>();
+                foreach (var variation in productCreateDTO.Variations)
+                {
+                    var variationDTO = new VariationCreateDTO
+                    {
+                        NameEn = variation.NameEn,
+                        NameAr = variation.NameAr,  
+                    };
+
+                    var addVariationResult = await _variationService.AddNewAsync(productId, variationDTO, connection, transaction);
+
+                   
+                    if (!addVariationResult.IsSuccess)
+                    {
+                        return await RollbackAndFail(transaction, savedImages);
+                    }
+
+                    int variationId = addVariationResult.Data.Id;
+
+                    foreach (var option in variation.VariationOptions)
+                    {
+                        var optionDTO = new VariationOptionCreateDTO
+                        {
+                            ValueEn = option.ValueEn,
+                            ValueAr = option.ValueAr,
+                        };
+
+                        var addVariationOptionResult = await _variationOptionService.AddNewAsync(variationId, optionDTO, connection, transaction);
+                        // for item options
+                        if (!addVariationOptionResult.IsSuccess)
+                        {
+                            return await RollbackAndFail(transaction, savedImages);
+                        }
+                        variationOptionMap[option.ValueEn] = variationId;
+                    }
+
+                }
+
+                // Product Items
+                foreach (var productItem in productCreateDTO.ProductItems)
+                {
+
+                    var addProductItemResult = await _productItemService.AddNewAsync(productId, productItem.Sku, connection, transaction);
+
+                    if (!addProductItemResult.IsSuccess)
+                    {
+                        return await RollbackAndFail(transaction, savedImages);
+                    }
+
+                    int productItemId = addProductItemResult.Data.Id;
+
+                    foreach (var image in imageMap[productItem.Sku])
+                    {
+                        var addProductItemImageResult = await _productItemImageService.AddNewAsync(productItemId, image, connection, transaction);
+
+                        if (!addProductItemImageResult.IsSuccess)
+                        {
+                            return await RollbackAndFail(transaction, savedImages);
+                        }
+                    }
+
+                    foreach (var selectionOption in productItem.VariationOptions)
+                    {
+                        var key = selectionOption.ValueEn;
+
+                        if (!variationOptionMap.TryGetValue(key, out var variationOptionId))
+                        {
+                            throw new Exception($"Variation option not found: {key}");
+                        }
+
+                        var addProductItemVariationOptionResult = await _productItemVariationOptionService.AddNewAsync(productItemId, variationOptionId, connection, transaction);
+                        if (!addProductItemVariationOptionResult.IsSuccess)
+                        {
+                            return await RollbackAndFail(transaction, savedImages);
+                        }
+                    }
+                }
+
                 transaction.Commit();
-                return new Result<bool>(true, addResult.Message, true, addResult.ErrorCode);
+                return new Result<bool>(true, addProductResult.Message, true, addProductResult.ErrorCode);
 
             }
             catch (Exception ex)
             {
-                transaction.Rollback();
-                foreach (var path in savedImages)
-                {
-                    await _imageService.DeleteImage(path);
-                }
-
                 _logger.LogError(ex, "CreateProductWithImagesAsync failed");
-                return new Result<bool>(false, "Error creating product", false, 500);
-
+                return await RollbackAndFail(transaction, savedImages);
             }
+        }
+
+        public async Task<Result<ProductDTO>> AddNewAsync(ProductCreateDBDTO product, SqlConnection connection, SqlTransaction transaction)
+        {
+            return await _productRepository.AddNewAsync(product, connection, transaction);
+        }
+
+        private async Task<Result<bool>> RollbackAndFail(
+           SqlTransaction transaction,
+           IEnumerable<string> images)
+        {
+            transaction.Rollback();
+            await RollbackImages(images);
+            return new Result<bool>(false, "Error creating product", false, 500);
+        }
+
+        private async Task RollbackImages(IEnumerable<string> images)
+        {
+            foreach (var img in images)
+                await _imageService.DeleteImage(img);
         }
     }
 }

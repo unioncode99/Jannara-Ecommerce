@@ -13,7 +13,7 @@ namespace Jannara_Ecommerce.DTOs.Product
         public string? DescriptionEn { get; set; }
         public string? DescriptionAr { get; set; }
         public decimal WeightKg { get; set; }
-        public IEnumerable<VariationCreateDTO> Variations { get; set; }
-        public IEnumerable<ProductItemCreateDBDTO> ProductItems { get; set; }
+        //public IEnumerable<VariationCreateDTO> Variations { get; set; }
+        //public IEnumerable<ProductItemCreateDBDTO> ProductItems { get; set; }
     }
 }

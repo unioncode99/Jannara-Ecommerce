@@ -28,6 +28,11 @@ namespace Jannara_Ecommerce.DataAccess
             services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IDashboardRepository, DashboardRepository>();
             services.AddScoped<IBrandRepository, BrandRepository>();
+            services.AddScoped<IVariationRepository, VariationRepository>();
+            services.AddScoped<IVariationOptionRepository, VariationOptionRepository>();
+            services.AddScoped<IProductItemRepository, ProductItemRepository>();
+            services.AddScoped<IProductItemImageRepository, ProductItemImageRepository>();
+            services.AddScoped<IProductItemVariationOptionRepository, ProductItemVariationOptionRepository>();
             return services;
         }
     }
