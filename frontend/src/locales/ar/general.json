@@ -471,6 +471,14 @@
       "product_item_add_failed": "فشل في إضافة عنصر المنتج.",
       "product_item_image_add_failed": "فشل في إضافة صورة عنصر المنتج.",
       "product_item_variation_option_add_failed": "فشل في إضافة خيار تباين عنصر المنتج."
+    },
+    "products": {
+      "title": "إدارة المنتجات",
+      "add_product": "إضافة منتج",
+      "edit_product": "تعديل المنتج",
+      "search_label": "بحث",
+      "search_product_placeholder": "ابحث عن المنتجات...",
+      "clear_filters": "مسح الفلاتر"
     }
   },
   "sidebar": {

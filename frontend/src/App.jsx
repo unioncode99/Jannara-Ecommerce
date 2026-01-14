@@ -29,6 +29,7 @@ import CustomerProfile from "./pages/Customer/CustomerProfile";
 import ProductCategoriesManagementPage from "./pages/Admin/ProductCategoriesManagementPage";
 import UserManagementPage from "./pages/Admin/UserManagementPage";
 import AddProductPage from "./pages/Admin/AddProductPage";
+import ProductsPage from "./pages/Admin/ProductsPage";
 
 function App() {
   const { language } = useLanguage();
@@ -91,6 +92,7 @@ function App() {
             />
             <Route path="users" element={<UserManagementPage />} />
             <Route path="add-product" element={<AddProductPage />} />
+            <Route path="products" element={<ProductsPage />} />
 
             <Route path="*" element={<NotFoundPage />} />
           </Route>

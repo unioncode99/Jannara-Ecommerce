@@ -428,111 +428,140 @@ VALUES
         }
 
 
-        public async Task<Result<PagedResponseDTO<ProductDTO>>> GetAllGeneralAsync(GeneralProductFilterDTO filter)
+        public async Task<Result<PagedResponseDTO<ProductGeneralResponseDTO>>> GetAllGeneralAsync(GeneralProductFilterDTO filter)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
+            using var connection = new SqlConnection(_connectionString);
 
-                string query = @"
+            string query = @"
 
 -- TOTAL COUNT
-SELECT COUNT(id) AS total
-FROM products
+SELECT COUNT(p.id) AS total
+FROM products p
+LEFT JOIN brands b ON p.brand_id = b.id
+LEFT JOIN ProductCategories c ON p.category_id = c.id
 WHERE
-    (@CategoryId IS NULL OR category_id = @CategoryId)
-AND (@BrandId IS NULL OR brand_id = @BrandId)
+    (@CategoryId IS NULL OR p.category_id = @CategoryId)
+AND (@BrandId IS NULL OR p.brand_id = @BrandId)
 AND (
         @SearchTerm IS NULL
-        OR name_en LIKE '%' + @SearchTerm + '%'
-        OR name_ar LIKE '%' + @SearchTerm + '%'
-        OR description_en LIKE '%' + @SearchTerm + '%'
-        OR description_ar LIKE '%' + @SearchTerm + '%'
+        OR p.name_en LIKE '%' + @SearchTerm + '%'
+        OR p.name_ar LIKE '%' + @SearchTerm + '%'
+        OR p.description_en LIKE '%' + @SearchTerm + '%'
+        OR p.description_ar LIKE '%' + @SearchTerm + '%'
     );
 
 -- PAGED DATA
-SELECT *
-FROM products
+SELECT
+    p.id,
+    p.public_id,
+    p.category_id,
+    p.brand_id,
+    p.default_image_url,
+    p.name_en,
+    p.name_ar,
+    p.description_en,
+    p.description_ar,
+    p.weight_kg,
+    p.created_at,
+    p.updated_at,
+    c.name_en AS category_name_en,
+    c.name_ar AS category_name_ar,
+    b.name_en AS brand_name_en,
+    b.name_ar AS brand_name_ar
+FROM products p
+LEFT JOIN brands b ON p.brand_id = b.id
+LEFT JOIN ProductCategories c ON p.category_id = c.id
 WHERE
-    (@CategoryId IS NULL OR category_id = @CategoryId)
-AND (@BrandId IS NULL OR brand_id = @BrandId)
+    (@CategoryId IS NULL OR p.category_id = @CategoryId)
+AND (@BrandId IS NULL OR p.brand_id = @BrandId)
 AND (
         @SearchTerm IS NULL
-        OR name_en LIKE '%' + @SearchTerm + '%'
-        OR name_ar LIKE '%' + @SearchTerm + '%'
-        OR description_en LIKE '%' + @SearchTerm + '%'
-        OR description_ar LIKE '%' + @SearchTerm + '%'
+        OR p.name_en LIKE '%' + @SearchTerm + '%'
+        OR p.name_ar LIKE '%' + @SearchTerm + '%'
+        OR p.description_en LIKE '%' + @SearchTerm + '%'
+        OR p.description_ar LIKE '%' + @SearchTerm + '%'
     )
 ORDER BY
-    CASE WHEN @SortBy = 'newest' THEN id END DESC,
-    CASE WHEN @SortBy = 'oldest' THEN id END ASC,
-    id DESC 
+    CASE WHEN @SortBy = 'newest' THEN p.id END DESC,
+    CASE WHEN @SortBy = 'oldest' THEN p.id END ASC,
+    p.id DESC
 OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
 ";
 
+            using var command = new SqlCommand(query, connection);
 
-                using (var command = new SqlCommand(query, connection))
+            int offset = (filter.PageNumber - 1) * filter.PageSize;
+            command.Parameters.AddWithValue("@offset", offset);
+            command.Parameters.AddWithValue("@pageSize", filter.PageSize);
+            command.Parameters.AddWithValue("@SortBy", filter.SortBy ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@CategoryId", filter.CategoryId ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@BrandId", filter.BrandId ?? (object)DBNull.Value);
+            command.Parameters.AddWithValue("@SearchTerm", filter.SearchTerm ?? (object)DBNull.Value);
+
+            try
+            {
+                await connection.OpenAsync();
+                using var reader = await command.ExecuteReaderAsync();
+
+                int total = 0;
+                if (await reader.ReadAsync())
                 {
-                    int offset = (filter.PageNumber - 1) * filter.PageSize;
-                    command.Parameters.AddWithValue("@offset", offset);
-                    command.Parameters.AddWithValue("@pageSize", filter.PageSize);
-                    command.Parameters.AddWithValue("@SortBy", filter.SortBy ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@CategoryId", filter.CategoryId ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@BrandId", filter.BrandId ?? (object)DBNull.Value);
-                    command.Parameters.AddWithValue("@SearchTerm", filter.SearchTerm ?? (object)DBNull.Value);
-                    try
-                    {
-                        await connection.OpenAsync();
-                        using (var reader = await command.ExecuteReaderAsync())
-                        {
-                            int total = 0;
-                            if (await reader.ReadAsync())
-                            {
-                                total = reader.GetInt32(reader.GetOrdinal("total"));
-                            }
-                            //await reader.NextResultAsync();
-                            if (!await reader.NextResultAsync())
-                            {
-                                return new Result<PagedResponseDTO<ProductDTO>>(false, "products_not_found", null, 404);
-                            }
-                            if (!reader.HasRows)
-                            {
-                                return new Result<PagedResponseDTO<ProductDTO>>(false, "products_not_found", null, 404);
-                            }
-                            var products = new List<ProductDTO>();
-                            while (await reader.ReadAsync())
-                            {
-                                products.Add(new ProductDTO
-                                (
-                                    reader.GetInt32(reader.GetOrdinal("id")),
-                                    reader.GetGuid(reader.GetOrdinal("public_id")),
-                                    reader.GetInt32(reader.GetOrdinal("category_id")),
-                                    reader.IsDBNull(reader.GetOrdinal("brand_id")) ? null : reader.GetInt32(reader.GetOrdinal("brand_id")),
-                                    reader.GetString(reader.GetOrdinal("default_image_url")),
-                                    reader.GetString(reader.GetOrdinal("name_en")),
-                                    reader.GetString(reader.GetOrdinal("name_ar")),
-                                    reader.IsDBNull(reader.GetOrdinal("description_en")) ? null : reader.GetString(reader.GetOrdinal("description_en")),
-                                    reader.IsDBNull(reader.GetOrdinal("description_ar")) ? null : reader.GetString(reader.GetOrdinal("description_ar")),
-                                    reader.GetDecimal(reader.GetOrdinal("weight_kg")),
-                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
-                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
-                                ));
-                            }
-                            if (products.Count() < 1)
-                            {
-                                return new Result<PagedResponseDTO<ProductDTO>>(false, "products_not_found", null, 404);
-                            }
-                            var response = new PagedResponseDTO<ProductDTO>(total, filter.PageNumber, filter.PageSize, products);
-                            return new Result<PagedResponseDTO<ProductDTO>>(true, "products_retrieved_successfully", response, 200);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Failed to retrieve products for page {PageNumber} with page size {PageSize}", filter.PageNumber, filter.PageSize);
-                        return new Result<PagedResponseDTO<ProductDTO>>(false, "internal_server_error", null, 500);
-                    }
+                    total = reader.GetInt32(reader.GetOrdinal("total"));
                 }
+
+                if (!await reader.NextResultAsync() || !reader.HasRows)
+                {
+                    return new Result<PagedResponseDTO<ProductGeneralResponseDTO>>(false, "products_not_found", null, 404);
+                }
+
+                var products = new List<ProductGeneralResponseDTO>();
+                while (await reader.ReadAsync())
+                {
+                    products.Add(new ProductGeneralResponseDTO
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("id")),
+                        PublicId = reader.GetGuid(reader.GetOrdinal("public_id")),
+                        CategoryId = reader.GetInt32(reader.GetOrdinal("category_id")),
+                        BrandId = reader.IsDBNull(reader.GetOrdinal("brand_id"))
+                                  ? null
+                                  : reader.GetInt32(reader.GetOrdinal("brand_id")),
+                        DefaultImageUrl = reader.GetString(reader.GetOrdinal("default_image_url")),
+                        NameEn = reader.GetString(reader.GetOrdinal("name_en")),
+                        NameAr = reader.GetString(reader.GetOrdinal("name_ar")),
+                        DescriptionEn = reader.IsDBNull(reader.GetOrdinal("description_en"))
+                                        ? null
+                                        : reader.GetString(reader.GetOrdinal("description_en")),
+                        DescriptionAr = reader.IsDBNull(reader.GetOrdinal("description_ar"))
+                                        ? null
+                                        : reader.GetString(reader.GetOrdinal("description_ar")),
+                        WeightKg = reader.GetDecimal(reader.GetOrdinal("weight_kg")),
+                        CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
+                        UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at")),
+                        CategoryNameEn = reader.IsDBNull(reader.GetOrdinal("category_name_en"))
+                                         ? null
+                                         : reader.GetString(reader.GetOrdinal("category_name_en")),
+                        CategoryNameAr = reader.IsDBNull(reader.GetOrdinal("category_name_ar"))
+                                         ? null
+                                         : reader.GetString(reader.GetOrdinal("category_name_ar")),
+                        BrandNameEn = reader.IsDBNull(reader.GetOrdinal("brand_name_en"))
+                                      ? null
+                                      : reader.GetString(reader.GetOrdinal("brand_name_en")),
+                        BrandNameAr = reader.IsDBNull(reader.GetOrdinal("brand_name_ar"))
+                                      ? null
+                                      : reader.GetString(reader.GetOrdinal("brand_name_ar")),
+                    });
+                }
+
+                var response = new PagedResponseDTO<ProductGeneralResponseDTO>(total, filter.PageNumber, filter.PageSize, products);
+                return new Result<PagedResponseDTO<ProductGeneralResponseDTO>>(true, "products_retrieved_successfully", response, 200);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to retrieve products for page {PageNumber} with page size {PageSize}", filter.PageNumber, filter.PageSize);
+                return new Result<PagedResponseDTO<ProductGeneralResponseDTO>>(false, "internal_server_error", null, 500);
             }
         }
+
 
     }
 }

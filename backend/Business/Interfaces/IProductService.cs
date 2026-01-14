@@ -14,6 +14,6 @@ namespace Jannara_Ecommerce.Business.Interfaces
         Task<Result<bool>> CreateAsync(ProductCreateDTO productCreateDTO);
 
         Task<Result<ProductDTO>> AddNewAsync(ProductCreateDBDTO product, SqlConnection connection, SqlTransaction transaction);
-        Task<Result<PagedResponseDTO<ProductDTO>>> GetAllGeneralAsync(GeneralProductFilterDTO filter);
+        Task<Result<PagedResponseDTO<ProductGeneralResponseDTO>>> GetAllGeneralAsync(GeneralProductFilterDTO filter);
     }
 }

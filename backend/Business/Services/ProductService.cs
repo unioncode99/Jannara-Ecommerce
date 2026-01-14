@@ -268,7 +268,7 @@ namespace Jannara_Ecommerce.Business.Services
                 await _imageService.DeleteImage(img);
         }
 
-        public async Task<Result<PagedResponseDTO<ProductDTO>>> GetAllGeneralAsync(GeneralProductFilterDTO filter)
+        public async Task<Result<PagedResponseDTO<ProductGeneralResponseDTO>>> GetAllGeneralAsync(GeneralProductFilterDTO filter)
         {
             var ProductsResult = await _productRepository.GetAllGeneralAsync(filter);
             if (ProductsResult.IsSuccess)

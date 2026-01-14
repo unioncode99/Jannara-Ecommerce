@@ -50,6 +50,7 @@ const menus = {
     { key: "dashboard", path: "/admin-dashboard", icon: <LayoutDashboard /> },
     { key: "users", path: "/users", icon: <User /> },
     { key: "categories", path: "/product-categories", icon: <Layers /> },
+    { key: "products", path: "/products", icon: <Package /> },
   ],
   superadmin: [
     {

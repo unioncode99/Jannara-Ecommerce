@@ -21,8 +21,7 @@ namespace Jannara_Ecommerce.Controllers
             _productService = productService;
         }
 
-
-        [HttpGet("{publicId}", Name = "GetProductByPublicId"), Route("details")]
+        [HttpGet("details", Name = "GetProductByPublicId")]
         public async Task<ActionResult<ProductDetailDTO>> GetProductByPublicId([FromQuery] Guid publicId, [FromQuery] int? customerId)
         {
             var result = await _productService.FindAsync(publicId, customerId);
@@ -32,6 +31,28 @@ namespace Jannara_Ecommerce.Controllers
             }
             return StatusCode(result.ErrorCode, result.Message);
         }
+
+
+        [HttpGet("general")]
+        public async Task<ActionResult<Result<PagedResponseDTO<ProductGeneralResponseDTO>>>>
+GetAllGeneralProducts([FromQuery] GeneralProductFilterDTO filter)
+        {
+            if (filter.PageNumber <= 0 || filter.PageSize <= 0)
+            {
+                return BadRequest(new ResponseMessage("invalid_pagination_parameters"));
+            }
+
+            var result = await _productService.GetAllGeneralAsync(filter);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
+
 
         [HttpGet]
         public async Task<ActionResult<PagedResponseDTO<ProductResponseDTO>>> GetAllProducts([FromQuery] FilterProductDTO filter)
@@ -79,23 +100,6 @@ namespace Jannara_Ecommerce.Controllers
         }
 
 
-        [HttpGet("general")]
-        public async Task<ActionResult<Result<PagedResponseDTO<ProductDTO>>>>
-    GetAllGeneralProducts([FromQuery] GeneralProductFilterDTO filter)
-        {
-            if (filter.PageNumber <= 0 || filter.PageSize <= 0)
-            {
-                return BadRequest(new ResponseMessage("invalid_pagination_parameters"));
-            }
 
-            var result = await _productService.GetAllGeneralAsync(filter);
-
-            if (result.IsSuccess)
-            {
-                return Ok(result);
-            }
-
-            return StatusCode(result.ErrorCode, result.Message);
-        }
     }
 }

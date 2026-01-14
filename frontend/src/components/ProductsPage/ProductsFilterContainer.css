@@ -1,0 +1,30 @@
+.products-filter-container {
+  background-color: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-1);
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  .products-filter-container {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .products-filter-container > * {
+    flex: 1;
+    max-width: 320px;
+  }
+}
+
+.clear-filters-container {
+  display: flex;
+  align-items: center;
+}
+
+.clear-filters-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

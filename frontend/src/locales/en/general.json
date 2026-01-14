@@ -476,6 +476,14 @@
       "product_item_add_failed": "Failed to add product item.",
       "product_item_image_add_failed": "Failed to add product item image.",
       "product_item_variation_option_add_failed": "Failed to add product item variation option."
+    },
+    "products": {
+      "title": "Products Management",
+      "add_product": "Add Product",
+      "edit_product": "Edit Product",
+      "search_label": "Search",
+      "search_product_placeholder": "Search products...",
+      "clear_filters": "Clear Filters"
     }
   },
   "sidebar": {

@@ -9,7 +9,7 @@ const BrandsDropdown = ({
   required = false,
   disabled = false,
   errorMessage = "",
-  label,
+  label = "Select",
   showLabel = false,
   name,
 }) => {
