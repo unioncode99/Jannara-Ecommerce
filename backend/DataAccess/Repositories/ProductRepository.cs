@@ -381,202 +381,6 @@ SELECT @json AS FullJson;
             }
         }
 
-
-//        public async Task<Result<bool>> AddNewAsync(ProductCreateDBDTO product, SqlConnection connection, SqlTransaction transaction)
-//        {
-//            try
-//            {
-//                //                string query = @"
-//                //-- Insert Product
-//                //DECLARE @ProductId INT;
-
-//                //INSERT INTO Products (brand_id, category_id, default_image_url, 
-//                //name_en, name_ar, description_en, 
-//                //description_ar, weight_kg)
-//                //Values( 
-//                //    TRY_CAST(JSON_VALUE(@json, '$.BrandId') AS INT), 
-//                //    TRY_CAST(JSON_VALUE(@json, '$.CategoryId') AS INT), 
-//                //    JSON_VALUE(@json, '$.DefaultImageUrl'),        
-//                //    JSON_VALUE(@json, '$.NameEn'),
-//                //    JSON_VALUE(@json, '$.NameAr'),
-//                //    JSON_VALUE(@json, '$.DescriptionEn'),       
-//                //    JSON_VALUE(@json, '$.DescriptionAr'),       
-//                //    CAST(JSON_VALUE(@json, '$.WeightKg') AS decimal(18,2));
-//                //)
-
-//                //SET @ProductId = SCOPE_IDENTITY();
-
-//                //-- Insert Variations
-//                //INSERT INTO Variations (product_id, name_en, name_ar)
-//                //SELECT 
-//                //    @ProductId,
-//                //    v.NameEn,
-//                //    v.NameAr
-//                //FROM OPENJSON(@json, '$.Variations')
-//                //WITH (
-//                //    NameEn NVARCHAR(200) '$.NameEn',
-//                //    NameAr NVARCHAR(200) '$.NameAr'
-//                //) AS v;
-
-//                //-- Insert ProductItems
-//                //INSERT INTO ProductItems (product_id, sku)
-//                //SELECT 
-//                //    @ProductId,
-//                //    JSON_VALUE(items.value, '$.Sku')
-//                //FROM OPENJSON(@json, '$.ProductItems')
-//                //--WITH (Sku NVARCHAR(100) '$.Sku') AS pi;
-
-//                //-- Insert ProductItemImages and ProductItemVariationOptions using CROSS APPLY
-//                //INSERT INTO ProductItemImages (product_item_id, image_url, is_primary)
-//                //SELECT 
-//                //    pi.id,
-//                //    img.ImageUrl,
-//                //    img.IsPrimary
-//                //FROM OPENJSON(@json, '$.ProductItems') AS items
-//                //Join ProductItems pi on pi.
-//                //CROSS APPLY OPENJSON(items.value, '$.ProductItemImages')
-//                //WITH (
-//                //    ImageUrl NVARCHAR(500) '$.ImageUrl',
-//                //    IsPrimary BIT '$.IsPrimary',
-//                //    Sku NVARCHAR(100) '$.Sku'
-//                //) AS img
-//                //WHERE pi.sku = img.Sku;
-
-//                //-- Insert ProductItemVariationOptions
-//                //INSERT INTO ProductItemVariationOptions (product_item_id, variation_option_id)
-//                //SELECT 
-//                //    pi.id,
-//                //    TRY_CAST(vo.Id AS INT)
-//                //FROM ProductItems pi
-//                //JOIN OPENJSON(@json, '$.ProductItems') AS items
-//                //CROSS APPLY OPENJSON(items.value, '$.VariationOptions')
-//                //WITH (
-//                //    Id INT '$.Id',
-//                //    Sku NVARCHAR(100) '$.Sku'
-//                //) AS vo
-//                //WHERE pi.sku = vo.Sku;
-//                //";
-
-
-
-//                // 1. Insert Product
-//                string insertProductQuery = @"
-//INSERT INTO Products
-//    (brand_id, category_id, default_image_url, name_en, name_ar, description_en, description_ar, weight_kg)
-//VALUES
-//    (@BrandId, @CategoryId, @DefaultImageUrl, @NameEn, @NameAr, @DescriptionEn, @DescriptionAr, @WeightKg);
-//SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-//                int productId;
-//                using (var cmd = new SqlCommand(insertProductQuery, connection, transaction))
-//                {
-//                    cmd.Parameters.AddWithValue("@BrandId", (object?)product.BrandId ?? DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@CategoryId", (object?)product.CategoryId ?? DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@DefaultImageUrl", (object?)product.DefaultImageUrl ?? DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@NameEn", product.NameEn);
-//                    cmd.Parameters.AddWithValue("@NameAr", product.NameAr);
-//                    cmd.Parameters.AddWithValue("@DescriptionEn", (object?)product.DescriptionEn ?? DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@DescriptionAr", (object?)product.DescriptionAr ?? DBNull.Value);
-//                    cmd.Parameters.AddWithValue("@WeightKg", product.WeightKg);
-
-//                    productId = (int)await cmd.ExecuteScalarAsync();
-//                }
-
-//                // 2. Insert Variations
-//                var variationMap = new Dictionary<VariationCreateDTO, int>();
-//                foreach (var v in product.Variations)
-//                {
-//                    string sql = @"
-//INSERT INTO Variations (product_id, name_en, name_ar)
-//VALUES (@ProductId, @NameEn, @NameAr);
-//SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-//                    using var cmd = new SqlCommand(sql, connection, transaction);
-//                    cmd.Parameters.AddWithValue("@ProductId", productId);
-//                    cmd.Parameters.AddWithValue("@NameEn", v.NameEn);
-//                    cmd.Parameters.AddWithValue("@NameAr", v.NameAr);
-//                    int variationId = (int)await cmd.ExecuteScalarAsync();
-//                    variationMap[v] = variationId;
-//                }
-
-//                // 3. Insert VariationOptions
-//                var variationOptionMap = new Dictionary<VariationOptionCreateDTO, int>();
-//                foreach (var v in product.Variations)
-//                {
-//                    int variationId = variationMap[v];
-//                    foreach (var opt in v.VariationOptions)
-//                    {
-//                        string sql = @"
-//INSERT INTO VariationOptions (variation_id, value_en, value_ar)
-//VALUES (@VariationId, @ValueEn, @ValueAr);
-//SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-//                        using var cmd = new SqlCommand(sql, connection, transaction);
-//                        cmd.Parameters.AddWithValue("@VariationId", variationId);
-//                        cmd.Parameters.AddWithValue("@ValueEn", opt.ValueEn);
-//                        cmd.Parameters.AddWithValue("@ValueAr", opt.ValueAr);
-//                        int optId = (int)await cmd.ExecuteScalarAsync();
-//                        variationOptionMap[opt] = optId;
-//                    }
-//                }
-
-//                // 4. Insert ProductItems
-//                foreach (var pi in product.ProductItems)
-//                {
-//                    string sql = @"
-//INSERT INTO ProductItems (product_id, sku)
-//VALUES (@ProductId, @Sku);
-//SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-//                    int productItemId;
-//                    using (var cmd = new SqlCommand(sql, connection, transaction))
-//                    {
-//                        cmd.Parameters.AddWithValue("@ProductId", productId);
-//                        cmd.Parameters.AddWithValue("@Sku", pi.Sku);
-//                        productItemId = (int)await cmd.ExecuteScalarAsync();
-//                    }
-
-//                    // 5. Insert ProductItemImages
-//                    foreach (var img in pi.ProductItemImages)
-//                    {
-//                        string imgSql = @"
-//INSERT INTO ProductItemImages (product_item_id, image_url, is_primary)
-//VALUES (@ProductItemId, @ImageUrl, @IsPrimary);";
-
-//                        using var imgCmd = new SqlCommand(imgSql, connection, transaction);
-//                        imgCmd.Parameters.AddWithValue("@ProductItemId", productItemId);
-//                        imgCmd.Parameters.AddWithValue("@ImageUrl", img.ImageUrl);
-//                        imgCmd.Parameters.AddWithValue("@IsPrimary", img.IsPrimary);
-//                        await imgCmd.ExecuteNonQueryAsync();
-//                    }
-
-//                    // 6. Insert ProductItemVariationOptions
-//                    foreach (var opt in pi.VariationOptions)
-//                    {
-//                        if (!variationOptionMap.TryGetValue(opt, out int variationOptionId))
-//                            continue; // skip if option not found
-
-//                        string sqlVarOpt = @"
-//INSERT INTO ProductItemVariationOptions (product_item_id, variation_option_id)
-//VALUES (@ProductItemId, @VariationOptionId);";
-
-//                        using var cmdVarOpt = new SqlCommand(sqlVarOpt, connection, transaction);
-//                        cmdVarOpt.Parameters.AddWithValue("@ProductItemId", productItemId);
-//                        cmdVarOpt.Parameters.AddWithValue("@VariationOptionId", variationOptionId);
-//                        await cmdVarOpt.ExecuteNonQueryAsync();
-//                    }
-//                }
-
-//                return new Result<bool>(true, "Product inserted successfully", true);
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError($"Error inserting product: {ex}");
-//                return new Result<bool>(false, $"Error inserting product: {ex.Message}", false, 500);
-//            }
-//        }
-        
-        
         public async Task<Result<ProductDTO>> AddNewAsync(ProductCreateDBDTO product, SqlConnection connection, SqlTransaction transaction)
         {
             string query = @"
@@ -622,6 +426,113 @@ VALUES
 
             return new Result<ProductDTO>(false, "failed_to_add_product", null, 500);
         }
-    
+
+
+        public async Task<Result<PagedResponseDTO<ProductDTO>>> GetAllGeneralAsync(GeneralProductFilterDTO filter)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+
+                string query = @"
+
+-- TOTAL COUNT
+SELECT COUNT(id) AS total
+FROM products
+WHERE
+    (@CategoryId IS NULL OR category_id = @CategoryId)
+AND (@BrandId IS NULL OR brand_id = @BrandId)
+AND (
+        @SearchTerm IS NULL
+        OR name_en LIKE '%' + @SearchTerm + '%'
+        OR name_ar LIKE '%' + @SearchTerm + '%'
+        OR description_en LIKE '%' + @SearchTerm + '%'
+        OR description_ar LIKE '%' + @SearchTerm + '%'
+    );
+
+-- PAGED DATA
+SELECT *
+FROM products
+WHERE
+    (@CategoryId IS NULL OR category_id = @CategoryId)
+AND (@BrandId IS NULL OR brand_id = @BrandId)
+AND (
+        @SearchTerm IS NULL
+        OR name_en LIKE '%' + @SearchTerm + '%'
+        OR name_ar LIKE '%' + @SearchTerm + '%'
+        OR description_en LIKE '%' + @SearchTerm + '%'
+        OR description_ar LIKE '%' + @SearchTerm + '%'
+    )
+ORDER BY
+    CASE WHEN @SortBy = 'newest' THEN id END DESC,
+    CASE WHEN @SortBy = 'oldest' THEN id END ASC,
+    id DESC 
+OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
+";
+
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    int offset = (filter.PageNumber - 1) * filter.PageSize;
+                    command.Parameters.AddWithValue("@offset", offset);
+                    command.Parameters.AddWithValue("@pageSize", filter.PageSize);
+                    command.Parameters.AddWithValue("@SortBy", filter.SortBy ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@CategoryId", filter.CategoryId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@BrandId", filter.BrandId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@SearchTerm", filter.SearchTerm ?? (object)DBNull.Value);
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            int total = 0;
+                            if (await reader.ReadAsync())
+                            {
+                                total = reader.GetInt32(reader.GetOrdinal("total"));
+                            }
+                            //await reader.NextResultAsync();
+                            if (!await reader.NextResultAsync())
+                            {
+                                return new Result<PagedResponseDTO<ProductDTO>>(false, "products_not_found", null, 404);
+                            }
+                            if (!reader.HasRows)
+                            {
+                                return new Result<PagedResponseDTO<ProductDTO>>(false, "products_not_found", null, 404);
+                            }
+                            var products = new List<ProductDTO>();
+                            while (await reader.ReadAsync())
+                            {
+                                products.Add(new ProductDTO
+                                (
+                                    reader.GetInt32(reader.GetOrdinal("id")),
+                                    reader.GetGuid(reader.GetOrdinal("public_id")),
+                                    reader.GetInt32(reader.GetOrdinal("category_id")),
+                                    reader.IsDBNull(reader.GetOrdinal("brand_id")) ? null : reader.GetInt32(reader.GetOrdinal("brand_id")),
+                                    reader.GetString(reader.GetOrdinal("default_image_url")),
+                                    reader.GetString(reader.GetOrdinal("name_en")),
+                                    reader.GetString(reader.GetOrdinal("name_ar")),
+                                    reader.IsDBNull(reader.GetOrdinal("description_en")) ? null : reader.GetString(reader.GetOrdinal("description_en")),
+                                    reader.IsDBNull(reader.GetOrdinal("description_ar")) ? null : reader.GetString(reader.GetOrdinal("description_ar")),
+                                    reader.GetDecimal(reader.GetOrdinal("weight_kg")),
+                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                                ));
+                            }
+                            if (products.Count() < 1)
+                            {
+                                return new Result<PagedResponseDTO<ProductDTO>>(false, "products_not_found", null, 404);
+                            }
+                            var response = new PagedResponseDTO<ProductDTO>(total, filter.PageNumber, filter.PageSize, products);
+                            return new Result<PagedResponseDTO<ProductDTO>>(true, "products_retrieved_successfully", response, 200);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to retrieve products for page {PageNumber} with page size {PageSize}", filter.PageNumber, filter.PageSize);
+                        return new Result<PagedResponseDTO<ProductDTO>>(false, "internal_server_error", null, 500);
+                    }
+                }
+            }
+        }
+
     }
 }

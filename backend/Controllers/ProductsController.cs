@@ -78,5 +78,24 @@ namespace Jannara_Ecommerce.Controllers
             return Ok(new { success = true, message = "Product created successfully" });
         }
 
+
+        [HttpGet("general")]
+        public async Task<ActionResult<Result<PagedResponseDTO<ProductDTO>>>>
+    GetAllGeneralProducts([FromQuery] GeneralProductFilterDTO filter)
+        {
+            if (filter.PageNumber <= 0 || filter.PageSize <= 0)
+            {
+                return BadRequest(new ResponseMessage("invalid_pagination_parameters"));
+            }
+
+            var result = await _productService.GetAllGeneralAsync(filter);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+
+            return StatusCode(result.ErrorCode, result.Message);
+        }
     }
 }

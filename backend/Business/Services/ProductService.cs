@@ -13,6 +13,7 @@ using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using Stripe;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Intrinsics.Arm;
 using System.Text.Json;
@@ -84,119 +85,6 @@ namespace Jannara_Ecommerce.Business.Services
 
             return ProductsResult;
         }
-
-        //public async Task<Result<bool>> CreateAsync(ProductCreateDTO productCreateDTO)
-        //{
-        //    using var connection = new SqlConnection(_connectionString);
-        //    await connection.OpenAsync();
-        //    using var transaction = connection.BeginTransaction();
-        //    var savedImages = new List<string>(); // for rollback
-        //    try
-        //    {
-        //        // Save default product image
-        //        string defaultImageUrl = string.Empty;
-        //        if (productCreateDTO.DefaultImageFile != null)
-        //        {
-        //            var imageResult = await _imageService.SaveImageAsync(productCreateDTO.DefaultImageFile, _imageSettings.Value.ProductFolder);
-        //            if (!imageResult.IsSuccess)
-        //            {
-        //                 return new Result<bool>(false, imageResult.Message, false, imageResult.ErrorCode);
-        //            }
-
-        //            defaultImageUrl = imageResult.Data;
-        //            savedImages.Add(defaultImageUrl);
-        //        }
-
-        //        // Save ProductItem images
-        //        var imageMap = new Dictionary<string, List<ProductItemImageCreateDBDTO>>();
-        //        foreach (var item in productCreateDTO.ProductItems)
-        //        {
-        //            var images = new List<ProductItemImageCreateDBDTO>();
-        //            foreach (var img in item.ProductItemImages)
-        //            {
-        //                var imageSaveResult = await _imageService.SaveImageAsync(img.ImageFile, _imageSettings.Value.ProductFolder);
-        //                if (!imageSaveResult.IsSuccess)
-        //                {
-        //                    foreach (var path in savedImages)
-        //                    {
-        //                        await _imageService.DeleteImage(path);
-
-        //                    }
-        //                    return new Result<bool>(false, imageSaveResult.Message, false, imageSaveResult.ErrorCode);
-        //                }
-        //                savedImages.Add(imageSaveResult.Data);
-
-        //                images.Add(new ProductItemImageCreateDBDTO
-        //                {
-        //                    ImageUrl = imageSaveResult.Data,
-        //                    IsPrimary = img.IsPrimary
-        //                });
-        //            }
-        //            imageMap[item.Sku] = images;
-        //        }
-
-        //        // Map API DTO to DB DTO
-        //        var dbProduct = new ProductCreateDBDTO
-        //        {
-        //            BrandId = productCreateDTO.BrandId,
-        //            CategoryId = productCreateDTO.CategoryId,
-        //            DefaultImageUrl = defaultImageUrl,
-        //            NameEn = productCreateDTO.NameEn,
-        //            NameAr = productCreateDTO.NameAr,
-        //            DescriptionEn = productCreateDTO.DescriptionEn,
-        //            DescriptionAr = productCreateDTO.DescriptionAr,
-        //            WeightKg = productCreateDTO.WeightKg,
-        //            Variations = productCreateDTO.Variations.Select(v => new VariationCreateDTO
-        //            {
-        //                NameEn = v.NameEn,
-        //                NameAr = v.NameAr,
-        //                VariationOptions = v.VariationOptions.Select(o => new VariationOptionCreateDTO
-        //                {
-        //                    ValueEn = o.ValueEn,
-        //                    ValueAr = o.ValueAr
-        //                }).ToList()
-        //            }).ToList(),
-
-        //            ProductItems = productCreateDTO.ProductItems.Select(pi => new ProductItemCreateDBDTO
-        //            {
-        //                Sku = pi.Sku,
-        //                VariationOptions = pi.VariationOptions.Select(o => new VariationOptionCreateDTO
-        //                {
-        //                    ValueEn = o.ValueEn,
-        //                    ValueAr = o.ValueAr
-        //                }).ToList(),
-        //                ProductItemImages = imageMap[pi.Sku]
-        //            }).ToList()
-        //        };
-        //        // Serialize DB DTO to JSON
-        //        //string json = JsonSerializer.Serialize(dbProduct);
-        //        var addResult = await _productRepository.AddNewAsync(dbProduct, connection, transaction);
-        //        if (!addResult.IsSuccess)
-        //        {
-        //            transaction.Rollback();
-        //            foreach (var path in savedImages)
-        //            {
-        //                await _imageService.DeleteImage(path);
-        //            }
-        //            return new Result<bool>(false, addResult.Message, false, addResult.ErrorCode);   
-        //        }
-        //        transaction.Commit();
-        //        return new Result<bool>(true, addResult.Message, true, addResult.ErrorCode);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        transaction.Rollback();
-        //        foreach (var path in savedImages)
-        //        {
-        //            await _imageService.DeleteImage(path);
-        //        }
-
-        //        _logger.LogError(ex, "CreateProductWithImagesAsync failed");
-        //        return new Result<bool>(false, "Error creating product", false, 500);
-
-        //    }
-        //}
        
         public async Task<Result<bool>> CreateAsync(ProductCreateDTO productCreateDTO)
         {
@@ -378,6 +266,20 @@ namespace Jannara_Ecommerce.Business.Services
         {
             foreach (var img in images)
                 await _imageService.DeleteImage(img);
+        }
+
+        public async Task<Result<PagedResponseDTO<ProductDTO>>> GetAllGeneralAsync(GeneralProductFilterDTO filter)
+        {
+            var ProductsResult = await _productRepository.GetAllGeneralAsync(filter);
+            if (ProductsResult.IsSuccess)
+            {
+                foreach (var product in ProductsResult.Data.Items)
+                {
+                    product.DefaultImageUrl = ImageUrlHelper.ToAbsoluteUrl(product.DefaultImageUrl, _baseUrl);
+                }
+            }
+
+            return ProductsResult;
         }
     }
 }
