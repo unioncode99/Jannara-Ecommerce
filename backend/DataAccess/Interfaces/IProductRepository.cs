@@ -13,5 +13,6 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
         public Task<Result<ProductDetailDTO>> GetByPublicIdAsync(Guid publicId, int? customerId);
         Task<Result<ProductDTO>> AddNewAsync(ProductCreateDBDTO product, SqlConnection connection, SqlTransaction transaction);
         Task<Result<PagedResponseDTO<ProductGeneralResponseDTO>>> GetAllGeneralAsync(GeneralProductFilterDTO filter);
+        Task<Result<ProductDetailsForAdminDTO>> GetProductForEditAsync(Guid publicId);
     }
 }

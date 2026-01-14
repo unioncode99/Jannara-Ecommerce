@@ -10,12 +10,15 @@ import TableView from "../../components/ProductsPage/TableView";
 import CardView from "../../components/ProductsPage/CardView";
 import Pagination from "../../components/ui/Pagination";
 import SpinnerLoader from "../../components/ui/SpinnerLoader";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const ProductsPage = () => {
   const [view, setView] = useState("card"); // 'table' or 'card'
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDeleteProductModalOpen, setIsDeleteProductModalOpen] =
+    useState(false);
   // Filters
   const [searchText, setSearchText] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -127,6 +130,13 @@ const ProductsPage = () => {
     setCurrentPage(page);
   };
 
+  function closeModal() {
+    setIsDeleteProductModalOpen(false);
+    setSelectedProduct(null);
+  }
+
+  async function deleteProduct() {}
+
   return (
     <div className="products-management-container">
       <header>
@@ -188,6 +198,15 @@ const ProductsPage = () => {
           )}
         </>
       )}
+
+      <ConfirmModal
+        show={isDeleteProductModalOpen}
+        onClose={() => closeModal()}
+        onConfirm={() => deleteProduct()}
+        title={"confirm_activate"}
+        cancelLabel={"cancel"}
+        confirmLabel={"activate_role"}
+      />
     </div>
   );
 };

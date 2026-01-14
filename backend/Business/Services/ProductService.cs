@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using Stripe;
+using Stripe.Climate;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Intrinsics.Arm;
 using System.Text.Json;
@@ -280,6 +281,20 @@ namespace Jannara_Ecommerce.Business.Services
             }
 
             return ProductsResult;
+        }
+
+        public async Task<Result<ProductDetailsForAdminDTO>> GetProductForEditAsync(Guid publicId)
+        {
+            var productResult = await _productRepository.GetProductForEditAsync(publicId);
+            productResult.Data.DefaultImageUrl = ImageUrlHelper.ToAbsoluteUrl(productResult.Data.DefaultImageUrl, _baseUrl);
+            foreach (var item in productResult.Data.ProductItems)
+            {
+                foreach (var image in item.ProductItemImages)
+                {
+                    image.ImageUrl = ImageUrlHelper.ToAbsoluteUrl(image.ImageUrl, _baseUrl);
+                }
+            }
+            return productResult;
         }
     }
 }

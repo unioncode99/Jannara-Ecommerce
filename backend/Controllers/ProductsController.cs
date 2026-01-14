@@ -100,6 +100,16 @@ GetAllGeneralProducts([FromQuery] GeneralProductFilterDTO filter)
         }
 
 
+        [HttpGet("edit/{publicId}")]
+        public async Task<ActionResult<Result<ProductDetailsForAdminDTO>>> GetProductForEdit(Guid publicId)
+        {
+            var result = await _productService.GetProductForEditAsync(publicId);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
 
     }
 }

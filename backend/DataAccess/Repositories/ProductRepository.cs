@@ -562,6 +562,122 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
             }
         }
 
+        public async Task<Result<ProductDetailsForAdminDTO>> GetProductForEditAsync(Guid publicId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+DECLARE @json NVARCHAR(MAX);
+SELECT @json = (
+    SELECT
+        p.id AS Id,
+        p.public_id AS PublicId,
+		p.category_id AS CategoryId,
+		p.brand_id AS BrandId,
+        p.default_image_url AS DefaultImageUrl,
+        p.name_en AS NameEn,
+        p.name_ar AS NameAr,
+        p.description_en AS DescriptionEn,
+        p.description_ar AS DescriptionAr,
+        p.weight_kg AS WeightKg,
+        p.created_at AS CreatedAt,
+        p.updated_at AS UpdatedAt,
+		(
+		    SELECT
+                v.id AS Id,
+                v.name_en AS NameEn,
+                v.name_ar AS NameAr,
+                v.created_at AS CreatedAt,
+                v.updated_at AS UpdatedAt,
+                (
+                    SELECT
+                        vo.id AS Id,
+                        vo.value_en AS ValueEn,
+                        vo.value_ar AS ValueAr,
+                        vo.created_at AS CreatedAt,
+                        vo.updated_at AS UpdatedAt
+                    FROM VariationOptions vo
+                    WHERE vo.variation_id = v.id
+                    FOR JSON PATH
+                ) AS VariationOptions
+            FROM Variations v
+            WHERE v.product_id = p.id
+            FOR JSON PATH
+		) AS Variations,
+		(
+		            SELECT
+                pi.id AS Id,
+                pi.sku AS Sku,
+                pi.created_at AS CreatedAt,
+                pi.updated_at AS UpdatedAt,
+                (
+                    SELECT
+                        pivo.id AS Id,
+                        pivo.variation_option_id AS variationOptionId,
+						vo.value_en As ValueEn,
+						vo.value_ar as ValueAr,
+                        pivo.created_at AS CreatedAt,
+                        pivo.updated_at AS UpdatedAt
+                    FROM ProductItemVariationOptions pivo
+					left join VariationOptions vo
+					on vo.id = pivo.variation_option_id
+                    WHERE pivo.product_item_id = pi.id
+                    FOR JSON PATH
+                ) AS VariationOptions,
+                (
+                    SELECT
+                        pii.id AS Id,
+                        pii.image_url AS ImageUrl,
+                        pii.is_primary AS IsPrimary,
+                        pii.created_at AS CreatedAt,
+                        pii.updated_at AS UpdatedAt
+                    FROM ProductItemImages pii
+                    WHERE pii.product_item_id = pi.id
+                    FOR JSON PATH
+                ) AS ProductItemImages
+            FROM ProductItems pi
+            WHERE pi.product_id = p.id
+            FOR JSON PATH
+		) AS ProductItems
+
+		    FROM Products p
+    WHERE p.public_id = @publicId
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER);
+SELECT @json AS FullJson;
+
+";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@publicId", publicId);
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+                        {
+                            if (!await reader.ReadAsync())
+                                return new Result<ProductDetailsForAdminDTO>(false, "Product not found", null, 404);
+
+                            // Read the entire JSON as a string first
+                            string json = await reader.GetFieldValueAsync<string>(0);
+
+                            var product = JsonSerializer.Deserialize<ProductDetailsForAdminDTO>(
+                                json,
+                                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                            );
+
+                            return new Result<ProductDetailsForAdminDTO>(true, "Product fetched successfully", product, 200);
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error fetching product by id {publicId}: {ex}");
+                        return new Result<ProductDetailsForAdminDTO>(false, "Error fetching product", null, 500);
+                    }
+                }
+            }
+        }
 
     }
 }
