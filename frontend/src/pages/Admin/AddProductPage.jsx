@@ -77,8 +77,9 @@ const AddProductPage = () => {
   const [productData, setProductData] = useState(intialFormData);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [updateProductLoading, setUpdateProductLoading] = useState(false);
   const [isModeUpdate, setIsModeUpdate] = useState(false);
-  const [deleteProfileImage, setDeleteProfileImage] = useState(false);
+  const [deleteProductImage, setDeleteProductImage] = useState(false);
   const navigate = useNavigate();
   const { productId } = useParams();
 
@@ -105,6 +106,9 @@ const AddProductPage = () => {
     product_add_success,
     product_add_failed,
   } = translations.general.pages.add_product;
+
+  const { product_update_success, product_update_failed } =
+    translations.general.pages.products;
 
   const steps = [
     { id: 1, name: general },
@@ -171,7 +175,7 @@ const AddProductPage = () => {
       // });
     } catch (error) {
       console.error("Failed to fetch product", error);
-      toast.show("Failed to load product", "error");
+      // toast.show("Failed to load product", "error");
     } finally {
       setLoading(false);
     }
@@ -448,8 +452,12 @@ const AddProductPage = () => {
   }
 
   async function updateProduct() {
+    if (!validateGeneralStep()) {
+      return;
+    }
+
     try {
-      setLoading(true);
+      setUpdateProductLoading(true);
       const formData = new FormData();
       formData.append("categoryId", productData.categoryId);
       formData.append("brandId", productData.brandId);
@@ -463,11 +471,11 @@ const AddProductPage = () => {
         formData.append("defaultImageFile", productData.defaultImageFile);
       }
 
-      if (deleteProfileImage) {
-        formData.append("deleteProfileImage", true);
-      } else {
-        formData.append("deleteProfileImage", false);
-      }
+      // if (deleteProductImage) {
+      //   formData.append("deleteProductImage", true);
+      // } else {
+      //   formData.append("deleteProductImage", false);
+      // }
 
       const result = await update(`products/${productId}`, formData);
 
@@ -478,8 +486,27 @@ const AddProductPage = () => {
           defaultImageFile: null, // clear file after upload
         }));
       }
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_update_success, "success");
+      }
     } catch (error) {
       console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show(product_update_failed, "error");
+      }
+    } finally {
+      setUpdateProductLoading(false);
     }
   }
 
@@ -503,6 +530,7 @@ const AddProductPage = () => {
           setProductData={setProductData}
           errors={errors}
           updateProduct={updateProduct}
+          updateProductLoading={updateProductLoading}
         />
       )}
       {step == 2 && (

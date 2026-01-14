@@ -685,7 +685,7 @@ SELECT @json AS FullJson;
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                string query = @"select * form products where public_id = @publicId";
+                string query = @"select * from products where public_id = @publicId";
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@publicId", publicId);

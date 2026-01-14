@@ -487,7 +487,9 @@
       "confirm_delete_product": "هل أنت متأكد أنك تريد حذف هذا المنتج؟",
       "cancel": "إلغاء",
       "delete_text": "حذف",
-      "save": "حفظ"
+      "save": "حفظ",
+      "product_update_success": "تم تحديث المنتج بنجاح!",
+      "product_update_failed": "فشل في تحديث المنتج"
     }
   },
   "sidebar": {

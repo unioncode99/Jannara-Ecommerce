@@ -36,7 +36,6 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IProductItemService _productItemService;
         private readonly IProductItemImageService _productItemImageService;
         private readonly IProductItemVariationOptionService _productItemVariationOptionService;
-        private readonly IOptions<ImageSettings> _imageOptions;
 
         public ProductService(IProductRepository productRepository, IImageService imageService,
             IOptions<ImageSettings> imageSettings, IOptions<DatabaseSettings> options,
@@ -337,7 +336,7 @@ namespace Jannara_Ecommerce.Business.Services
                 // Save new image
                 var saveResult = await _imageService.SaveImageAsync(
            productUpdateDTO.DefaultImageFile,
-           _imageOptions.Value.ProfileFolder);
+           _imageSettings.Value.ProductFolder);
 
                 if (!saveResult.IsSuccess)
                 {
@@ -355,6 +354,7 @@ namespace Jannara_Ecommerce.Business.Services
                 NameAr = productUpdateDTO.NameAr,
                 DescriptionEn = productUpdateDTO.DescriptionEn,
                 DescriptionAr = productUpdateDTO.DescriptionAr,
+                WeightKg = productUpdateDTO.WeightKg,
                 DefaultImageUrl = finalImageUrl,
 
             };

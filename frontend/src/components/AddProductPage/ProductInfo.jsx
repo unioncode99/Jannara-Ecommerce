@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "../../hooks/useLanguage";
 import Input from "../ui/Input";
 import TextArea from "../ui/TextArea";
-import { Camera, Globe, Upload, X } from "lucide-react";
+import { Camera, Globe, Loader2, Upload, X } from "lucide-react";
 import "./ProductInfo.css";
 import BrandsDropdown from "../BrandsDropdown";
 import ProductCategoriesDropdown from "../ProductCategoriesDropdown";
@@ -15,6 +15,7 @@ const ProductInfo = ({
   errors,
   updateProduct,
   isModeUpdate,
+  updateProductLoading,
 }) => {
   const [productImagePreview, setProductImagePreview] = useState(
     productData?.defaultImageUrl || null
@@ -64,11 +65,15 @@ const ProductInfo = ({
   };
 
   function cancelUpload() {
+    // setProductData((prev) => ({
+    //   ...prev,
+    //   defaultImageFile: null,
+    // }));
     setProductData((prev) => ({
       ...prev,
       defaultImageFile: null,
+      defaultImageUrl: null,
     }));
-    setProductImagePreview(null);
   }
 
   return (
@@ -76,7 +81,6 @@ const ProductInfo = ({
       <h3 className="step-title">
         <Globe /> {general_info}
       </h3>
-
       <ProductCategoriesDropdown
         name="categoryId"
         value={productData.categoryId}
@@ -85,7 +89,6 @@ const ProductInfo = ({
         showLabel={true}
         errorMessage={errors?.categoryId}
       />
-
       <BrandsDropdown
         name="brandId"
         onChange={handleChange}
@@ -94,7 +97,6 @@ const ProductInfo = ({
         value={productData.brandId}
         errorMessage={errors?.brandId}
       />
-
       <Input
         label={general_nameEn_label}
         name="nameEn"
@@ -113,7 +115,6 @@ const ProductInfo = ({
         errorMessage={errors?.nameAr}
         showLabel={true}
       />
-
       <TextArea
         label={general_descriptionEn_label}
         name="descriptionEn"
@@ -136,6 +137,7 @@ const ProductInfo = ({
         label={general_weightKg_label}
         name="weightKg"
         type="number"
+        min={0}
         placeholder={general_weightKg_placeholder}
         value={productData.weightKg}
         onChange={handleChange}
@@ -169,10 +171,15 @@ const ProductInfo = ({
       {errors.defaultImageFile && (
         <div className="form-alert">{errors.defaultImageFile}</div>
       )}
+      {/* updateProductLoading */}
       {isModeUpdate && (
         <div className="save-container">
-          <Button onClick={updateProduct} className="btn btn-primary ">
-            {save}
+          <Button
+            onClick={updateProduct}
+            disabled={updateProductLoading}
+            className="btn btn-primary "
+          >
+            {updateProductLoading ? <Loader2 className="animate-spin" /> : save}
           </Button>
         </div>
       )}
