@@ -21,7 +21,12 @@ const computeCombinations = (variations) => {
   }, []);
 };
 
-const ProductItems = ({ productData, setProductData, errors }) => {
+const ProductItems = ({
+  productData,
+  setProductData,
+  errors,
+  isModeUpdate,
+}) => {
   const { language, translations } = useLanguage();
 
   const {
@@ -106,8 +111,16 @@ const ProductItems = ({ productData, setProductData, errors }) => {
     setProductData({ ...productData, productItems: items });
   };
 
-  const getImagePrview = (file) => {
-    return URL.createObjectURL(file);
+  const getImagePrview = (img) => {
+    if (img.imageUrl) {
+      return img.imageUrl;
+    }
+
+    if (img.imageFile instanceof File) {
+      return URL.createObjectURL(img.imageFile);
+    }
+
+    return "";
   };
 
   const removeItem = (itemIndex) => {
@@ -122,9 +135,11 @@ const ProductItems = ({ productData, setProductData, errors }) => {
         <h3 className="step-title">
           <Box /> {product_items}
         </h3>
-        <Button className="btn btn-primary" onClick={generateItems}>
-          <WandSparkles /> {generate_items}
-        </Button>
+        {!isModeUpdate && (
+          <Button className="btn btn-primary" onClick={generateItems}>
+            <WandSparkles /> {generate_items}
+          </Button>
+        )}
       </header>
       {productData?.productItems?.map((item, index) => (
         <div key={index} className="product-item-row">
@@ -201,7 +216,7 @@ const ProductItems = ({ productData, setProductData, errors }) => {
                 } `}
               >
                 <img
-                  src={getImagePrview(img?.imageFile)}
+                  src={getImagePrview(img)}
                   alt="Product Image"
                   className="product-img"
                   onClick={() => setPrimaryImage(index, imgIndex)}

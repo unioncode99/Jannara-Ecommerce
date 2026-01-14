@@ -8,8 +8,10 @@ import BrandsDropdown from "../BrandsDropdown";
 import ProductCategoriesDropdown from "../ProductCategoriesDropdown";
 import { isImageValid } from "../../utils/utils";
 
-const ProductInfo = ({ productData, setProductData, errors }) => {
-  const [productImagePreview, setProductImagePreview] = useState(null);
+const ProductInfo = ({ productData, setProductData, errors, isModeUpdate }) => {
+  const [productImagePreview, setProductImagePreview] = useState(
+    productData?.defaultImageUrl || null
+  );
   const { translations } = useLanguage();
   const {
     general_brand_label,
@@ -36,10 +38,6 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
     console.log("value -> ", value);
   };
 
-  const handleFileChange = (e) => {
-    setProductData({ ...productData, defaultImageFile: e.target.files[0] });
-  };
-
   const handleProductImageChange = (e) => {
     const file = e.target.files[0];
 
@@ -47,23 +45,27 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
       return;
     }
 
-    handleFileChange(e);
+    setProductData((prev) => ({
+      ...prev,
+      defaultImageFile: file,
+      defaultImageUrl: null,
+    }));
 
-    const imageUrl = URL.createObjectURL(file);
-    setProductImagePreview(imageUrl);
+    setProductImagePreview(URL.createObjectURL(file));
   };
 
   function cancelUpload() {
-    setProductData({ ...productData, defaultImageFile: null });
+    setProductData((prev) => ({
+      ...prev,
+      defaultImageFile: null,
+    }));
     setProductImagePreview(null);
   }
 
   return (
     <div className="product-info-container">
-      <h3>
-        <h3 className="step-title">
-          <Globe /> {general_info}
-        </h3>
+      <h3 className="step-title">
+        <Globe /> {general_info}
       </h3>
 
       <ProductCategoriesDropdown
@@ -142,10 +144,10 @@ const ProductInfo = ({ productData, setProductData, errors }) => {
             onChange={handleProductImageChange}
           />
         </label>
-        {productImagePreview && (
+        {(productImagePreview || productData.defaultImageUrl) && (
           <div className="product-preview-container">
             <img
-              src={productImagePreview}
+              src={productImagePreview || productData.defaultImageUrl}
               alt="Product Image"
               className="product-img"
             />

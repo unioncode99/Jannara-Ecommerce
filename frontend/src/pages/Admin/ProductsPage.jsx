@@ -11,6 +11,7 @@ import CardView from "../../components/ProductsPage/CardView";
 import Pagination from "../../components/ui/Pagination";
 import SpinnerLoader from "../../components/ui/SpinnerLoader";
 import ConfirmModal from "../../components/ui/ConfirmModal";
+import { useNavigate } from "react-router-dom";
 
 const ProductsPage = () => {
   const [view, setView] = useState("card"); // 'table' or 'card'
@@ -30,8 +31,10 @@ const ProductsPage = () => {
   const pageSize = 10; // Items per page
 
   const { translations } = useLanguage();
-  const { title, add_product, edit_product } =
+  const { title, add_product, confirm_delete_product, cancel, delete_text } =
     translations.general.pages.products;
+
+  const navigate = useNavigate();
 
   const fetchProducts = async () => {
     try {
@@ -86,16 +89,17 @@ const ProductsPage = () => {
 
   function handleAddProduct() {
     console.log("handleAddProduct");
+    navigate(`/add-product`);
   }
 
   function handleDeleteProduct(product) {
     setSelectedProduct(product);
-    // setIsDeleteProductCategoryConfirmModalOpen(true);
+    setIsDeleteProductModalOpen(true);
     console.log("handleDeleteProduct -> ", product);
   }
   function handleEditProduct(product) {
     setSelectedProduct(product);
-    // setIsAddEditProductCategoryModalOpen(true);
+    navigate(`/edit-product/${product.publicId}`);
     console.log("handleDeleteProduct -> ", product);
   }
 
@@ -203,9 +207,9 @@ const ProductsPage = () => {
         show={isDeleteProductModalOpen}
         onClose={() => closeModal()}
         onConfirm={() => deleteProduct()}
-        title={"confirm_activate"}
-        cancelLabel={"cancel"}
-        confirmLabel={"activate_role"}
+        title={confirm_delete_product}
+        cancelLabel={cancel}
+        confirmLabel={delete_text}
       />
     </div>
   );

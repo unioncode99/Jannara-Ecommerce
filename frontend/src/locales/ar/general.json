@@ -483,7 +483,10 @@
       "category": "الفئة",
       "brand": "العلامة التجارية",
       "description": "الوصف",
-      "actions": "الإجراءات"
+      "actions": "الإجراءات",
+      "confirm_delete_product": "هل أنت متأكد أنك تريد حذف هذا المنتج؟",
+      "cancel": "إلغاء",
+      "delete_text": "حذف"
     }
   },
   "sidebar": {

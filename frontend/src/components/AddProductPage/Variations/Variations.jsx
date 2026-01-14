@@ -4,7 +4,7 @@ import { useState } from "react";
 import VariationForm from "./VariationForm";
 import VariationItem from "./VariationItem";
 
-const Variations = ({ productData, setProductData }) => {
+const Variations = ({ productData, setProductData, isModeUpdate }) => {
   // Store new option inputs per variation
   const [newOptions, setNewOptions] = useState({});
 

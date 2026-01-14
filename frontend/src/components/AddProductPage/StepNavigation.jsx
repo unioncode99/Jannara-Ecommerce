@@ -41,7 +41,7 @@ const StepNavigation = ({
           onClick={handleSubmit}
           className="btn btn-primary"
         >
-          {loading ? <Loader2 className="animate-spin" /> : { submit_product }}
+          {loading ? <Loader2 className="animate-spin" /> : submit_product}
         </Button>
       )}
     </div>

@@ -92,6 +92,10 @@ function App() {
             />
             <Route path="users" element={<UserManagementPage />} />
             <Route path="add-product" element={<AddProductPage />} />
+            <Route
+              path="edit-product/:productId"
+              element={<AddProductPage />}
+            />
             <Route path="products" element={<ProductsPage />} />
 
             <Route path="*" element={<NotFoundPage />} />

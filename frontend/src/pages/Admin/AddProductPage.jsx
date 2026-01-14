@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { create } from "../../api/apiWrapper.js";
+import { create, read } from "../../api/apiWrapper.js";
 import ProductInfo from "../../components/AddProductPage/ProductInfo";
 import Variations from "../../components/AddProductPage/Variations/Variations.jsx";
 import ProductItems from "../../components/AddProductPage/ProductItems.jsx";
 import "./AddProductPage.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Save } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Header from "../../components/AddProductPage/Header.jsx";
@@ -77,7 +77,11 @@ const AddProductPage = () => {
   const [productData, setProductData] = useState(intialFormData);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [isModeUpdate, setIsModeUpdate] = useState(false);
   const navigate = useNavigate();
+  const { productId } = useParams();
+
+  console.log("productId -> ", productId);
 
   const { translations, language } = useLanguage();
   const {
@@ -107,6 +111,71 @@ const AddProductPage = () => {
     { id: 3, name: items },
   ];
 
+  useEffect(() => {
+    if (productId) {
+      setIsModeUpdate(true);
+      getProductForEdit(productId);
+    } else {
+      setIsModeUpdate(false);
+      setProductData(intialFormData);
+    }
+  }, [productId]);
+
+  async function getProductForEdit(id) {
+    try {
+      setLoading(true);
+
+      const result = await read(`products/edit/${id}`);
+
+      const data = result?.data;
+
+      console.log("result -> ", result);
+      setProductData(data);
+
+      // setProductData({
+      //   categoryId: data.categoryId,
+      //   brandId: data.brandId,
+      //   nameEn: data.nameEn,
+      //   nameAr: data.nameAr,
+      //   descriptionEn: data.descriptionEn || "",
+      //   descriptionAr: data.descriptionAr || "",
+      //   weightKg: data.weightKg,
+      //   defaultImageUrl: data.defaultImageUrl,
+      //   defaultImageFile: null, // IMPORTANT
+      //   variations: data.variations.map((v) => ({
+      //     id: v.Id,
+      //     nameEn: v.NameEn,
+      //     nameAr: v.NameAr,
+      //     variationOptions: v.variationOptions.map((o) => ({
+      //       id: o.Id,
+      //       valueEn: o.ValueEn,
+      //       valueAr: o.ValueAr,
+      //     })),
+      //   })),
+      //   productItems: data.productItems.map((pi) => ({
+      //     id: pi.Id,
+      //     sku: pi.Sku,
+      //     variationOptions: pi.variationOptions.map((o) => ({
+      //       id: o.variationOptionId,
+      //       valueEn: o.ValueEn,
+      //       valueAr: o.ValueAr,
+      //     })),
+      //     productItemImages: pi.productItemImages.map((img) => ({
+      //       id: img.id,
+      //       imageUrl: img.imageUrl, // existing image
+      //       imageFile: null, // only for new uploads
+      //       isPrimary: img.isPrimary,
+      //     })),
+      //   })),
+      // });
+    } catch (error) {
+      console.error("Failed to fetch product", error);
+      toast.show("Failed to load product", "error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function validateGeneralStep() {
     let newErrors = {};
 
@@ -135,7 +204,10 @@ const AddProductPage = () => {
       newErrors.weightKg = general_weightKg_error;
     }
 
-    if (!isImageValid(productData.defaultImageFile)) {
+    const hasImage =
+      productData.defaultImageFile || productData?.defaultImageUrl;
+
+    if (!hasImage) {
       newErrors.defaultImageFile = general_defaultImage_error;
     }
 
@@ -374,13 +446,13 @@ const AddProductPage = () => {
     }
   }
 
-  useEffect(() => {
-    console.log("productData -> ", productData);
-  }, [productData]);
+  // useEffect(() => {
+  //   console.log("productData -> ", productData);
+  // }, [productData]);
 
   return (
     <div className="add-product-container">
-      <Header />
+      <Header isModeUpdate={isModeUpdate} />
       <Tabs
         loading={loading}
         steps={steps}
@@ -390,16 +462,22 @@ const AddProductPage = () => {
       {step == 1 && (
         <ProductInfo
           productData={productData}
+          isModeUpdate={isModeUpdate}
           setProductData={setProductData}
           errors={errors}
         />
       )}
       {step == 2 && (
-        <Variations productData={productData} setProductData={setProductData} />
+        <Variations
+          productData={productData}
+          isModeUpdate={isModeUpdate}
+          setProductData={setProductData}
+        />
       )}
       {step == 3 && (
         <ProductItems
           productData={productData}
+          isModeUpdate={isModeUpdate}
           setProductData={setProductData}
           errors={errors}
         />
