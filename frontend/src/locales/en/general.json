@@ -491,7 +491,8 @@
       "actions": "Actions",
       "confirm_delete_product": "Are you sure you want to delete this product?",
       "cancel": "Cancel",
-      "delete_text": "Delete"
+      "delete_text": "Delete",
+      "save": "Save"
     }
   },
   "sidebar": {

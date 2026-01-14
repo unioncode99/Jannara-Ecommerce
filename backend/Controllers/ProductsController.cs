@@ -1,10 +1,12 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Product;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 using System.Text.Json;
 
 namespace Jannara_Ecommerce.Controllers
@@ -111,5 +113,16 @@ GetAllGeneralProducts([FromQuery] GeneralProductFilterDTO filter)
             return StatusCode(result.ErrorCode, result.Message);
         }
 
+        [HttpPut("{publicId:Guid}")]
+        public async Task<ActionResult> UpdateProduct(Guid publicId, [FromForm] ProductUpdateDTO productUpdateDTO)
+        {
+            var result = await _productService.UpdateAsync(publicId, productUpdateDTO);
+
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.ErrorCode, result.Message);
+            }
+            return Ok(result.Data);
+        }
     }
 }

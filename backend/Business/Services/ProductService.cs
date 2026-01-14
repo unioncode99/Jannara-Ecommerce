@@ -2,6 +2,7 @@
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DataAccess.Repositories;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Product;
 using Jannara_Ecommerce.DTOs.ProductItem;
 using Jannara_Ecommerce.DTOs.ProductItemImage;
@@ -35,6 +36,7 @@ namespace Jannara_Ecommerce.Business.Services
         private readonly IProductItemService _productItemService;
         private readonly IProductItemImageService _productItemImageService;
         private readonly IProductItemVariationOptionService _productItemVariationOptionService;
+        private readonly IOptions<ImageSettings> _imageOptions;
 
         public ProductService(IProductRepository productRepository, IImageService imageService,
             IOptions<ImageSettings> imageSettings, IOptions<DatabaseSettings> options,
@@ -69,8 +71,6 @@ namespace Jannara_Ecommerce.Business.Services
 
             return ProductResult;
         }
-
-
 
         public async Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(FilterProductDTO filter)
         {
@@ -296,5 +296,73 @@ namespace Jannara_Ecommerce.Business.Services
             }
             return productResult;
         }
+
+        public async Task<Result<ProductDTO>> GetGeneralByIdAsync(Guid publicId)
+        {
+            return await _productRepository.GetGeneralByIdAsync(publicId);
+        }
+
+        public async Task<Result<ProductDTO>> UpdateAsync(Guid publicId, ProductUpdateDTO productUpdateDTO)
+        {
+            var findResult = await GetGeneralByIdAsync(publicId);
+            if (!findResult.IsSuccess)
+            {
+                return new Result<ProductDTO>(false, findResult.Message, null, findResult.ErrorCode);
+            }
+            string? finalImageUrl = findResult.Data.DefaultImageUrl;
+            // Handle delete-only request
+            if (productUpdateDTO.DeleteProductImage && !string.IsNullOrWhiteSpace(finalImageUrl))
+            {
+                var deleteResult = await _imageService.DeleteImage(finalImageUrl);
+                if (!deleteResult.IsSuccess)
+                {
+                    return new Result<ProductDTO>(false, deleteResult.Message, null, deleteResult.ErrorCode);
+                }
+
+                finalImageUrl = null;
+            }
+
+            // Handle new uploaded image
+            if (productUpdateDTO.DefaultImageFile != null)
+            {
+                // Delete old image if it exists (after deleteProfileImage handled)
+                if (!string.IsNullOrWhiteSpace(finalImageUrl))
+                {
+                    var deleteOld = await _imageService.DeleteImage(finalImageUrl);
+                    if (!deleteOld.IsSuccess)
+                    {
+                        return new Result<ProductDTO>(false, deleteOld.Message, null, deleteOld.ErrorCode);
+                    }
+                }
+                // Save new image
+                var saveResult = await _imageService.SaveImageAsync(
+           productUpdateDTO.DefaultImageFile,
+           _imageOptions.Value.ProfileFolder);
+
+                if (!saveResult.IsSuccess)
+                {
+                    return new Result<ProductDTO>(false, saveResult.Message, null, saveResult.ErrorCode);
+                }
+                // Update final image path for DB
+                finalImageUrl = saveResult.Data;
+            }
+
+            var productDTO = new ProductUpdateDBDTO
+            {
+                BrandId = productUpdateDTO.BrandId,
+                CategoryId = productUpdateDTO.CategoryId,
+                NameEn = productUpdateDTO.NameEn,
+                NameAr = productUpdateDTO.NameAr,
+                DescriptionEn = productUpdateDTO.DescriptionEn,
+                DescriptionAr = productUpdateDTO.DescriptionAr,
+                DefaultImageUrl = finalImageUrl,
+
+            };
+            // Update DB with new image path
+            var updateResult = await _productRepository.UpdateAsync(publicId, productDTO);
+            updateResult.Data.DefaultImageUrl = ImageUrlHelper.ToAbsoluteUrl(updateResult.Data.DefaultImageUrl, _baseUrl);
+            return updateResult;
+        }
+    
     }
 }

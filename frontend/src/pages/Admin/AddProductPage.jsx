@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { create, read } from "../../api/apiWrapper.js";
+import { create, read, update } from "../../api/apiWrapper.js";
 import ProductInfo from "../../components/AddProductPage/ProductInfo";
 import Variations from "../../components/AddProductPage/Variations/Variations.jsx";
 import ProductItems from "../../components/AddProductPage/ProductItems.jsx";
@@ -78,6 +78,7 @@ const AddProductPage = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [isModeUpdate, setIsModeUpdate] = useState(false);
+  const [deleteProfileImage, setDeleteProfileImage] = useState(false);
   const navigate = useNavigate();
   const { productId } = useParams();
 
@@ -446,6 +447,42 @@ const AddProductPage = () => {
     }
   }
 
+  async function updateProduct() {
+    try {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append("categoryId", productData.categoryId);
+      formData.append("brandId", productData.brandId);
+      formData.append("nameEn", productData.nameEn);
+      formData.append("nameAr", productData.nameAr);
+      formData.append("descriptionEn", productData.descriptionEn || "");
+      formData.append("descriptionAr", productData.descriptionAr || "");
+      formData.append("weightKg", productData.weightKg);
+
+      if (productData.defaultImageFile) {
+        formData.append("defaultImageFile", productData.defaultImageFile);
+      }
+
+      if (deleteProfileImage) {
+        formData.append("deleteProfileImage", true);
+      } else {
+        formData.append("deleteProfileImage", false);
+      }
+
+      const result = await update(`products/${productId}`, formData);
+
+      if (result?.data?.defaultImageUrl) {
+        setProductData((prev) => ({
+          ...prev,
+          defaultImageUrl: result.data.defaultImageUrl,
+          defaultImageFile: null, // clear file after upload
+        }));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   // useEffect(() => {
   //   console.log("productData -> ", productData);
   // }, [productData]);
@@ -465,6 +502,7 @@ const AddProductPage = () => {
           isModeUpdate={isModeUpdate}
           setProductData={setProductData}
           errors={errors}
+          updateProduct={updateProduct}
         />
       )}
       {step == 2 && (

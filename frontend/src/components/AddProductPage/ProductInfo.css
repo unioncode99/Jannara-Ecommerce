@@ -94,3 +94,9 @@
   cursor: pointer;
   transition: var(--transition);
 }
+
+.save-container {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}

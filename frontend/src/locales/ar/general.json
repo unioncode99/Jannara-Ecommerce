@@ -486,7 +486,8 @@
       "actions": "الإجراءات",
       "confirm_delete_product": "هل أنت متأكد أنك تريد حذف هذا المنتج؟",
       "cancel": "إلغاء",
-      "delete_text": "حذف"
+      "delete_text": "حذف",
+      "save": "حفظ"
     }
   },
   "sidebar": {

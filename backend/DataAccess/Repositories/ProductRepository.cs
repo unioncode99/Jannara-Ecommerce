@@ -1,11 +1,13 @@
 ﻿using Azure;
 using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.General;
+using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Product;
 using Jannara_Ecommerce.DTOs.Role;
 using Jannara_Ecommerce.DTOs.Seller;
 using Jannara_Ecommerce.DTOs.Variation;
 using Jannara_Ecommerce.DTOs.VariationOption;
+using Jannara_Ecommerce.Enums;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -427,7 +429,6 @@ VALUES
             return new Result<ProductDTO>(false, "failed_to_add_product", null, 500);
         }
 
-
         public async Task<Result<PagedResponseDTO<ProductGeneralResponseDTO>>> GetAllGeneralAsync(GeneralProductFilterDTO filter)
         {
             using var connection = new SqlConnection(_connectionString);
@@ -675,6 +676,118 @@ SELECT @json AS FullJson;
                         _logger.LogError($"Error fetching product by id {publicId}: {ex}");
                         return new Result<ProductDetailsForAdminDTO>(false, "Error fetching product", null, 500);
                     }
+                }
+            }
+        }
+
+
+        public async Task<Result<ProductDTO>> GetGeneralByIdAsync(Guid publicId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"select * form products where public_id = @publicId";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@publicId", publicId);
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using var reader = await command.ExecuteReaderAsync();
+                        if (await reader.ReadAsync())
+                        {
+                            var insertedProduct = new ProductDTO
+                            (
+                                reader.GetInt32(reader.GetOrdinal("id")),
+                                reader.GetGuid(reader.GetOrdinal("public_id")),
+                                reader.GetInt32(reader.GetOrdinal("category_id")),
+                                reader.IsDBNull(reader.GetOrdinal("brand_id")) ? default : reader.GetInt32(reader.GetOrdinal("id")),
+                                reader.GetString(reader.GetOrdinal("default_image_url")),
+                                reader.GetString(reader.GetOrdinal("name_en")),
+                                reader.GetString(reader.GetOrdinal("name_ar")),
+                                reader.GetString(reader.GetOrdinal("description_en")),
+                                reader.GetString(reader.GetOrdinal("description_ar")),
+                                reader.GetDecimal(reader.GetOrdinal("weight_kg")),
+                                reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                            );
+                            return new Result<ProductDTO>(true, "product_fetched_successfully", insertedProduct);
+                        }
+
+                        return new Result<ProductDTO>(false, "failed_to_fetch_product", null, 500);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to retrieve products for page {PageNumber} with page size {PageSize}");
+                        return new Result<ProductDTO>(false, "internal_server_error", null, 500);
+                    }
+                }
+            }
+            
+        }
+
+        public async Task<Result<ProductDTO>> UpdateAsync(Guid publicId, ProductUpdateDBDTO productUpdateDBDTO)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+
+  UPDATE Products
+        SET 
+            category_id = @CategoryId,
+            brand_id = @BrandId,
+            name_en = @NameEn,
+            name_ar = @NameAr,
+            description_en = @DescriptionEn,
+            description_ar = @DescriptionAr,
+            weight_kg = @WeightKg,
+            default_image_url = COALESCE(@DefaultImageUrl, default_image_url)
+        WHERE public_id = @PublicId;
+select * from Products where public_id = @PublicId";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@PublicId", publicId);
+                    command.Parameters.AddWithValue("@CategoryId", productUpdateDBDTO.CategoryId);
+                    command.Parameters.AddWithValue("@BrandId", productUpdateDBDTO.BrandId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@NameEn", productUpdateDBDTO.NameEn);
+                    command.Parameters.AddWithValue("@NameAr", productUpdateDBDTO.NameAr);
+                    command.Parameters.AddWithValue("@DescriptionEn", productUpdateDBDTO.DescriptionEn ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@DescriptionAr", productUpdateDBDTO.DescriptionAr ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@WeightKg", productUpdateDBDTO.WeightKg);
+                    command.Parameters.AddWithValue("@DefaultImageUrl", productUpdateDBDTO.DefaultImageUrl);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using var reader = await command.ExecuteReaderAsync();
+                        if (await reader.ReadAsync())
+                        {
+                            var updatedProduct = new ProductDTO
+                            (
+                                reader.GetInt32(reader.GetOrdinal("id")),
+                                reader.GetGuid(reader.GetOrdinal("public_id")),
+                                reader.GetInt32(reader.GetOrdinal("category_id")),
+                                reader.IsDBNull(reader.GetOrdinal("brand_id")) ? default : reader.GetInt32(reader.GetOrdinal("id")),
+                                reader.GetString(reader.GetOrdinal("default_image_url")),
+                                reader.GetString(reader.GetOrdinal("name_en")),
+                                reader.GetString(reader.GetOrdinal("name_ar")),
+                                reader.GetString(reader.GetOrdinal("description_en")),
+                                reader.GetString(reader.GetOrdinal("description_ar")),
+                                reader.GetDecimal(reader.GetOrdinal("weight_kg")),
+                                reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                            );
+                            return new Result<ProductDTO>(true, "product_fetched_successfully", updatedProduct);
+                        }
+
+                        return new Result<ProductDTO>(false, "product_fetched_successfully", null);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to update person with PersonId {PersonId}", publicId);
+                        return new Result<ProductDTO>(false, "internal_server_error", null, 500);
+                    }
+
                 }
             }
         }

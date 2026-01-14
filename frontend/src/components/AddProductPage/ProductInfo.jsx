@@ -7,8 +7,15 @@ import "./ProductInfo.css";
 import BrandsDropdown from "../BrandsDropdown";
 import ProductCategoriesDropdown from "../ProductCategoriesDropdown";
 import { isImageValid } from "../../utils/utils";
+import Button from "../ui/Button";
 
-const ProductInfo = ({ productData, setProductData, errors, isModeUpdate }) => {
+const ProductInfo = ({
+  productData,
+  setProductData,
+  errors,
+  updateProduct,
+  isModeUpdate,
+}) => {
   const [productImagePreview, setProductImagePreview] = useState(
     productData?.defaultImageUrl || null
   );
@@ -29,6 +36,8 @@ const ProductInfo = ({ productData, setProductData, errors, isModeUpdate }) => {
     upload,
     general_category_label,
   } = translations.general.pages.add_product;
+
+  const { save } = translations.general.pages.products;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -159,6 +168,13 @@ const ProductInfo = ({ productData, setProductData, errors, isModeUpdate }) => {
       </div>
       {errors.defaultImageFile && (
         <div className="form-alert">{errors.defaultImageFile}</div>
+      )}
+      {isModeUpdate && (
+        <div className="save-container">
+          <Button onClick={updateProduct} className="btn btn-primary ">
+            {save}
+          </Button>
+        </div>
       )}
     </div>
   );
