@@ -483,7 +483,12 @@
       "edit_product": "Edit Product",
       "search_label": "Search",
       "search_product_placeholder": "Search products...",
-      "clear_filters": "Clear Filters"
+      "clear_filters": "Clear Filters",
+      "product_name": "Product Name",
+      "category": "Category",
+      "brand": "Brand",
+      "description": "Description",
+      "actions": "Actions"
     }
   },
   "sidebar": {

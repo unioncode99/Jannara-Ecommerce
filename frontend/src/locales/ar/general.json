@@ -478,7 +478,12 @@
       "edit_product": "تعديل المنتج",
       "search_label": "بحث",
       "search_product_placeholder": "ابحث عن المنتجات...",
-      "clear_filters": "مسح الفلاتر"
+      "clear_filters": "مسح الفلاتر",
+      "product_name": "اسم المنتج",
+      "category": "الفئة",
+      "brand": "العلامة التجارية",
+      "description": "الوصف",
+      "actions": "الإجراءات"
     }
   },
   "sidebar": {

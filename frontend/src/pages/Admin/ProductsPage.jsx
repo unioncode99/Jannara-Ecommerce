@@ -81,8 +81,19 @@ const ProductsPage = () => {
     pageSize,
   ]);
 
-  function handleAddEditProduct() {
-    console.log("handleAddEditProduct");
+  function handleAddProduct() {
+    console.log("handleAddProduct");
+  }
+
+  function handleDeleteProduct(product) {
+    setSelectedProduct(product);
+    // setIsDeleteProductCategoryConfirmModalOpen(true);
+    console.log("handleDeleteProduct -> ", product);
+  }
+  function handleEditProduct(product) {
+    setSelectedProduct(product);
+    // setIsAddEditProductCategoryModalOpen(true);
+    console.log("handleDeleteProduct -> ", product);
   }
 
   const handleSearchInputChange = (e) => {
@@ -122,7 +133,7 @@ const ProductsPage = () => {
         <h1>
           <Package /> {title}
         </h1>
-        <Button onClick={handleAddEditProduct} className="btn btn-primary">
+        <Button onClick={handleAddProduct} className="btn btn-primary">
           <UserPlus /> {add_product}
         </Button>
       </header>
@@ -153,8 +164,20 @@ const ProductsPage = () => {
                 onPageChange={handlePageChange}
                 pageSize={pageSize}
               />
-              {view == "card" && <CardView products={products} />}
-              {view == "table" && <TableView products={products} />}
+              {view == "card" && (
+                <CardView
+                  handleEditProduct={handleEditProduct}
+                  handleDeleteProduct={handleDeleteProduct}
+                  products={products}
+                />
+              )}
+              {view == "table" && (
+                <TableView
+                  products={products}
+                  handleEditProduct={handleEditProduct}
+                  handleDeleteProduct={handleDeleteProduct}
+                />
+              )}
               <Pagination
                 currentPage={currentPage}
                 totalItems={totalProducts}

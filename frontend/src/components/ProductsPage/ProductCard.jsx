@@ -7,7 +7,7 @@ const ProductCard = ({ product, handleEditProduct, handleDeleteProduct }) => {
   return (
     <div className="product-card">
       <div className="image-container">
-        <img src={product.defaultImageUrl} alt={product.name} />
+        <img src={product.defaultImageUrl} alt={product.nameEn} />
       </div>
       <div className="product-info">
         <h3 className="product-name">
