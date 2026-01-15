@@ -9,5 +9,10 @@ namespace Jannara_Ecommerce.Business.Interfaces
         Task<Result<ProductItemImageDTO>> AddNewAsync(int productItemId,
             ProductItemImageCreateDBDTO productItemImage,
             SqlConnection connection, SqlTransaction transaction);
+
+
+        Task<Result<IEnumerable<ProductItemImageDTO>>> AddNewImagesAsync(ProductItemImageCreateOneDTO productItem);
+        public Task<Result<ProductItemImageDTO>> SetPrimaryAsync(int id);
+        public Task<Result<bool>> DeleteAsync(int id);
     }
 }
