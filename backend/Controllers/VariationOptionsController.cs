@@ -1,23 +1,25 @@
 ﻿using Jannara_Ecommerce.Business.Interfaces;
 using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.DTOs.Variation;
+using Jannara_Ecommerce.DTOs.VariationOption;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Jannara_Ecommerce.Controllers
 {
-    [Route("api/variations")]
+    [Route("api/variation-options")]
     [ApiController]
-    public class VariationsController : ControllerBase
+    public class VariationOptionsController : ControllerBase
     {
-        private readonly IVariationService _service;
-        public VariationsController(IVariationService service)
+
+        private readonly IVariationOptionService _service;
+        public VariationOptionsController(IVariationOptionService service)
         {
             _service = service;
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddVariation(VariationCreateOneDTO request)
+        public async Task<ActionResult> AddVariationOption(VariationOptionCreateOneDTO request)
         {
             var result = await _service.AddNewAsync(request);
             if (result.IsSuccess)
@@ -28,7 +30,7 @@ namespace Jannara_Ecommerce.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> UpdateVariation(int id, [FromBody] VariationUpdateDTO request)
+        public async Task<ActionResult> UpdateVariationOption(int id, [FromBody] VariationOptionUpdateDTO request)
         {
             var result = await _service.UpdateAsync(id, request);
             if (result.IsSuccess)
@@ -39,7 +41,7 @@ namespace Jannara_Ecommerce.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public async Task<ActionResult> DeleteVariation(int id)
+        public async Task<ActionResult> DeleteVariationOption(int id)
         {
             var result = await _service.DeleteAsync(id);
             if (result.IsSuccess)

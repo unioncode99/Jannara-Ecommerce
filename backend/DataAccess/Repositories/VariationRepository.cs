@@ -136,6 +136,8 @@ select
 *
 from
 Variations
+where
+id = @id;
 ";
                 using (var command = new SqlCommand(query, connection))
                 {
