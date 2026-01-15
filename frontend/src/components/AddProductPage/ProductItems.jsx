@@ -13,7 +13,7 @@ import Button from "../ui/Button";
 import { isImageValid } from "../../utils/utils";
 import { useLanguage } from "../../hooks/useLanguage";
 import { toast } from "../ui/Toast";
-import { create, remove } from "../../api/apiWrapper";
+import { create, remove, update } from "../../api/apiWrapper";
 
 const computeCombinations = (variations) => {
   if (!variations?.length) return [];
@@ -57,6 +57,8 @@ const ProductItems = ({
     product_image_update_failed,
     product_image_delete_success,
     product_image_delete_failed,
+    product_image_primary_success,
+    product_image_primary_failed,
   } = translations.general.pages.products;
 
   const generateItems = () => {
@@ -138,14 +140,34 @@ const ProductItems = ({
   };
 
   const setPrimaryImage = (itemIndex, imgIndex) => {
-    const items = [...productData.productItems];
-    items[itemIndex].productItemImages = items[itemIndex].productItemImages.map(
-      (img, i) => ({
-        ...img,
-        isPrimary: i === imgIndex,
-      })
-    );
-    setProductData({ ...productData, productItems: items });
+    const selectedImage =
+      productData.productItems[itemIndex]?.productItemImages[imgIndex];
+
+    if (!selectedImage) {
+      return;
+    }
+
+    if (!isModeUpdate) {
+      const updatedItems = productData.productItems.map((item, i) => {
+        if (i !== itemIndex) return item;
+
+        return {
+          ...item,
+          productItemImages: item.productItemImages.map((image, j) => ({
+            ...image,
+            isPrimary: j === imgIndex,
+          })),
+        };
+      });
+      setProductData({
+        ...productData,
+        productItems: updatedItems,
+      });
+    } else {
+      if (selectedImage?.id) {
+        setPrimary(selectedImage);
+      }
+    }
   };
 
   const getImagePrview = (img) => {
@@ -256,6 +278,48 @@ const ProductItems = ({
         );
       } else {
         toast.show(product_image_delete_failed, "error");
+      }
+    }
+  }
+
+  async function setPrimary(selectedImage) {
+    try {
+      const result = await update(
+        `product-item-images/set-primary/${selectedImage.id}`
+      );
+
+      console.log("result -> ", result);
+
+      const updatedItems = productData.productItems.map((item) => ({
+        ...item,
+        productItemImages: item.productItemImages.map((image) => ({
+          ...image,
+          isPrimary: image.id === selectedImage.id,
+        })),
+      }));
+
+      setProductData({
+        ...productData,
+        productItems: updatedItems,
+      });
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_image_primary_success, "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show(product_image_primary_failed, "error");
       }
     }
   }

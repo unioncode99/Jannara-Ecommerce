@@ -29,7 +29,7 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("set-primary/{id:int}")]
         public async Task<ActionResult> SetPrimary(int id)
         {
             var result = await _service.SetPrimaryAsync(id);

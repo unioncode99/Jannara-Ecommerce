@@ -87,12 +87,12 @@ VALUES (@ProductItemId, @ImageUrl, @IsPrimary);
                 string query = @"
 UPDATE ProductItemImages
 SET 
-    is_primary = 0,
+    is_primary = 0
 WHERE id <> @id;
 
 UPDATE ProductItemImages
 SET 
-    is_primary = 1,
+    is_primary = 1
 WHERE id = @id;
 
 select 
