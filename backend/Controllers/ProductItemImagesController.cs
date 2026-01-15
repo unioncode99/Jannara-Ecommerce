@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Jannara_Ecommerce.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/product-item-images")]
     [ApiController]
     public class ProductItemImagesController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace Jannara_Ecommerce.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddImages(ProductItemImageCreateOneDTO request)
+        public async Task<ActionResult> AddImages([FromForm] ProductItemImageCreateOneDTO request)
         {
             var result = await _service.AddNewImagesAsync(request);
             if (result.IsSuccess)

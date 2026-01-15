@@ -74,7 +74,7 @@ namespace Jannara_Ecommerce.Business.Services
 
                     ProductItems.Add(addProductItemImageResult.Data);
                 }
-
+                transaction.CommitAsync();
                 return new Result<IEnumerable<ProductItemImageDTO>>(true, "Image save successfully", ProductItems, 200);
 
             }

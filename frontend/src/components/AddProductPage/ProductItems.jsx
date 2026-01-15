@@ -1,9 +1,19 @@
-import { Box, Star, Trash2, Upload, WandSparkles, X } from "lucide-react";
+import {
+  Box,
+  Files,
+  Star,
+  Trash2,
+  Upload,
+  WandSparkles,
+  X,
+} from "lucide-react";
 import "./ProductItems.css";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import { isImageValid } from "../../utils/utils";
 import { useLanguage } from "../../hooks/useLanguage";
+import { toast } from "../ui/Toast";
+import { create } from "../../api/apiWrapper";
 
 const computeCombinations = (variations) => {
   if (!variations?.length) return [];
@@ -42,6 +52,9 @@ const ProductItems = ({
     upload_images,
   } = translations.general.pages.add_product;
 
+  const { product_image_update_success, product_image_update_failed } =
+    translations.general.pages.products;
+
   const generateItems = () => {
     const combos = computeCombinations(productData?.variations);
     const items = combos.map((variationOptions) => ({
@@ -64,7 +77,7 @@ const ProductItems = ({
     setProductData({ ...productData, productItems: items });
   };
 
-  const addImages = (index, files) => {
+  const addImages = (index, files, itemId) => {
     const validFiles = Array.from(files)
       .filter((file) => isImageValid(file))
       .map((file) => ({ imageFile: file, isPrimary: false }));
@@ -78,8 +91,20 @@ const ProductItems = ({
       validFiles[0].isPrimary = true;
     }
 
-    items[index].productItemImages.push(...validFiles);
-    setProductData({ ...productData, productItems: items });
+    if (!isModeUpdate) {
+      items[index].productItemImages.push(...validFiles);
+      setProductData({ ...productData, productItems: items });
+    } else {
+      //
+      console.log(
+        "productData.productItems[index].id -> ",
+        productData.productItems[index].id
+      );
+
+      console.log("itemId", itemId);
+
+      uploadItemImages(itemId, validFiles);
+    }
   };
 
   const removeImage = (itemIndex, imageIndex) => {
@@ -128,6 +153,75 @@ const ProductItems = ({
     items.splice(itemIndex, 1); // remove the whole item
     setProductData({ ...productData, productItems: items });
   };
+
+  async function uploadItemImages(itemId, images) {
+    try {
+      const formData = new FormData();
+
+      formData.append("ProductItemId", itemId);
+      images
+        ?.filter((img) => img.imageFile instanceof File)
+        ?.forEach((img, index) => {
+          formData.append(
+            `ProductItemImages[${index}].ImageFile`,
+            img.imageFile
+          );
+          formData.append(
+            `ProductItemImages[${index}].IsPrimary`,
+            img.isPrimary
+          );
+        });
+
+      const result = await create(`product-item-images`, formData);
+
+      console.log("result -> ", result);
+
+      const updatedItems = productData.productItems.map((item) => {
+        if (item.id === itemId) {
+          return {
+            ...item,
+            productItemImages: [...(item.productItemImages || []), ...result],
+          };
+        }
+        return item;
+      });
+
+      // const productItems = [...productData.productItems, ...result];
+
+      let currentItem = productData.productItems.find(
+        (item) => item.id == itemId
+      );
+
+      currentItem.push;
+
+      setProductData({
+        ...productData,
+        productItems: updatedItems,
+      });
+
+      // productData.productItems.productItemImages;
+      // productData.productItems.variationOptions;
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_image_update_success, "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show(product_image_update_failed, "error");
+      }
+    }
+  }
 
   return (
     <div className="product-items-container">
@@ -203,7 +297,7 @@ const ProductItems = ({
               accept="image/*"
               multiple
               style={{ display: "none" }}
-              onChange={(e) => addImages(index, e.target.files)}
+              onChange={(e) => addImages(index, e.target.files, item.id)}
             />
           </label>
 
