@@ -491,7 +491,11 @@
       "product_update_success": "تم تحديث المنتج بنجاح!",
       "product_update_failed": "فشل في تحديث المنتج",
       "product_image_update_success": "تم تحديث صور المنتج بنجاح!",
-      "product_image_update_failed": "فشل تحديث صور المنتج"
+      "product_image_update_failed": "فشل تحديث صور المنتج",
+      "product_image_primary_success": "تم تغيير الصورة الرئيسية بنجاح!",
+      "product_image_primary_failed": "فشل في تغيير الصورة الرئيسية",
+      "product_image_delete_success": "تم حذف الصورة بنجاح!",
+      "product_image_delete_failed": "فشل في حذف الصورة."
     }
   },
   "sidebar": {

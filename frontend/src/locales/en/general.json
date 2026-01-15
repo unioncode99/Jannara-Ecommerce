@@ -496,7 +496,11 @@
       "product_update_success": "Product updated successfully!",
       "product_update_failed": "Failed to update product",
       "product_image_update_success": "Product images updated successfully!",
-      "product_image_update_failed": "Failed to update product images"
+      "product_image_update_failed": "Failed to update product images",
+      "product_image_primary_success": "Primary image updated successfully!",
+      "product_image_primary_failed": "Failed to update primary image",
+      "product_image_delete_success": "Image deleted successfully!",
+      "product_image_delete_failed": "Failed to delete image."
     }
   },
   "sidebar": {

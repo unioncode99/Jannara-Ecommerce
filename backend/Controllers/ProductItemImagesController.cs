@@ -39,5 +39,17 @@ namespace Jannara_Ecommerce.Controllers
             }
             return StatusCode(result.ErrorCode, result.Message);
         }
+
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> SetImage(int id)
+        {
+            var result = await _service.DeleteAsync(id);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
     }
 }

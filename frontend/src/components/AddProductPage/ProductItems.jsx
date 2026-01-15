@@ -13,7 +13,7 @@ import Button from "../ui/Button";
 import { isImageValid } from "../../utils/utils";
 import { useLanguage } from "../../hooks/useLanguage";
 import { toast } from "../ui/Toast";
-import { create } from "../../api/apiWrapper";
+import { create, remove } from "../../api/apiWrapper";
 
 const computeCombinations = (variations) => {
   if (!variations?.length) return [];
@@ -52,8 +52,12 @@ const ProductItems = ({
     upload_images,
   } = translations.general.pages.add_product;
 
-  const { product_image_update_success, product_image_update_failed } =
-    translations.general.pages.products;
+  const {
+    product_image_update_success,
+    product_image_update_failed,
+    product_image_delete_success,
+    product_image_delete_failed,
+  } = translations.general.pages.products;
 
   const generateItems = () => {
     const combos = computeCombinations(productData?.variations);
@@ -110,19 +114,27 @@ const ProductItems = ({
   const removeImage = (itemIndex, imageIndex) => {
     const items = [...productData.productItems];
 
-    const removedImage = items[itemIndex].productItemImages.splice(
-      imageIndex,
-      1
-    )[0];
+    const removedImage = items[itemIndex].productItemImages[imageIndex];
 
-    if (
-      removedImage?.isPrimary &&
-      items[itemIndex].productItemImages.length > 0
-    ) {
-      items[itemIndex].productItemImages[0].isPrimary = true;
+    // Remove locally
+    items[itemIndex].productItemImages.splice(imageIndex, 1);
+
+    // Ensure a primary image exists
+    if (!items[itemIndex].productItemImages.some((img) => img.isPrimary)) {
+      if (items[itemIndex].productItemImages.length > 0) {
+        items[itemIndex].productItemImages[0].isPrimary = true;
+        setPrimaryImage(itemIndex, 0);
+      }
     }
 
-    setProductData({ ...productData, productItems: items });
+    if (!isModeUpdate) {
+      setProductData({ ...productData, productItems: items });
+    } else {
+      // If in update mode and the image exists on server, call API to delete it
+      if (removedImage?.id) {
+        deleteImage(removedImage);
+      }
+    }
   };
 
   const setPrimaryImage = (itemIndex, imgIndex) => {
@@ -186,21 +198,10 @@ const ProductItems = ({
         return item;
       });
 
-      // const productItems = [...productData.productItems, ...result];
-
-      let currentItem = productData.productItems.find(
-        (item) => item.id == itemId
-      );
-
-      currentItem.push;
-
       setProductData({
         ...productData,
         productItems: updatedItems,
       });
-
-      // productData.productItems.productItemImages;
-      // productData.productItems.variationOptions;
 
       if (translations.general.server_messages[result?.message?.message]) {
         toast.show(
@@ -219,6 +220,42 @@ const ProductItems = ({
         );
       } else {
         toast.show(product_image_update_failed, "error");
+      }
+    }
+  }
+
+  async function deleteImage(removedImage) {
+    try {
+      const result = await remove(`product-item-images/${removedImage.id}`);
+
+      console.log("result -> ", result);
+      const updatedItems = productData.productItems.map((item) => {
+        item.productItemImages.filter((image) => image.id != removedImage.id);
+        return item;
+      });
+
+      setProductData({
+        ...productData,
+        productItems: updatedItems,
+      });
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_image_delete_success, "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show(product_image_delete_failed, "error");
       }
     }
   }
