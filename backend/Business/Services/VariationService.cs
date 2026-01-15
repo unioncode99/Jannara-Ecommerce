@@ -20,5 +20,20 @@ namespace Jannara_Ecommerce.Business.Services
         {
             return await _variationRepository.AddNewAsync(productId, variation, connection, transaction);
         }
+
+        public async Task<Result<VariationDTO>> AddNewAsync(VariationCreateOneDTO variationCreateOneDTO)
+        {
+            return await _variationRepository.AddNewAsync(variationCreateOneDTO);
+        }
+
+        public async Task<Result<bool>> DeleteAsync(int id)
+        {
+            return await _variationRepository.DeleteAsync(id);
+        }
+
+        public async Task<Result<VariationDTO>> UpdateAsync(int id, VariationUpdateDTO variationUpdateDTO)
+        {
+            return await _variationRepository.UpdateAsync(id, variationUpdateDTO);
+        }
     }
 }

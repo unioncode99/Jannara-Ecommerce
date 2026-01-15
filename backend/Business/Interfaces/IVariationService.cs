@@ -9,5 +9,8 @@ namespace Jannara_Ecommerce.Business.Interfaces
         Task<Result<VariationDTO>> AddNewAsync(int productId,
             VariationCreateDTO variation,
             SqlConnection connection, SqlTransaction transaction);
+        Task<Result<VariationDTO>> AddNewAsync(VariationCreateOneDTO variationCreateOneDTO);
+        Task<Result<VariationDTO>> UpdateAsync(int id, VariationUpdateDTO variationUpdateDTO);
+         Task<Result<bool>> DeleteAsync(int id);
     }
 }
