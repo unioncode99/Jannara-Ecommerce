@@ -792,5 +792,33 @@ select * from Products where public_id = @PublicId";
             }
         }
 
+        public async Task<Result<bool>> DeleteAsync(int id)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"DELETE FROM Products WHERE id = @id";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    try
+                    {
+                        await connection.OpenAsync();
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+                        if (rowsAffected > 0)
+                        {
+                            return new Result<bool>(true, "role_deleted_successfully", true);
+                        }
+                        return new Result<bool>(false, "role_not_found", false, 404);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to delete role with RoleId {RoleId}", id);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
+                    }
+                }
+            }
+
+        }
+
     }
 }

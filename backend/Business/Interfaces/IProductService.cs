@@ -18,5 +18,6 @@ namespace Jannara_Ecommerce.Business.Interfaces
         Task<Result<ProductDetailsForAdminDTO>> GetProductForEditAsync(Guid publicId);
         Task<Result<ProductDTO>> GetGeneralByIdAsync(Guid publicId);
         Task<Result<ProductDTO>> UpdateAsync(Guid publicId, ProductUpdateDTO productUpdateDTO);
+        Task<Result<bool>> DeleteAsync(int id);
     }
 }

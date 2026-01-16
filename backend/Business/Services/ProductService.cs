@@ -363,6 +363,10 @@ namespace Jannara_Ecommerce.Business.Services
             updateResult.Data.DefaultImageUrl = ImageUrlHelper.ToAbsoluteUrl(updateResult.Data.DefaultImageUrl, _baseUrl);
             return updateResult;
         }
-    
+
+        public async Task<Result<bool>> DeleteAsync(int id)
+        {
+            return await _productRepository.DeleteAsync(id);
+        }
     }
 }

@@ -124,5 +124,17 @@ GetAllGeneralProducts([FromQuery] GeneralProductFilterDTO filter)
             }
             return Ok(result.Data);
         }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteProduct(int id)
+        {
+            var result = await _productService.DeleteAsync(id);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Message);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
     }
 }
