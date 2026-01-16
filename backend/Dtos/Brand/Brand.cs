@@ -3,8 +3,26 @@
     //public class BrandDetailDTO
     public class BrandDTO
     {
-		//public int BrandId { get; set; }
-		public int Id { get; set; }
+
+        public BrandDTO()
+        {
+
+        }
+        public BrandDTO(int id, string nameEn, string nameAr, string logoUrl, string websiteUrl, string? descriptionEn, string? descriptionAr, DateTime createdAt, DateTime updatedAt)
+        {
+            Id = id;
+            NameEn = nameEn;
+            NameAr = nameAr;
+            LogoUrl = logoUrl;
+            WebsiteUrl = websiteUrl;
+            DescriptionEn = descriptionEn;
+            DescriptionAr = descriptionAr;
+            CreatedAt = createdAt;
+            UpdatedAt = updatedAt;
+        }
+
+        //public int BrandId { get; set; }
+        public int Id { get; set; }
 		public string NameEn { get; set; }
 		public string NameAr { get; set; }
 		public string LogoUrl { get; set; }

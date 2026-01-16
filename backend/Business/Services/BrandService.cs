@@ -13,9 +13,24 @@ namespace Jannara_Ecommerce.Business.Services
             _brandRepository = brandRepository;
         }
 
+        public async Task<Result<BrandDTO>> AddNewAsync(BrandCreateDTO newPBrand)
+        {
+            return await _brandRepository.AddNewAsync(newPBrand);
+        }
+
+        public async Task<Result<bool>> DeleteAsync(int id)
+        {
+            return await _brandRepository.DeleteAsync(id);
+        }
+
         public async Task<Result<IEnumerable<BrandDTO>>> GetAllAsync()
         {
             return await _brandRepository.GetAllAsync();
+        }
+
+        public async Task<Result<BrandDTO>> UpdateAsync(int id, BrandUpdateDTO updatedBrand)
+        {
+            return await _brandRepository.UpdateAsync(id, updatedBrand);
         }
     }
 }
