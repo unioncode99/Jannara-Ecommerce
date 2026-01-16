@@ -3,7 +3,7 @@ import "./Variations.css";
 import { useState } from "react";
 import VariationForm from "./VariationForm";
 import VariationItem from "./VariationItem";
-import { create } from "../../../api/apiWrapper";
+import { create, update } from "../../../api/apiWrapper";
 import { toast } from "../../ui/Toast";
 import { useLanguage } from "../../../hooks/useLanguage";
 
@@ -53,9 +53,25 @@ const Variations = ({ productData, setProductData, isModeUpdate }) => {
 
   // Update variation name
   const updateVariationName = (index, field, value) => {
-    const updatedVariations = [...productData.variations];
-    updatedVariations[index][field] = value;
-    setProductData({ ...productData, variations: updatedVariations });
+    if (!productData.variations?.[index]) {
+      return;
+    }
+
+    const updatedVariation = {
+      ...productData.variations[index],
+      [field]: value,
+    };
+
+    if (isModeUpdate) {
+      updateVariation(updatedVariation);
+    } else {
+      setProductData((prev) => ({
+        ...prev,
+        variations: prev.variations.map((v, i) =>
+          i === index ? updatedVariation : v
+        ),
+      }));
+    }
   };
 
   // Update option value
@@ -136,6 +152,69 @@ const Variations = ({ productData, setProductData, isModeUpdate }) => {
         ...prev,
         variations: [...(prev.variations || []), newVariation],
       }));
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_variation_create_success, "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show(product_variation_create_failed, "error");
+      }
+    }
+  }
+
+  async function updateVariation(variation) {
+    try {
+      const payload = {
+        id: variation.id,
+        productId: productData.id,
+        nameEn: variation?.nameEn,
+        nameAr: variation?.nameAr,
+      };
+      const result = await update(`variations/${payload.id}`, payload);
+      console.log("result -> ", result);
+
+      // Merge backend result with existing variation to preserve options
+      const existingVariation = productData.variations.find(
+        (v) => v.id === variation.id
+      );
+      const updatedVariation = {
+        ...existingVariation,
+        ...result, // overwrite only fields returned from API
+      };
+
+      setProductData((prev) => ({
+        ...prev,
+        variations: prev.variations.map((v) =>
+          v.id === updatedVariation.id ? updatedVariation : v
+        ),
+      }));
+
+      // const updatedVariations = productData.variations.map((variation) => {
+      //   return {
+      //     ...variation,
+      //     nameEn: result.nameEn,
+      //     nameAr: result.nameAr,
+      //     createdAt: result.createdAt,
+      //     updatedAt: result.updatedAt,
+      //   };
+      // });
+
+      // setProductData({
+      //   ...productData,
+      //   variations: updatedVariations,
+      // });
 
       if (translations.general.server_messages[result?.message?.message]) {
         toast.show(
