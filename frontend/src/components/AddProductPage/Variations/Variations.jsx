@@ -181,9 +181,33 @@ const Variations = ({ productData, setProductData, isModeUpdate }) => {
 
   // Remove an option
   const removeOption = (variationIndex, optionIndex) => {
-    const updatedVariations = [...productData.variations];
-    updatedVariations[variationIndex].variationOptions.splice(optionIndex, 1);
-    setProductData({ ...productData, variations: updatedVariations });
+    const variation = productData.variations[variationIndex];
+    if (!variation || !variation.variationOptions?.[optionIndex]) {
+      return;
+    }
+
+    const optionToRemove = variation.variationOptions[optionIndex];
+
+    if (isModeUpdate && optionToRemove.id) {
+      deleteVariationOption(optionToRemove.id, variation.id);
+    } else {
+      const updatedVariations = productData.variations.map((v, i) =>
+        i === variationIndex
+          ? {
+              ...v,
+              variationOptions: v.variationOptions.filter(
+                (_, oIndex) => oIndex !== optionIndex
+              ),
+            }
+          : v
+      );
+
+      // Update state
+      setProductData({
+        ...productData,
+        variations: updatedVariations,
+      });
+    }
   };
 
   async function createVariation(variation) {
@@ -411,6 +435,46 @@ const Variations = ({ productData, setProductData, isModeUpdate }) => {
         );
       } else {
         toast.show(product_variation_option_update_failed, "error");
+      }
+    }
+  }
+
+  async function deleteVariationOption(optionId, variationId) {
+    try {
+      const result = await remove(`variation-options/${optionId}`);
+      console.log("result -> ", result);
+
+      setProductData((prev) => ({
+        ...prev,
+        variations: prev.variations.map((v) =>
+          v.id === variationId
+            ? {
+                ...v,
+                variationOptions: v.variationOptions.filter(
+                  (opt) => opt.id !== optionId
+                ),
+              }
+            : v
+        ),
+      }));
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_variation_option_delete_success, "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show(product_variation_option_delete_failed, "error");
       }
     }
   }
