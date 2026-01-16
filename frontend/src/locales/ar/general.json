@@ -501,7 +501,7 @@
       "product_variation_create_failed": "فشل في إضافة المتغير.",
       "product_variation_update_success": "تم تحديث المتغير بنجاح!",
       "product_variation_update_failed": "فشل في تحديث المتغير.",
-      "product_variation_delete_successr": "تم حذف المتغير بنجاح!",
+      "product_variation_delete_success": "تم حذف المتغير بنجاح!",
       "product_variation_delete_failed": "فشل في حذف المتغير.",
       "product_variation_option_create_success": "تمت إضافة خيار المتغير بنجاح!",
       "product_variation_option_create_failed": "فشل في إضافة خيار المتغير.",
