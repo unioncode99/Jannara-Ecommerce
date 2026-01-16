@@ -101,10 +101,36 @@ const Variations = ({ productData, setProductData, isModeUpdate }) => {
 
   // Update option value
   const updateOption = (variationIndex, optionIndex, field, value) => {
-    const updatedVariations = [...productData.variations];
-    updatedVariations[variationIndex].variationOptions[optionIndex][field] =
-      value;
-    setProductData({ ...productData, variations: updatedVariations });
+    const variation = productData.variations[variationIndex];
+
+    if (!variation || !variation.variationOptions?.[optionIndex]) {
+      return;
+    }
+
+    const updatedOption = {
+      ...variation.variationOptions[optionIndex],
+      [field]: value,
+      id: variation.variationOptions[optionIndex].id,
+      variationId: variation.id,
+    };
+
+    if (isModeUpdate) {
+      updateVariationOption(updatedOption);
+    } else {
+      setProductData((prev) => ({
+        ...prev,
+        variations: prev.variations.map((v, i) =>
+          i === variationIndex
+            ? {
+                ...v,
+                variationOptions: v.variationOptions.map((opt, oIndex) =>
+                  oIndex === optionIndex ? updatedOption : opt
+                ),
+              }
+            : v
+        ),
+      }));
+    }
   };
 
   // Update new option input
@@ -335,6 +361,56 @@ const Variations = ({ productData, setProductData, isModeUpdate }) => {
         );
       } else {
         toast.show(product_variation_option_create_failed, "error");
+      }
+    }
+  }
+
+  async function updateVariationOption(option) {
+    try {
+      const payload = {
+        id: option?.id,
+        valueEn: option?.valueEn,
+        valueAr: option?.valueAr,
+      };
+      const result = await update(`variation-options/${payload?.id}`, payload);
+
+      const updatedOption = result.data || result;
+
+      console.log("result -> ", result);
+
+      setProductData((prev) => ({
+        ...prev,
+        variations: prev.variations.map((v) =>
+          v.id === option.variationId
+            ? {
+                ...v,
+                variationOptions: v.variationOptions.map((opt) =>
+                  opt.id === updatedOption.id
+                    ? { ...opt, ...updatedOption } // merge to avoid losing fields
+                    : opt
+                ),
+              }
+            : v
+        ),
+      }));
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_variation_option_update_success, "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show(product_variation_option_update_failed, "error");
       }
     }
   }

@@ -136,7 +136,7 @@ WHERE id = @id;
 select 
 *
 from
-Variations
+VariationOptions
 where
 id = @id;
 ";
