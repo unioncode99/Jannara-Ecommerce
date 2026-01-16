@@ -508,7 +508,9 @@
       "product_variation_option_update_success": "تم تحديث خيار المتغير بنجاح!",
       "product_variation_option_update_failed": "فشل في تحديث خيار المتغير.",
       "product_variation_option_delete_success": "تم حذف خيار المتغير بنجاح!",
-      "product_variation_option_delete_failed": "فشل في حذف خيار المتغير."
+      "product_variation_option_delete_failed": "فشل في حذف خيار المتغير.",
+      "product_delete_success": "تم حذف المنتج بنجاح!",
+      "product_delete_failed": "فشل حذف المنتج"
     }
   },
   "sidebar": {

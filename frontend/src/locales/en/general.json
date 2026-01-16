@@ -513,7 +513,9 @@
       "product_variation_option_update_success": "Variation option updated successfully!",
       "product_variation_option_update_failed": "Failed to update variation option.",
       "product_variation_option_delete_success": "Variation option deleted successfully!",
-      "product_variation_option_delete_failed": "Failed to delete variation option."
+      "product_variation_option_delete_failed": "Failed to delete variation option.",
+      "product_delete_success": "Product deleted successfully!",
+      "product_delete_failed": "Failed to delete product"
     }
   },
   "sidebar": {

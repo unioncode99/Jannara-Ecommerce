@@ -3,7 +3,7 @@ import Button from "../../components/ui/Button";
 import { useLanguage } from "../../hooks/useLanguage";
 import "./ProductsPage.css";
 import { useEffect, useState } from "react";
-import { read } from "../../api/apiWrapper";
+import { read, remove } from "../../api/apiWrapper";
 import ViewSwitcher from "../../components/CustomerOrders/ViewSwitcher";
 import ProductsFilterContainer from "../../components/ProductsPage/ProductsFilterContainer";
 import TableView from "../../components/ProductsPage/TableView";
@@ -12,6 +12,7 @@ import Pagination from "../../components/ui/Pagination";
 import SpinnerLoader from "../../components/ui/SpinnerLoader";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import { useNavigate } from "react-router-dom";
+import { toast } from "../../components/ui/Toast";
 
 const ProductsPage = () => {
   const [view, setView] = useState("card"); // 'table' or 'card'
@@ -31,8 +32,15 @@ const ProductsPage = () => {
   const pageSize = 10; // Items per page
 
   const { translations } = useLanguage();
-  const { title, add_product, confirm_delete_product, cancel, delete_text } =
-    translations.general.pages.products;
+  const {
+    title,
+    add_product,
+    confirm_delete_product,
+    cancel,
+    delete_text,
+    product_delete_success,
+    product_delete_failed,
+  } = translations.general.pages.products;
 
   const navigate = useNavigate();
 
@@ -139,7 +147,37 @@ const ProductsPage = () => {
     setSelectedProduct(null);
   }
 
-  async function deleteProduct() {}
+  async function deleteProduct() {
+    try {
+      const result = await remove(`products/${selectedProduct?.id}`);
+      console.log("result -> ", result);
+
+      setProducts((prev) =>
+        prev.filter((product) => product.id !== selectedProduct.id)
+      );
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_delete_success, "success");
+      }
+
+      closeModal();
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show(product_delete_failed, "error");
+      }
+    }
+  }
 
   return (
     <div className="products-management-container">
