@@ -60,7 +60,9 @@ const BrandsPage = () => {
     setSelectedBrand(null);
   };
 
-  async function addEditBrand(payload) {}
+  async function addEditBrand(payload) {
+    console.log("payload", payload);
+  }
   async function deleteBrand() {}
 
   if (loading) {
