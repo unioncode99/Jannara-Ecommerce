@@ -30,6 +30,7 @@ import ProductCategoriesManagementPage from "./pages/Admin/ProductCategoriesMana
 import UserManagementPage from "./pages/Admin/UserManagementPage";
 import AddProductPage from "./pages/Admin/AddProductPage";
 import ProductsPage from "./pages/Admin/ProductsPage";
+import BrandsPage from "./pages/Admin/BrandsPage";
 
 function App() {
   const { language } = useLanguage();
@@ -97,6 +98,7 @@ function App() {
               element={<AddProductPage />}
             />
             <Route path="products" element={<ProductsPage />} />
+            <Route path="brands" element={<BrandsPage />} />
 
             <Route path="*" element={<NotFoundPage />} />
           </Route>

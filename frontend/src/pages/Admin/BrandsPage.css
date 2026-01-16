@@ -1,0 +1,19 @@
+.brand-actions-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand-actions-btn button {
+  background-color: transparent;
+  border-color: transparent;
+  cursor: pointer;
+  color: var(--grey-500);
+  transition: var(--transition);
+}
+.delete-brand-btn:hover {
+  color: red;
+}
+.edit-brand-btn:hover {
+  color: var(--primary-500);
+}

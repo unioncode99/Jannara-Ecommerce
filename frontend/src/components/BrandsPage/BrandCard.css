@@ -1,0 +1,41 @@
+.brand-card {
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+  padding: 0.75rem;
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+.brand-card:hover {
+  box-shadow: var(--shadow-2);
+}
+.brand-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-card h3 span {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  background-color: var(--background-color);
+  color: var(--primary-500);
+}
+
+.brand-card p {
+  color: var(--grey-500);
+  text-align: start;
+}
+
+.brand-card div {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--background-color);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: end;
+}

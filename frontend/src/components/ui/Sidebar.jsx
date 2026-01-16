@@ -8,6 +8,7 @@ import {
   Settings,
   ShoppingBag,
   ShoppingCart,
+  Tags,
   User,
   X,
 } from "lucide-react";
@@ -50,6 +51,7 @@ const menus = {
     { key: "dashboard", path: "/admin-dashboard", icon: <LayoutDashboard /> },
     { key: "users", path: "/users", icon: <User /> },
     { key: "categories", path: "/product-categories", icon: <Layers /> },
+    { key: "brands", path: "/brands", icon: <Tags /> },
     { key: "products", path: "/products", icon: <Package /> },
   ],
   superadmin: [
