@@ -76,7 +76,7 @@ INSERT INTO [dbo].[Brands]
            ,[description_ar]
 )
 OUTPUT inserted.*
-     VALUES
+     VALUES(
            @NameEn
            ,@NameAr
            ,@LogoUrl
