@@ -122,14 +122,29 @@ const Variations = ({ productData, setProductData, isModeUpdate }) => {
   const addOption = (variationIndex) => {
     const optionEn = newOptions[variationIndex]?.valueEn || "";
     const optionAr = newOptions[variationIndex]?.valueAr || "";
-    if (!optionEn.trim() || !optionAr.trim()) return;
+    if (!optionEn.trim() || !optionAr.trim()) {
+      return;
+    }
 
-    const updatedVariations = [...productData.variations];
-    updatedVariations[variationIndex].variationOptions.push({
-      valueEn: optionEn,
-      valueAr: optionAr,
-    });
-    setProductData({ ...productData, variations: updatedVariations });
+    const variation = productData.variations[variationIndex];
+
+    const newOption = { valueEn: optionEn, valueAr: optionAr };
+
+    if (isModeUpdate) {
+      createVariationOption(variation?.id, newOption);
+    } else {
+      setProductData((prev) => ({
+        ...prev,
+        variations: prev.variations.map((v, i) =>
+          i === variationIndex
+            ? {
+                ...v,
+                variationOptions: [...(v.variationOptions || []), newOption],
+              }
+            : v
+        ),
+      }));
+    }
 
     // Clear input
     setNewOptions({
@@ -274,6 +289,52 @@ const Variations = ({ productData, setProductData, isModeUpdate }) => {
         );
       } else {
         toast.show(product_variation_delete_failed, "error");
+      }
+    }
+  }
+
+  async function createVariationOption(variationId, option) {
+    try {
+      const payload = {
+        variationId: variationId,
+        valueEn: option?.valueEn,
+        valueAr: option?.valueAr,
+      };
+      const result = await create(`variation-options`, payload);
+
+      const newOption = result.data || result;
+
+      console.log("result -> ", result);
+
+      setProductData((prev) => ({
+        ...prev,
+        variations: prev.variations.map((v) =>
+          v.id === variationId
+            ? {
+                ...v,
+                variationOptions: [...(v.variationOptions || []), newOption],
+              }
+            : v
+        ),
+      }));
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_variation_option_create_success, "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show(product_variation_option_create_failed, "error");
       }
     }
   }
