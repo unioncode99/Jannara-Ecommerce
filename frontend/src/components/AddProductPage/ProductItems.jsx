@@ -367,7 +367,7 @@ const ProductItems = ({
           />
 
           {/* Price */}
-          <Input
+          {/* <Input
             showLabel={true}
             label={price_label}
             placeholder={price_placeholder}
@@ -375,10 +375,10 @@ const ProductItems = ({
             value={item.price}
             onChange={(e) => updateItem(index, "price", e.target.value)}
             errorMessage={errors?.productItems?.[index]?.price}
-          />
+          /> */}
 
           {/* Stock */}
-          <Input
+          {/* <Input
             showLabel={true}
             label={stock_label}
             placeholder={stock_placeholder}
@@ -386,7 +386,7 @@ const ProductItems = ({
             value={item.stock}
             onChange={(e) => updateItem(index, "stock", e.target.value)}
             errorMessage={errors?.productItems?.[index]?.stock}
-          />
+          /> */}
 
           {/* Images */}
 

@@ -255,14 +255,14 @@ const AddProductPage = () => {
         itemsErrors[index].sku = product_item_sku_error;
         hasError = true;
       }
-      if (!item.price || Number(item.price) <= 0) {
-        itemsErrors[index].price = product_item_price_error;
-        hasError = true;
-      }
-      if (!item.stock || Number(item.stock) < 0) {
-        itemsErrors[index].stock = product_item_stock_error;
-        hasError = true;
-      }
+      // if (!item.price || Number(item.price) <= 0) {
+      //   itemsErrors[index].price = product_item_price_error;
+      //   hasError = true;
+      // }
+      // if (!item.stock || Number(item.stock) < 0) {
+      //   itemsErrors[index].stock = product_item_stock_error;
+      //   hasError = true;
+      // }
       if (!item.productItemImages || item.productItemImages.length == 0) {
         itemsErrors[index].productItemImages = product_item_images_error;
         hasError = true;
