@@ -495,7 +495,20 @@
       "product_image_primary_success": "تم تغيير الصورة الرئيسية بنجاح!",
       "product_image_primary_failed": "فشل في تغيير الصورة الرئيسية",
       "product_image_delete_success": "تم حذف الصورة بنجاح!",
-      "product_image_delete_failed": "فشل في حذف الصورة."
+      "product_image_delete_failed": "فشل في حذف الصورة.",
+
+      "product_variation_create_success": "تمت إضافة المتغير بنجاح!",
+      "product_variation_create_failed": "فشل في إضافة المتغير.",
+      "product_variation_update_success": "تم تحديث المتغير بنجاح!",
+      "product_variation_update_failed": "فشل في تحديث المتغير.",
+      "product_variation_delete_successr": "تم حذف المتغير بنجاح!",
+      "product_variation_delete_failed": "فشل في حذف المتغير.",
+      "product_variation_option_create_success": "تمت إضافة خيار المتغير بنجاح!",
+      "product_variation_option_create_failed": "فشل في إضافة خيار المتغير.",
+      "product_variation_option_update_success": "تم تحديث خيار المتغير بنجاح!",
+      "product_variation_option_update_failed": "فشل في تحديث خيار المتغير.",
+      "product_variation_option_delete_success": "تم حذف خيار المتغير بنجاح!",
+      "product_variation_option_delete_failed": "فشل في حذف خيار المتغير."
     }
   },
   "sidebar": {

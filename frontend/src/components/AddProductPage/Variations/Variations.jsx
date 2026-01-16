@@ -3,10 +3,18 @@ import "./Variations.css";
 import { useState } from "react";
 import VariationForm from "./VariationForm";
 import VariationItem from "./VariationItem";
+import { create } from "../../../api/apiWrapper";
+import { toast } from "../../ui/Toast";
+import { useLanguage } from "../../../hooks/useLanguage";
 
 const Variations = ({ productData, setProductData, isModeUpdate }) => {
   // Store new option inputs per variation
   const [newOptions, setNewOptions] = useState({});
+
+  const { translations, language } = useLanguage();
+
+  const { product_variation_create_success, product_variation_create_failed } =
+    translations.general.pages.products;
 
   // Add a new variation
   const addVariation = (nameEn, nameAr) => {
@@ -18,10 +26,16 @@ const Variations = ({ productData, setProductData, isModeUpdate }) => {
       nameAr: nameAr,
       variationOptions: [],
     };
-    setProductData({
-      ...productData,
-      variations: [...(productData.variations || []), newVariation],
-    });
+
+    if (isModeUpdate) {
+      createVariation(newVariation);
+    } else {
+      setProductData({
+        ...productData,
+        variations: [...(productData.variations || []), newVariation],
+      });
+    }
+
     return true;
   };
 
@@ -89,6 +103,60 @@ const Variations = ({ productData, setProductData, isModeUpdate }) => {
     updatedVariations[variationIndex].variationOptions.splice(optionIndex, 1);
     setProductData({ ...productData, variations: updatedVariations });
   };
+
+  async function createVariation(variation) {
+    try {
+      const payload = {
+        productId: productData.id,
+        nameEn: variation?.nameEn,
+        nameAr: variation?.nameAr,
+      };
+      const result = await create(`variations`, payload);
+
+      const newVariation = result.data || result;
+
+      console.log("result -> ", result);
+
+      // const updatedVariations = productData.variations.map((variation) => {
+      //   return {
+      //     ...variation,
+      //     nameEn: result.nameEn,
+      //     nameAr: result.nameAr,
+      //     createdAt: result.createdAt,
+      //     updatedAt: result.updatedAt,
+      //   };
+      // });
+
+      // setProductData({
+      //   ...productData,
+      //   variations: updatedVariations,
+      // });
+
+      setProductData((prev) => ({
+        ...prev,
+        variations: [...(prev.variations || []), newVariation],
+      }));
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success"
+        );
+      } else {
+        toast.show(product_variation_create_success, "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error"
+        );
+      } else {
+        toast.show(product_variation_create_failed, "error");
+      }
+    }
+  }
 
   return (
     <div className="add-variations-container">

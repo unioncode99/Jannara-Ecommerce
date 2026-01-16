@@ -500,7 +500,20 @@
       "product_image_primary_success": "Primary image updated successfully!",
       "product_image_primary_failed": "Failed to update primary image",
       "product_image_delete_success": "Image deleted successfully!",
-      "product_image_delete_failed": "Failed to delete image."
+      "product_image_delete_failed": "Failed to delete image.",
+
+      "product_variation_create_success": "Variation added successfully!",
+      "product_variation_create_failed": "Failed to add variation.",
+      "product_variation_update_success": "Variation updated successfully!",
+      "product_variation_update_failed": "Failed to update variation.",
+      "product_variation_delete_success": "Variation deleted successfully!",
+      "product_variation_delete_failed": "Failed to delete variation.",
+      "product_variation_option_create_success": "Variation option added successfully!",
+      "product_variation_option_create_failed": "Failed to add variation option.",
+      "product_variation_option_update_success": "Variation option updated successfully!",
+      "product_variation_option_update_failed": "Failed to update variation option.",
+      "product_variation_option_delete_success": "Variation option deleted successfully!",
+      "product_variation_option_delete_failed": "Failed to delete variation option."
     }
   },
   "sidebar": {
