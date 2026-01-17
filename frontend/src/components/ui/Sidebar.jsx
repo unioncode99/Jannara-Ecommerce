@@ -43,9 +43,9 @@ const menus = {
   ],
   seller: [
     { key: "dashboard", path: "/seller-dashboard", icon: <LayoutDashboard /> },
-    { key: "products", path: "/products", icon: <Package /> },
-    { key: "add_product", path: "/add-product", icon: <Package /> },
-    { key: "orders", path: "/orders", icon: <ShoppingBag /> },
+    { key: "products", path: "/seller-products", icon: <Package /> },
+    // { key: "add_product", path: "/add-product", icon: <Package /> },
+    { key: "orders", path: "/seller-orders", icon: <ShoppingBag /> },
   ],
   admin: [
     { key: "dashboard", path: "/admin-dashboard", icon: <LayoutDashboard /> },

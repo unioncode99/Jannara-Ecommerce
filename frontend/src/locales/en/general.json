@@ -548,6 +548,17 @@
       "view_all": "View All",
       "welcome_title": "Welcome back",
       "welcome_description": "Here's what's happening with your store today."
+    },
+    "seller_products": {
+      "title": "Seller Products",
+      "add_product": "Add Product",
+      "search_placeholder": "Search products...",
+      "sort_by": "Sort By",
+      "category": "Category",
+      "brand": "Brand",
+      "clear_filters": "Clear Filters",
+      "no_products": "No products found",
+      "loading": "Loading products..."
     }
   },
   "sidebar": {

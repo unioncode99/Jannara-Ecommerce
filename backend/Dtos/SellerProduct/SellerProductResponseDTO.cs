@@ -8,6 +8,9 @@
         public string ProductNameAr { get; set; }
         public string ProductImage { get; set; }
 
+        // Product Item
+        public string Sku { get; set; }
+
         // Seller Product
         public int SellerProductId { get; set; }
         public int StockQuantity { get; set; }

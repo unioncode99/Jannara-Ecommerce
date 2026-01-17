@@ -543,6 +543,17 @@
       "view_all": "عرض الكل",
       "welcome_title": "مرحبًا بعودتك",
       "welcome_description": "إليك ما يحدث في متجرك اليوم."
+    },
+    "seller_products": {
+      "title": "منتجات البائع",
+      "add_product": "إضافة منتج",
+      "search_placeholder": "ابحث عن المنتجات...",
+      "sort_by": "ترتيب حسب",
+      "category": "الفئة",
+      "brand": "العلامة التجارية",
+      "clear_filters": "مسح الفلاتر",
+      "no_products": "لا توجد منتجات",
+      "loading": "جاري تحميل المنتجات..."
     }
   },
   "sidebar": {

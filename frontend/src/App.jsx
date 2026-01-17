@@ -31,6 +31,8 @@ import UserManagementPage from "./pages/Admin/UserManagementPage";
 import AddProductPage from "./pages/Admin/AddProductPage";
 import ProductsPage from "./pages/Admin/ProductsPage";
 import BrandsPage from "./pages/Admin/BrandsPage";
+import SellerOrders from "./pages/Seller/SellerOrders";
+import SellerProducts from "./pages/Seller/SellerProducts";
 
 function App() {
   const { language } = useLanguage();
@@ -99,6 +101,8 @@ function App() {
             />
             <Route path="products" element={<ProductsPage />} />
             <Route path="brands" element={<BrandsPage />} />
+            <Route path="seller-orders" element={<SellerOrders />} />
+            <Route path="seller-products" element={<SellerProducts />} />
 
             <Route path="*" element={<NotFoundPage />} />
           </Route>

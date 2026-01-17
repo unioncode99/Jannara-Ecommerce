@@ -62,6 +62,8 @@ p.id As ProductId,
 p.name_en as ProductNameEn,
 p.name_ar as ProductNameAr, 
 p.default_image_url as ProductImage,
+-- Product Item
+pi.sku as Sku,
 -- Seller Product
 sp.id as SellerProductId,
 sp.stock_quantity as StockQuantity,
@@ -142,6 +144,8 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
                         ProductNameEn = reader.GetString(reader.GetOrdinal("ProductNameEn")),
                         ProductNameAr = reader.GetString(reader.GetOrdinal("ProductNameAr")),
                         ProductImage = reader.GetString(reader.GetOrdinal("ProductImage")),
+
+                        Sku = reader.GetString(reader.GetOrdinal("Sku")),
 
                         SellerProductId = reader.GetInt32(reader.GetOrdinal("SellerProductId")),
                         StockQuantity = reader.GetInt32(reader.GetOrdinal("StockQuantity")),
