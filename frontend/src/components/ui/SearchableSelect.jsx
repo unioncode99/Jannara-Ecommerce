@@ -24,6 +24,8 @@ const SearchableSelect = ({
     setOpen(value.trim().length > 0);
   };
 
+  const safeOptions = Array.isArray(options) ? options : [];
+
   return (
     <div className="searchable-select">
       <Input
@@ -46,14 +48,14 @@ const SearchableSelect = ({
             </div>
           )}
 
-          {!loading && options.length === 0 && (
+          {!loading && safeOptions.length === 0 && (
             <div className="dropdown-item">
               {language == "en" ? "No results" : "لا توجد نتائج"}
             </div>
           )}
 
           {!loading &&
-            options.map((item) => (
+            safeOptions?.map((item) => (
               <div
                 key={item[valueKey]}
                 className="dropdown-item"

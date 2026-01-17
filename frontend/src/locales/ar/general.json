@@ -566,7 +566,14 @@
       "price_label": "السعر",
       "stock_label": "المخزون",
       "edit_product": "تعديل المنتج",
-      "delete_product": "حذف المنتج"
+      "delete_product": "حذف المنتج",
+      "required": "هذا الحقل مطلوب",
+      "invalid_price": "يرجى إدخال سعر صحيح",
+      "invalid_stock": "يرجى إدخال كمية صحيحة",
+      "cancel_text": "إلغاء",
+      "save": "حفظ",
+      "select_sku": "اختر رمز المنتج (SKU)",
+      "save_product": "حفظ المنتج"
     }
   },
   "sidebar": {

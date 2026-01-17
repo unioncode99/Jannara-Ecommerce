@@ -62,12 +62,16 @@ SELECT TOP 20
   sku
 FROM ProductItems
 WHERE 
-product_id = @ProductId AND
- sku LIKE '%' + @SearchTerm + '%'
+product_id = @ProductId 
+AND (
+@SearchTerm IS NULL
+OR @SearchTerm = ''
+OR sku LIKE '%' + @SearchTerm + '%'
+);
 ";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@SearchTerm", request.SearchTerm);
+                    command.Parameters.AddWithValue("@SearchTerm", request.SearchTerm ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@ProductId", request.ProductId);
 
                     var products = new List<ProductItemDropdown>();

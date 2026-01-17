@@ -571,7 +571,14 @@
       "price_label": "Price",
       "stock_label": "Stock",
       "edit_product": "Edit Product",
-      "delete_product": "Delete Product"
+      "delete_product": "Delete Product",
+      "cancel_text": "Cancel",
+      "save": "Save",
+      "save_product": "Save Product",
+      "required": "This field is required",
+      "invalid_price": "Please enter a valid price",
+      "invalid_stock": "Please enter a valid stock quantity",
+      "select_sku": "Select SKU..."
     }
   },
   "sidebar": {
