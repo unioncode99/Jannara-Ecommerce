@@ -820,5 +820,54 @@ select * from Products where public_id = @PublicId";
 
         }
 
+        public async Task<Result<IEnumerable<ProductDropdownDTO>>> GetProductDropdownAsync(ProductDropdownRequestDTO request)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+SELECT TOP 20
+  id,
+  name_en,
+  name_ar
+FROM Products
+WHERE 
+ name_en LIKE '%' + @SearchTerm + '%'
+ OR name_ar LIKE '%' + @SearchTerm + '%'
+";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@SearchTerm", request.SearchTerm);
+
+                    var products = new List<ProductDropdownDTO>();
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                products.Add(new ProductDropdownDTO
+                                (
+                                    reader.GetInt32(reader.GetOrdinal("id")),
+                                    reader.GetString(reader.GetOrdinal("name_en")),
+                                    reader.GetString(reader.GetOrdinal("name_ar"))
+                                ));
+                            }
+                            if (products.Count > 0)
+                            {
+                                return new Result<IEnumerable<ProductDropdownDTO>>(true, "roles_retrieved_successfully", products);
+                            }
+                            return new Result<IEnumerable<ProductDropdownDTO>>(false, "roles_not_found", null, 404);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to retrieve all roles from database");
+                        return new Result<IEnumerable<ProductDropdownDTO>>(false, "internal_server_error", null, 500);
+                    }
+                }
+            }
+        }
+
     }
 }

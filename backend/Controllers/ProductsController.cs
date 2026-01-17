@@ -71,6 +71,17 @@ GetAllGeneralProducts([FromQuery] GeneralProductFilterDTO filter)
             return StatusCode(result.ErrorCode, result.Message);
         }
 
+        [HttpGet("dropdown")]
+        public async Task<ActionResult<PagedResponseDTO<ProductResponseDTO>>> GetProductDropdown([FromQuery] ProductDropdownRequestDTO filter)
+        {
+            var result = await _productService.GetProductDropdownAsync(filter);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] ProductCreateDTO productCreateDTO)

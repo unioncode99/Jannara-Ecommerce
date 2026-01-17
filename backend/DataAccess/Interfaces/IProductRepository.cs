@@ -17,5 +17,6 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
         Task<Result<ProductDTO>> GetGeneralByIdAsync(Guid publicId);
         Task<Result<ProductDTO>> UpdateAsync(Guid publicId, ProductUpdateDBDTO productUpdateDBDTO);
         Task<Result<bool>> DeleteAsync(int id);
+        Task<Result<IEnumerable<ProductDropdownDTO>>> GetProductDropdownAsync(ProductDropdownRequestDTO request);
     }
 }

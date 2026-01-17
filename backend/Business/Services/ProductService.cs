@@ -368,5 +368,10 @@ namespace Jannara_Ecommerce.Business.Services
         {
             return await _productRepository.DeleteAsync(id);
         }
+
+        public async Task<Result<IEnumerable<ProductDropdownDTO>>> GetProductDropdownAsync(ProductDropdownRequestDTO request)
+        {
+            return await _productRepository.GetProductDropdownAsync(request);   
+        }
     }
 }
