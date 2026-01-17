@@ -232,5 +232,144 @@ FOR JSON PATH, WITHOUT_ARRAY_WRAPPER;
             }
         }
 
+
+        public async Task<Result<SellerDashboardResponseDTO>> GetSellerDashboardDataAsync(int userId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+DECLARE @SellerId INT = 1;
+
+SET @SellerId = (SELECT TOP 1 id FROM Sellers WHERE user_id = @UserId);
+
+DECLARE @json NVARCHAR(MAX);
+
+SELECT @json = (
+    SELECT
+        -- Total Sales
+  (SELECT ISNULL(SUM(so.grand_total),0)
+         FROM SellerOrders so
+         WHERE so.seller_id = @SellerId
+           AND so.order_status IN (2,3,4)
+        ) AS TotalSales,
+
+        -- Total Orders
+        (SELECT COUNT(DISTINCT so.id)
+         FROM SellerOrders so
+         WHERE so.seller_id = @SellerId
+        ) AS TotalOrders,
+
+        -- Active Products
+        (SELECT COUNT(*)
+         FROM SellerProducts
+         WHERE seller_id = @SellerId AND is_active = 1
+        ) AS ActiveProducts,
+
+        -- Last 5 Orders
+        (SELECT TOP 5
+            so.id AS OrderId,
+            p.first_name + ' ' + p.last_name AS CustomerName,
+            so.grand_total AS TotalAmount,
+            so.created_at AS OrderDate,
+            CASE so.order_status
+                WHEN 1 THEN 'Pending'
+                WHEN 2 THEN 'Processing'
+                WHEN 3 THEN 'Shipped'
+                WHEN 4 THEN 'Delivered'
+                WHEN 5 THEN 'Cancelled'
+                ELSE 'Unknown'
+            END AS StatusNameEn,
+            CASE so.order_status
+                WHEN 1 THEN N'قيد الانتظار'
+                WHEN 2 THEN N'قيد المعالجة'
+                WHEN 3 THEN N'تم الشحن'
+                WHEN 4 THEN N'تم التوصيل'
+                WHEN 5 THEN N'ملغى'
+                ELSE N'غير معروف'
+            END AS StatusNameAr
+         FROM SellerOrders so
+         LEFT JOIN Orders o ON so.customer_order_id = o.id
+         LEFT JOIN Customers c ON c.id = o.customer_id
+         LEFT JOIN Users u ON u.id = c.user_id
+         LEFT JOIN People p ON u.person_id = p.id
+         WHERE so.seller_id = @SellerId
+         ORDER BY so.created_at DESC
+         FOR JSON PATH
+        ) AS RecentOrders,
+
+        -- Monthly Revenue (last 12 months)
+        (SELECT ISNULL(
+            (
+                SELECT
+                    YEAR(so.created_at) AS [Year],
+                    MONTH(so.created_at) AS [Month],
+                    ISNULL(SUM(soi.total_price),0) AS Revenue
+                FROM SellerOrders so
+                JOIN SellerOrderItems soi ON so.id = soi.seller_order_id
+                JOIN SellerProducts sp ON soi.seller_product_id = sp.id
+                WHERE sp.seller_id = @SellerId
+                  AND so.order_status IN (2,3,4)
+                  AND so.created_at >= DATEADD(MONTH, -12, GETDATE())
+                GROUP BY YEAR(so.created_at), MONTH(so.created_at)
+                ORDER BY YEAR(so.created_at), MONTH(so.created_at)
+                FOR JSON PATH
+            ), '[]'
+        )) AS MonthlyRevenue
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+);
+
+SELECT @json AS FullJson;
+
+";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", userId);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+
+                        using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+
+                        if (!await reader.ReadAsync())
+                        {
+                            return new Result<SellerDashboardResponseDTO>(
+                                false,
+                                "Seller Data not found",
+                                null,
+                                404
+                            );
+                        }
+
+                        string json = await reader.GetFieldValueAsync<string>(0);
+
+                        var sellerDashboardData = JsonSerializer.Deserialize<SellerDashboardResponseDTO>(
+                            json,
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                        );
+
+                        return new Result<SellerDashboardResponseDTO>(
+                            true,
+                            "Seller Data fetched successfully",
+                            sellerDashboardData,
+                            200
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error fetching Seller Data : {ex}");
+
+                        return new Result<SellerDashboardResponseDTO>(
+                            false,
+                            "internal_server_error",
+                            null,
+                            500
+                        );
+                    }
+                }
+            }
+        }
+
     }
 }

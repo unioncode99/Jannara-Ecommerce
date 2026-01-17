@@ -39,5 +39,25 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
+        [HttpGet("seller")]
+        public async Task<ActionResult> GetSellerDashboardData()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+
+            var result = await _service.GetSellerDashboardDataAsync(userId);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
     }
 }

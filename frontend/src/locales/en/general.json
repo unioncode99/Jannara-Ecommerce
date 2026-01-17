@@ -516,6 +516,28 @@
       "product_variation_option_delete_failed": "Failed to delete variation option.",
       "product_delete_success": "Product deleted successfully!",
       "product_delete_failed": "Failed to delete product"
+    },
+    "brands": {
+      "title": "Brands",
+      "add_brand": "Add Brand",
+      "delete_confirm_title": "Are you sure you want to delete this brand?",
+      "brand_create_success": "Brand created successfully!",
+      "brand_create_failed": "Failed to create brand",
+      "brand_update_success": "Brand updated successfully!",
+      "brand_update_failed": "Failed to update brand",
+      "brand_delete_success": "Brand deleted successfully!",
+      "brand_delete_failed": "Failed to delete brand",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "edit_brand": "Edit Brand",
+      "website_url": "Website URL",
+      "logo_url": "Logo URL",
+      "save": "Save",
+      "actions": "Actions",
+      "name_en": "Name (English)",
+      "name_ar": "Name (Arabic)",
+      "description_en": "Description (English)",
+      "description_ar": "Description (Arabic)"
     }
   },
   "sidebar": {
@@ -528,6 +550,7 @@
     "orders": "Orders",
     "products": "Products",
     "users": "Users",
+    "brands": "Brands",
     "settings": "Settings",
     "logout": "Logout",
     "profile": {

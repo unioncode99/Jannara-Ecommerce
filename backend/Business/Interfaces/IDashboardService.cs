@@ -7,5 +7,6 @@ namespace Jannara_Ecommerce.Business.Interfaces
     {
         Task<Result<CustomerDashboardResponseDTO>> GetCustomerDashboardDataAsync(int customerId);
         Task<Result<AdminDashboardResponseDTO>> GetAdminDashboardDataAsync();
+        Task<Result<SellerDashboardResponseDTO>> GetSellerDashboardDataAsync(int userId);
     }
 }

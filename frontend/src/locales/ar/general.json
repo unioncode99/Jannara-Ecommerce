@@ -511,6 +511,28 @@
       "product_variation_option_delete_failed": "فشل في حذف خيار المتغير.",
       "product_delete_success": "تم حذف المنتج بنجاح!",
       "product_delete_failed": "فشل حذف المنتج"
+    },
+    "brands": {
+      "title": "العلامات التجارية",
+      "add_brand": "إضافة علامة تجارية",
+      "delete_confirm_title": "هل أنت متأكد أنك تريد حذف هذه العلامة التجارية؟",
+      "brand_create_success": "تم إنشاء العلامة التجارية بنجاح!",
+      "brand_create_failed": "فشل إنشاء العلامة التجارية",
+      "brand_update_success": "تم تحديث العلامة التجارية بنجاح!",
+      "brand_update_failed": "فشل تحديث العلامة التجارية",
+      "brand_delete_success": "تم حذف العلامة التجارية بنجاح!",
+      "brand_delete_failed": "فشل حذف العلامة التجارية",
+      "confirm": "تأكيد",
+      "cancel": "إلغاء",
+      "edit_brand": "تعديل العلامة التجارية",
+      "website_url": "رابط الموقع",
+      "logo_url": "رابط الشعار",
+      "save": "حفظ",
+      "actions": "الإجراءات",
+      "name_en": "الاسم (بالإنجليزية)",
+      "name_ar": "الاسم (بالعربية)",
+      "description_en": "الوصف (بالإنجليزية)",
+      "description_ar": "الوصف (بالعربية)"
     }
   },
   "sidebar": {
@@ -523,6 +545,7 @@
     "orders": "الطلبات",
     "products": "المنتجات",
     "users": "المستخدمون",
+    "brands": "العلامات التجارية",
     "settings": "الإعدادات",
     "logout": "تسجيل الخروج",
     "profile": {

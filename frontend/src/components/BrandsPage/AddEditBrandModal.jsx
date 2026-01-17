@@ -26,8 +26,11 @@ const AddEditBrandModal = ({
   const { translations, language } = useLanguage();
   const [errors, setErrors] = useState({});
 
-  const { name_en, name_ar, description_en, description_ar } =
+  const { name_en, name_ar, description_en, description_ar, website_url } =
     translations.general.form;
+
+  const { add_brand, edit_brand, save, logo_url, cancel } =
+    translations.general.pages.brands;
 
   useEffect(() => {
     setFormData({
@@ -106,7 +109,7 @@ const AddEditBrandModal = ({
         onClose={onClose}
         title={
           <>
-            <span>{brand ? "edit_brand" : "add_brand"}</span>
+            <span>{brand ? edit_brand : add_brand}</span>
           </>
         }
         className="confirm-modal"
@@ -145,27 +148,27 @@ const AddEditBrandModal = ({
             errorMessage={errors.descriptionAr}
           />
           <Input
-            label={"name_ar"}
+            label={website_url}
             name="websiteUrl"
-            placeholder={"name_ar"}
+            placeholder={website_url}
             value={formData.websiteUrl}
             onChange={(e) => updateField("websiteUrl", e.target.value)}
             errorMessage={errors.websiteUrl}
           />
           <Input
-            label={"name_ar"}
+            label={logo_url}
             name="logoUrl"
-            placeholder={"name_ar"}
+            placeholder={logo_url}
             value={formData.logoUrl}
             onChange={(e) => updateField("logoUrl", e.target.value)}
             errorMessage={errors.logoUrl}
           />
           <div className="btns-container">
             <Button className="cancel-btn" onClick={onClose}>
-              {"cancel_text"}
+              {cancel}
             </Button>
             <Button className="btn btn-primary" onClick={handleSubmit}>
-              {"save"}
+              {save}
             </Button>
           </div>
         </form>

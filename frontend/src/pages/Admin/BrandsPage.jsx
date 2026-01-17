@@ -22,6 +22,20 @@ const BrandsPage = () => {
   const [selectedBrand, setSelectedBrand] = useState(null);
   const { translations } = useLanguage();
 
+  const {
+    title,
+    add_brand,
+    delete_confirm_title,
+    brand_create_success,
+    brand_create_failed,
+    brand_update_success,
+    brand_update_failed,
+    brand_delete_success,
+    brand_delete_failed,
+    confirm,
+    cancel,
+  } = translations.general.pages.brands;
+
   const fetchBrands = async () => {
     try {
       setLoading(true);
@@ -88,7 +102,7 @@ const BrandsPage = () => {
           "success"
         );
       } else {
-        toast.show("product_variation_option_create_success", "success");
+        toast.show(brand_create_success, "success");
       }
     } catch (error) {
       console.error(error);
@@ -98,7 +112,7 @@ const BrandsPage = () => {
           "error"
         );
       } else {
-        toast.show("product_variation_option_create_failed", "error");
+        toast.show(brand_create_failed, "error");
       }
     } finally {
       closeModal();
@@ -124,7 +138,7 @@ const BrandsPage = () => {
           "success"
         );
       } else {
-        toast.show("product_variation_update_success", "success");
+        toast.show(brand_update_success, "success");
       }
     } catch (error) {
       console.error(error);
@@ -134,7 +148,7 @@ const BrandsPage = () => {
           "error"
         );
       } else {
-        toast.show("product_variation_update_failed", "error");
+        toast.show(brand_update_failed, "error");
       }
     } finally {
       closeModal();
@@ -154,7 +168,7 @@ const BrandsPage = () => {
           "success"
         );
       } else {
-        toast.show("product_variation_delete_success", "success");
+        toast.show(brand_delete_success, "success");
       }
     } catch (error) {
       console.error(error);
@@ -164,7 +178,7 @@ const BrandsPage = () => {
           "error"
         );
       } else {
-        toast.show("product_variation_delete_failed", "error");
+        toast.show(brand_delete_failed, "error");
       }
     } finally {
       closeModal();
@@ -183,10 +197,10 @@ const BrandsPage = () => {
     <div className="brand-page-container">
       <header>
         <h1>
-          <Tags /> {"title"}
+          <Tags /> {title}
         </h1>
         <Button onClick={handleAddBrand} className="btn btn-primary">
-          <Plus /> {"add_category"}
+          <Plus /> {add_brand}
         </Button>
       </header>
       <ViewSwitcher view={view} setView={setView} />
@@ -215,9 +229,9 @@ const BrandsPage = () => {
         show={isDeleteBrandConfirmModalOpen}
         onClose={() => closeModal()}
         onConfirm={() => deleteBrand()}
-        title={"delete_confirm_title"}
-        cancelLabel={"cancel"}
-        confirmLabel={"confirm"}
+        title={delete_confirm_title}
+        cancelLabel={cancel}
+        confirmLabel={confirm}
       />
     </div>
   );
