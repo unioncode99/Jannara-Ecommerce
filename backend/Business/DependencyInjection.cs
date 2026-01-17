@@ -41,6 +41,7 @@ namespace Jannara_Ecommerce.Business
             services.AddScoped<IProductItemService, ProductItemService>();
             services.AddScoped<IProductItemImageService, ProductItemImageService>();
             services.AddScoped<IProductItemVariationOptionService, ProductItemVariationOptionService>();
+            services.AddScoped<ISellerProductService, SellerProductService>();
             return services;
         }
     }

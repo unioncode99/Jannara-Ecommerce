@@ -33,6 +33,7 @@ namespace Jannara_Ecommerce.DataAccess
             services.AddScoped<IProductItemRepository, ProductItemRepository>();
             services.AddScoped<IProductItemImageRepository, ProductItemImageRepository>();
             services.AddScoped<IProductItemVariationOptionRepository, ProductItemVariationOptionRepository>();
+            services.AddScoped<ISellerProductRepository, SellerProductRepository>();
             return services;
         }
     }
