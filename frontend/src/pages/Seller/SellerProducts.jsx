@@ -89,7 +89,7 @@ const SellerProducts = () => {
 
   function handleAddProduct() {
     console.log("handleAddProduct");
-    // navigate(`/add-product`);
+    navigate(`/add-seller-product`);
   }
 
   function handleDeleteProduct(product) {
@@ -99,7 +99,7 @@ const SellerProducts = () => {
   }
   function handleEditProduct(product) {
     setSelectedProduct(product);
-    // navigate(`/edit-product/${product.publicId}`);
+    navigate(`/edit-seller-product/${product?.sellerProductId}`);
     console.log("handleDeleteProduct -> ", product);
   }
 
