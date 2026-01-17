@@ -9,5 +9,7 @@ namespace Jannara_Ecommerce.Business.Interfaces
         Task<Result<ProductItemDTO>> AddNewAsync(int productId,
             string sku,
             SqlConnection connection, SqlTransaction transaction);
+
+        Task<Result<IEnumerable<ProductItemDropdown>>> GetProductDropdownAsync(ProductItemDropdownRequest request);
     }
 }

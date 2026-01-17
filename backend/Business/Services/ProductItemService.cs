@@ -20,5 +20,10 @@ namespace Jannara_Ecommerce.Business.Services
         {
             return await _productItemRepository.AddNewAsync(productId, sku, connection, transaction);   
         }
+
+        public async Task<Result<IEnumerable<ProductItemDropdown>>> GetProductDropdownAsync(ProductItemDropdownRequest request)
+        {
+            return await _productItemRepository.GetProductDropdownAsync(request);
+        }
     }
 }
