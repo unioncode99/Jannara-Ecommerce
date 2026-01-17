@@ -533,6 +533,16 @@
       "name_ar": "الاسم (بالعربية)",
       "description_en": "الوصف (بالإنجليزية)",
       "description_ar": "الوصف (بالعربية)"
+    },
+    "seller_dashboard": {
+      "total_sales": "إجمالي المبيعات",
+      "total_orders": "إجمالي الطلبات",
+      "active_products": "المنتجات النشطة",
+      "sales_overview": "نظرة عامة على المبيعات",
+      "recent_orders": "أحدث الطلبات",
+      "view_all": "عرض الكل",
+      "welcome_title": "مرحبًا بعودتك",
+      "welcome_description": "إليك ما يحدث في متجرك اليوم."
     }
   },
   "sidebar": {

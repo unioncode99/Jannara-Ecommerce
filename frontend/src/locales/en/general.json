@@ -538,6 +538,16 @@
       "name_ar": "Name (Arabic)",
       "description_en": "Description (English)",
       "description_ar": "Description (Arabic)"
+    },
+    "seller_dashboard": {
+      "total_sales": "Total Sales",
+      "total_orders": "Total Orders",
+      "active_products": "Active Products",
+      "sales_overview": "Sales Overview",
+      "recent_orders": "Recent Orders",
+      "view_all": "View All",
+      "welcome_title": "Welcome back",
+      "welcome_description": "Here's what's happening with your store today."
     }
   },
   "sidebar": {

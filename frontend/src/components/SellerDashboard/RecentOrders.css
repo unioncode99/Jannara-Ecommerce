@@ -1,0 +1,64 @@
+.seller-recent-orders-container {
+  background-color: var(--card-background);
+  box-shadow: var(--shadow-2);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 4rem;
+}
+
+.seller-recent-orders-container h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.recent-seller-order-item {
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  /* justify-content: space-between; */
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+}
+
+.recent-seller-order-item div:nth-child(1) span {
+  background-color: var(--primary-100);
+  color: var(--primary-700);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.recent-seller-order-item div:nth-child(2) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.recent-seller-order-item div:nth-child(2) small:first-child {
+  color: var(--text-color);
+}
+
+.recent-seller-order-item div:nth-child(2) small:last-child {
+  color: var(--grey-500);
+}
+
+.recent-seller-order-item div:last-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+.recent-seller-order-item div:last-child small:last-child {
+  color: var(--primary-500);
+}
