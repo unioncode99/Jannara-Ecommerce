@@ -553,7 +553,20 @@
       "brand": "العلامة التجارية",
       "clear_filters": "مسح الفلاتر",
       "no_products": "لا توجد منتجات",
-      "loading": "جاري تحميل المنتجات..."
+      "loading": "جاري تحميل المنتجات...",
+      "stock_quantity": "الكمية المتوفرة",
+      "price": "السعر",
+      "status": "الحالة",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "name_label": "الاسم",
+      "category_label": "الفئة",
+      "brand_label": "العلامة التجارية",
+      "sku_label": "رمز المنتج",
+      "price_label": "السعر",
+      "stock_label": "المخزون",
+      "edit_product": "تعديل المنتج",
+      "delete_product": "حذف المنتج"
     }
   },
   "sidebar": {

@@ -558,7 +558,20 @@
       "brand": "Brand",
       "clear_filters": "Clear Filters",
       "no_products": "No products found",
-      "loading": "Loading products..."
+      "loading": "Loading products...",
+      "stock_quantity": "Stock Quantity",
+      "price": "Price",
+      "status": "Status",
+      "active": "Active",
+      "inactive": "Inactive",
+      "name_label": "Name",
+      "category_label": "Category",
+      "brand_label": "Brand",
+      "sku_label": "SKU",
+      "price_label": "Price",
+      "stock_label": "Stock",
+      "edit_product": "Edit Product",
+      "delete_product": "Delete Product"
     }
   },
   "sidebar": {
