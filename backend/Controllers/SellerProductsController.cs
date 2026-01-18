@@ -87,5 +87,17 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> UpdateProduct(int id, [FromBody] SellerProductUpdateDTO productUpdateDTO)
+        {
+            var result = await _sellerProductService.UpdateAsync(id, productUpdateDTO);
+
+            if (!result.IsSuccess)
+            {
+                return StatusCode(result.ErrorCode, result.Message);
+            }
+            return Ok(result.Data);
+        }
     }
 }

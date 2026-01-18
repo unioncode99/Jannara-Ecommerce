@@ -318,8 +318,15 @@ select * from SellerProducts where id = @Id";
 DECLARE @json NVARCHAR(MAX);
 SELECT @json = (
     SELECT
-		sp.id as Id,
+	    -- Product
+		p.id as ProductId,
+		p.name_en as ProductNameEn, 
+		p.name_ar As ProductNameAr,
+		-- ProductItem
 		sp.product_item_id As ProductItemId,
+		pi.sku As Sku,
+		-- Seller Product
+		sp.id as SellerProductId,
 		sp.price As Price,
 		sp.stock_quantity As StockQuantity,
 		sp.created_at As CreatedAt,
@@ -337,6 +344,8 @@ SELECT @json = (
         ) AS SellerProductImages
 
 	FROM SellerProducts sp
+	JOIN ProductItems pi on pi.id = sp.product_item_id
+	Join Products p on p.id = pi.product_id
     WHERE sp.id = @Id
     FOR JSON PATH, WITHOUT_ARRAY_WRAPPER);
 SELECT @json AS FullJson;

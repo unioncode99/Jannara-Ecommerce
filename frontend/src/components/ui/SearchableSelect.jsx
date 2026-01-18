@@ -13,6 +13,7 @@ const SearchableSelect = ({
   loading = false,
   valueKey = "id",
   labelKey = "name",
+  disabled = false,
 }) => {
   const [open, setOpen] = useState(false);
 
@@ -29,6 +30,7 @@ const SearchableSelect = ({
   return (
     <div className="searchable-select">
       <Input
+        disabled={disabled}
         type="search"
         placeholder={placeholder}
         icon={<Search />}

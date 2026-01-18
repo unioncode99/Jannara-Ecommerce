@@ -6,7 +6,7 @@ import { useLanguage } from "../../hooks/useLanguage";
 import { ArrowLeft, ArrowRight, Save, Upload, X } from "lucide-react";
 import Button from "../../components/ui/Button";
 import { useDebounce } from "../../hooks/useDebounce";
-import { create, read } from "../../api/apiWrapper";
+import { create, read, update } from "../../api/apiWrapper";
 import Input from "../../components/ui/Input";
 import { isImageValid } from "../../utils/utils";
 import { toast } from "../../components/ui/Toast";
@@ -47,9 +47,12 @@ const AddEditSellerProduct = () => {
     select_sku,
     seller_product_add_success,
     seller_product_add_failed,
+    seller_product_update_success,
+    seller_product_update_failed,
   } = translations.general.pages.seller_products;
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const { upload_images } = translations.general.pages.add_product;
 
@@ -60,7 +63,7 @@ const AddEditSellerProduct = () => {
   useEffect(() => {
     if (id) {
       setIsModeUpdate(true);
-      // TODO: fetch product by id for edit
+      fetchSellerProduct(id);
     } else {
       setIsModeUpdate(false);
       resetForm();
@@ -129,18 +132,31 @@ const AddEditSellerProduct = () => {
       return;
     }
 
-    const formData = new FormData();
+    if (isModeUpdate) {
+      const payload = {
+        id: id,
+        price: price,
+        stockQuantity: stock,
+        isActive: false,
+      };
 
-    formData.append("productItemId", selectedSku.id);
-    formData.append("stockQuantity", stock);
-    formData.append("price", price);
+      await updateSellerProduct(payload);
+    } else {
+      const formData = new FormData();
 
-    images.forEach((file) => {
-      formData.append(`SellerProductImages`, file);
-    });
+      formData.append("productItemId", selectedSku.id);
+      formData.append("stockQuantity", stock);
+      formData.append("price", price);
 
-    console.log("SEND TO API:", formData);
-    await createSellerProduct(formData);
+      images.forEach((img) => {
+        if (img.isNew) {
+          formData.append(`SellerProductImages`, img.file);
+        }
+      });
+
+      console.log("SEND TO API:", formData);
+      await createSellerProduct(formData);
+    }
   };
 
   const validateFormData = () => {
@@ -171,20 +187,31 @@ const AddEditSellerProduct = () => {
   };
 
   const addImages = (files) => {
-    const validFiles = Array.from(files).filter((file) => isImageValid(file));
+    const validFiles = Array.from(files)
+      .filter((file) => isImageValid(file))
+      .map((file) => ({ file, isNew: true }));
     setImages((prev) => [...prev, ...validFiles]);
   };
 
   const removeImage = (index) => {
     const updated = [...images];
-    updated.splice(index, 1);
+    const removed = updated.splice(index, 1)[0];
+
+    if (!removed?.isNew) {
+      // TODO: Call backend API to delete existing image by ID
+    }
+
     setImages(updated);
   };
 
   const getImagePrview = (img) => {
-    if (img instanceof File) {
-      return URL.createObjectURL(img);
+    if (img.isNew && img.file && img.file instanceof File) {
+      return URL.createObjectURL(img.file);
     }
+    if (!img.isNew && img.url) {
+      return img.url;
+    }
+
     return "";
   };
 
@@ -213,6 +240,74 @@ const AddEditSellerProduct = () => {
       } else {
         toast.show(seller_product_add_failed, "error");
       }
+    }
+  }
+
+  async function updateSellerProduct(payload) {
+    try {
+      const result = await update(`seller-products/${id}`, payload);
+
+      console.log("result -> ", result);
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success",
+        );
+      } else {
+        toast.show(seller_product_update_success, "success");
+      }
+      navigate("/seller-products");
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error",
+        );
+      } else {
+        toast.show(seller_product_update_failed, "error");
+      }
+    }
+  }
+
+  async function fetchSellerProduct(id) {
+    try {
+      setLoading(true);
+      const result = await read(`seller-products/edit/${id}`);
+      console.log("result -> ", result);
+
+      setSelectedProduct({
+        id: result.data.productId,
+        nameEn: result.data.productNameEn,
+        nameAr: result.data.productNameAr,
+      });
+
+      await fetchProductItems(result.data.productId);
+
+      setSearch(result.data.productNameEn);
+      setSkuSearch(result.data.sku);
+
+      setSelectedSku({
+        id: result.data.productItemId,
+        sku: result.data.sku,
+      });
+
+      setPrice(result.data.price);
+      setStock(result.data.stockQuantity);
+
+      setImages(
+        result.data.sellerProductImages.map((img) => ({
+          id: img.id,
+          url: img.imageUrl,
+          isNew: false,
+        })) || [],
+      );
+    } catch (error) {
+      console.error("Failed to fetch product", error);
+      // toast.show("Failed to load product", "error");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -254,6 +349,7 @@ const AddEditSellerProduct = () => {
           loading={loadingProducts}
           valueKey="id"
           labelKey={language == "en" ? "nameEn" : "nameAr"}
+          disabled={isModeUpdate}
         />
         {/* SKU SELECT */}
         {selectedProduct && (
@@ -268,6 +364,7 @@ const AddEditSellerProduct = () => {
               valueKey="id"
               labelKey="sku"
               lang={language}
+              disabled={isModeUpdate}
             />
             {errors.sku && <div className="form-alert">{errors.sku}</div>}
           </>
@@ -314,7 +411,7 @@ const AddEditSellerProduct = () => {
                       alt="Product Image"
                       className="product-img"
                     />
-                    <button onClick={() => removeImage(index)}>
+                    <button type="button" onClick={() => removeImage(index)}>
                       <X />
                     </button>
                   </div>
