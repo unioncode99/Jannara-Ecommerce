@@ -329,6 +329,7 @@ SELECT @json = (
 		sp.id as SellerProductId,
 		sp.price As Price,
 		sp.stock_quantity As StockQuantity,
+        sp.is_active as IsActive,
 		sp.created_at As CreatedAt,
 		sp.updated_at As UpdatedAt,
 		(

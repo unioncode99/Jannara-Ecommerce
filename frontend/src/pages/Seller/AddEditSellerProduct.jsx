@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import SearchableSelect from "../../components/ui/SearchableSelect";
+import SpinnerLoader from "../../components/ui/SpinnerLoader";
 import "./AddEditSellerProduct.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useLanguage } from "../../hooks/useLanguage";
@@ -10,6 +11,7 @@ import { create, read, remove, update } from "../../api/apiWrapper";
 import Input from "../../components/ui/Input";
 import { isImageValid } from "../../utils/utils";
 import { toast } from "../../components/ui/Toast";
+import Checkbox from "../../components/ui/Checkbox";
 
 const AddEditSellerProduct = () => {
   const [search, setSearch] = useState("");
@@ -55,6 +57,8 @@ const AddEditSellerProduct = () => {
     seller_product_image_add_failed,
     seller_product_image_delete_success,
     seller_product_image_delete_failed,
+    active,
+    inactive,
   } = translations.general.pages.seller_products;
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
@@ -143,7 +147,7 @@ const AddEditSellerProduct = () => {
         id: id,
         price: price,
         stockQuantity: stock,
-        isActive: true,
+        isActive: isActive,
       };
 
       await updateSellerProduct(payload);
@@ -313,6 +317,8 @@ const AddEditSellerProduct = () => {
       setPrice(result.data.price);
       setStock(result.data.stockQuantity);
 
+      setIsActive(result.data.isActive);
+
       setImages(
         result.data.sellerProductImages.map((img) => ({
           id: img.id,
@@ -392,6 +398,14 @@ const AddEditSellerProduct = () => {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <SpinnerLoader />
+      </div>
+    );
+  }
+
   return (
     <div className="add-edit-seller-product-container">
       <header>
@@ -408,7 +422,7 @@ const AddEditSellerProduct = () => {
           >
             {cancel_text}
           </Button>
-          <Button className="btn btn-primary save-btn">
+          <Button onClick={handleSubmit} className="btn btn-primary save-btn">
             <Save />
             <span>{save}</span>
           </Button>
@@ -470,6 +484,14 @@ const AddEditSellerProduct = () => {
               onChange={(e) => setStock(e.target.value)}
               errorMessage={errors.stock}
             />
+
+            {isModeUpdate && (
+              <Checkbox
+                value={isActive}
+                onChange={setIsActive}
+                label={isActive ? active : inactive}
+              />
+            )}
 
             <>
               <label className="upload-product-image-container">
