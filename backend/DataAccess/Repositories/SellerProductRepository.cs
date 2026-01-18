@@ -3,10 +3,13 @@ using Jannara_Ecommerce.DataAccess.Interfaces;
 using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Product;
 using Jannara_Ecommerce.DTOs.SellerProduct;
+using Jannara_Ecommerce.DTOs.SellerProductImage;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using Org.BouncyCastle.Utilities.Zlib;
+using System.Data;
+using System.Text.Json;
 
 namespace Jannara_Ecommerce.DataAccess.Repositories
 {
@@ -168,6 +171,203 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
             {
                 _logger.LogError(ex, "Failed to retrieve products for page {PageNumber} with page size {PageSize}", filter.PageNumber, filter.PageSize);
                 return new Result<PagedResponseDTO<SellerProductResponseDTO>>(false, "internal_server_error", null, 500);
+            }
+        }
+
+        public async Task<Result<SellerProductDTO>> AddNewAsync(SellerProductCreateDBDTO product, SqlConnection connection, SqlTransaction transaction)
+        {
+            string query = @"
+INSERT INTO [dbo].[SellerProducts]
+(
+    [seller_id],
+    [product_item_id],
+    [price],
+    [stock_quantity],
+    [is_active]
+)
+OUTPUT inserted.*
+VALUES
+(
+    @SellerId,
+    @ProductItemId,
+    @Price,
+    @StockQuantity,
+    @IsActive
+);
+";
+
+            using var command = new SqlCommand(query, connection, transaction);
+            command.Parameters.AddWithValue("@SellerId", product.SellerId);
+            command.Parameters.AddWithValue("@ProductItemId", product.ProductItemId);
+            command.Parameters.AddWithValue("@Price", product.Price);
+            command.Parameters.AddWithValue("@StockQuantity", product.StockQuantity);
+            command.Parameters.AddWithValue("@IsActive", true);
+
+            using var reader = await command.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                var insertedProduct = new SellerProductDTO
+                (
+                    reader.GetInt32(reader.GetOrdinal("id")),
+                    reader.GetInt32(reader.GetOrdinal("seller_id")),
+                    reader.GetInt32(reader.GetOrdinal("product_item_id")),
+                    reader.GetDecimal(reader.GetOrdinal("price")),
+                    reader.GetInt32(reader.GetOrdinal("stock_quantity")),
+                    reader.GetBoolean(reader.GetOrdinal("is_active")),
+                    reader.GetDateTime(reader.GetOrdinal("created_at")),
+                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                );
+                return new Result<SellerProductDTO>(true, "product_added_successfully", insertedProduct);
+            }
+
+            return new Result<SellerProductDTO>(false, "failed_to_add_product", null, 500);
+        }
+
+        public async Task<Result<SellerProductDTO>> UpdateAsync(int id, SellerProductUpdateDTO productUpdateDBDTO)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+
+UPDATE [dbo].[SellerProducts]
+SET
+    [price] = @Price,
+    [stock_quantity] = @StockQuantity,
+    [is_active] = @IsActive
+WHERE
+    [id] = @Id;
+
+select * from SellerProducts where id = @Id";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", productUpdateDBDTO.Id);
+                    command.Parameters.AddWithValue("@Price", productUpdateDBDTO.Price);
+                    command.Parameters.AddWithValue("@StockQuantity", productUpdateDBDTO.StockQuantity);
+                    command.Parameters.AddWithValue("@IsActive", productUpdateDBDTO.IsActive);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using var reader = await command.ExecuteReaderAsync();
+                        if (await reader.ReadAsync())
+                        {
+                            var insertedProduct = new SellerProductDTO
+                            (
+                                reader.GetInt32(reader.GetOrdinal("id")),
+                                reader.GetInt32(reader.GetOrdinal("seller_id")),
+                                reader.GetInt32(reader.GetOrdinal("product_item_id")),
+                                reader.GetDecimal(reader.GetOrdinal("price")),
+                                reader.GetInt32(reader.GetOrdinal("stock_quantity")),
+                                reader.GetBoolean(reader.GetOrdinal("is_active")),
+                                reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                            );
+                            return new Result<SellerProductDTO>(true, "product_added_successfully", insertedProduct);
+                        }
+
+                        return new Result<SellerProductDTO>(false, "failed_to_add_product", null, 500);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to update person with PersonId {PersonId}", id);
+                        return new Result<SellerProductDTO>(false, "internal_server_error", null, 500);
+                    }
+
+                }
+            }
+        }
+
+        public async Task<Result<bool>> DeleteAsync(int id)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"DELETE FROM SellerProducts WHERE id = @id";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    try
+                    {
+                        await connection.OpenAsync();
+                        int rowsAffected = await command.ExecuteNonQueryAsync();
+                        if (rowsAffected > 0)
+                        {
+                            return new Result<bool>(true, "role_deleted_successfully", true);
+                        }
+                        return new Result<bool>(false, "role_not_found", false, 404);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to delete role with RoleId {RoleId}", id);
+                        return new Result<bool>(false, "internal_server_error", false, 500);
+                    }
+                }
+            }
+
+        }
+
+        public async Task<Result<SellerProductResponseForEdit>> GetSellerProductForEditAsync(int id)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+DECLARE @json NVARCHAR(MAX);
+SELECT @json = (
+    SELECT
+		sp.id as Id,
+		sp.product_item_id As ProductItemId,
+		sp.price As Price,
+		sp.stock_quantity As StockQuantity,
+		sp.created_at As CreatedAt,
+		sp.updated_at As UpdatedAt,
+		(
+			SELECT
+				spi.id AS Id,
+				spi.seller_product_id as SellerProductId,
+				spi.image_url AS ImageUrl,
+				spi.created_at AS CreatedAt,
+				spi.updated_at AS UpdatedAt
+			FROM SellerProductImages spi
+			WHERE spi.seller_product_id = @id
+			FOR JSON PATH
+        ) AS SellerProductImages
+
+	FROM SellerProducts sp
+    WHERE sp.id = @Id
+    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER);
+SELECT @json AS FullJson;
+
+";
+
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using var reader = await command.ExecuteReaderAsync(CommandBehavior.SequentialAccess);
+                        {
+                            if (!await reader.ReadAsync())
+                                return new Result<SellerProductResponseForEdit>(false, "Product not found", null, 404);
+
+                            // Read the entire JSON as a string first
+                            string json = await reader.GetFieldValueAsync<string>(0);
+
+                            var product = JsonSerializer.Deserialize<SellerProductResponseForEdit>(
+                                json,
+                                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                            );
+
+                            return new Result<SellerProductResponseForEdit>(true, "Product fetched successfully", product, 200);
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error fetching product by id {id}: {ex}");
+                        return new Result<SellerProductResponseForEdit>(false, "Error fetching product", null, 500);
+                    }
+                }
             }
         }
 

@@ -19,7 +19,7 @@ namespace Jannara_Ecommerce.Controllers
         }
 
         [HttpGet("dropdown")]
-        public async Task<ActionResult<ProductResponseDTO>> GetProductDropdown([FromQuery] ProductItemDropdownRequest filter)
+        public async Task<ActionResult<PagedResponseDTO<ProductResponseDTO>>> GetProductDropdown([FromQuery] ProductItemDropdownRequest filter)
         {
             var result = await _productService.GetProductDropdownAsync(filter);
             if (result.IsSuccess)

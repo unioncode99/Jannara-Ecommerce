@@ -46,5 +46,35 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Create([FromForm] SellerProductCreateDTO productCreateDTO)
+        {
+            //Console.WriteLine($"productCreateDTO: {JsonSerializer.Serialize(productCreateDTO)}");
+            //Console.WriteLine($"ProductItems: {JsonSerializer.Serialize(productCreateDTO?.ProductItems)}");
+            //Console.WriteLine($"Variations: {JsonSerializer.Serialize(productCreateDTO?.Variations)}");
+            if (productCreateDTO == null)
+            {
+                return BadRequest(new { success = false, message = "Product data is required" });
+            }
+
+            var result = await _sellerProductService.CreateAsync(productCreateDTO);
+
+            if (!result.IsSuccess)
+                return StatusCode(result.ErrorCode, new { success = false, message = result.Message });
+
+            return Ok(new { success = true, message = "Product created successfully" });
+        }
+
+        [HttpGet("edit/{id}")]
+        public async Task<ActionResult<Result<ProductDetailsForAdminDTO>>> GetProductForEdit(int id)
+        {
+            var result = await _sellerProductService.GetSellerProductForEditAsync(id);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
     }
 }
