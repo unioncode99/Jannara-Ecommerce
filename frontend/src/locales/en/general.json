@@ -584,7 +584,11 @@
       "seller_product_update_success": "Seller product has been updated successfully",
       "seller_product_update_failed": "Failed to update seller product. Please try again",
       "seller_product_delete_success": "Seller product has been deleted successfully",
-      "seller_product_delete_failed": "Failed to delete seller product. Please try again"
+      "seller_product_delete_failed": "Failed to delete seller product. Please try again",
+      "seller_product_image_add_success": "Image uploaded successfully",
+      "seller_product_image_add_failed": "Failed to upload image",
+      "seller_product_image_delete_success": "Image deleted successfully",
+      "seller_product_image_delete_failed": "Failed to delete image"
     }
   },
   "sidebar": {

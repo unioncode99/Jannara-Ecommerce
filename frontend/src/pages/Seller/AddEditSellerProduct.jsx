@@ -6,7 +6,7 @@ import { useLanguage } from "../../hooks/useLanguage";
 import { ArrowLeft, ArrowRight, Save, Upload, X } from "lucide-react";
 import Button from "../../components/ui/Button";
 import { useDebounce } from "../../hooks/useDebounce";
-import { create, read, update } from "../../api/apiWrapper";
+import { create, read, remove, update } from "../../api/apiWrapper";
 import Input from "../../components/ui/Input";
 import { isImageValid } from "../../utils/utils";
 import { toast } from "../../components/ui/Toast";
@@ -26,6 +26,8 @@ const AddEditSellerProduct = () => {
   const [price, setPrice] = useState("");
 
   const [images, setImages] = useState([]);
+
+  const [isActive, setIsActive] = useState(true);
 
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingSkus, setLoadingSkus] = useState(false);
@@ -49,6 +51,10 @@ const AddEditSellerProduct = () => {
     seller_product_add_failed,
     seller_product_update_success,
     seller_product_update_failed,
+    seller_product_image_add_success,
+    seller_product_image_add_failed,
+    seller_product_image_delete_success,
+    seller_product_image_delete_failed,
   } = translations.general.pages.seller_products;
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
@@ -137,7 +143,7 @@ const AddEditSellerProduct = () => {
         id: id,
         price: price,
         stockQuantity: stock,
-        isActive: false,
+        isActive: true,
       };
 
       await updateSellerProduct(payload);
@@ -190,18 +196,29 @@ const AddEditSellerProduct = () => {
     const validFiles = Array.from(files)
       .filter((file) => isImageValid(file))
       .map((file) => ({ file, isNew: true }));
-    setImages((prev) => [...prev, ...validFiles]);
+
+    if (isModeUpdate) {
+      const formData = new FormData();
+      formData.append("sellerProductId", id);
+
+      for (const file of validFiles) {
+        formData.append("Images", file?.file);
+      }
+      addSellerProductImages(formData);
+    } else {
+      setImages((prev) => [...prev, ...validFiles]);
+    }
   };
 
   const removeImage = (index) => {
     const updated = [...images];
     const removed = updated.splice(index, 1)[0];
 
-    if (!removed?.isNew) {
-      // TODO: Call backend API to delete existing image by ID
+    if (!removed?.isNew && removed?.id) {
+      deleteSellerProductImage(removed.id);
+    } else {
+      setImages(updated);
     }
-
-    setImages(updated);
   };
 
   const getImagePrview = (img) => {
@@ -308,6 +325,70 @@ const AddEditSellerProduct = () => {
       // toast.show("Failed to load product", "error");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function addSellerProductImages(payload) {
+    try {
+      const result = await create(`seller-product-images`, payload);
+
+      console.log("result -> ", result);
+
+      const newImages = result?.map((img) => ({
+        id: img.id,
+        url: img.imageUrl,
+        isNew: false,
+      }));
+
+      setImages((prev) => [...prev, ...newImages]);
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success",
+        );
+      } else {
+        toast.show(seller_product_image_add_success, "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error",
+        );
+      } else {
+        toast.show(seller_product_image_add_failed, "error");
+      }
+    }
+  }
+
+  async function deleteSellerProductImage(imageId) {
+    try {
+      const result = await remove(`seller-product-images/${imageId}`);
+
+      console.log("result -> ", result);
+
+      setImages((prev) => prev.filter((image) => image.id !== imageId));
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success",
+        );
+      } else {
+        toast.show(seller_product_image_delete_success, "success");
+      }
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error",
+        );
+      } else {
+        toast.show(seller_product_image_delete_failed, "error");
+      }
     }
   }
 

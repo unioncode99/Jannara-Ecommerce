@@ -157,10 +157,14 @@ namespace Jannara_Ecommerce.Business.Services
         public async Task<Result<SellerProductResponseForEdit>> GetSellerProductForEditAsync(int id)
         {
             var productResult = await _sellerProductRepository.GetSellerProductForEditAsync(id);
-            foreach (var image in productResult.Data.SellerProductImages)
+            if (productResult.Data.SellerProductImages != null)
             {
-                image.ImageUrl = ImageUrlHelper.ToAbsoluteUrl(image.ImageUrl, _baseUrl);
+                foreach (var image in productResult.Data.SellerProductImages)
+                {
+                    image.ImageUrl = ImageUrlHelper.ToAbsoluteUrl(image.ImageUrl, _baseUrl);
+                }
             }
+
             return productResult;
         }
     }

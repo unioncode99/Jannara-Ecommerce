@@ -579,7 +579,11 @@
       "seller_product_update_success": "تم تحديث المنتج للبائع بنجاح",
       "seller_product_update_failed": "فشل تحديث المنتج للبائع. يرجى المحاولة مرة أخرى",
       "seller_product_delete_success": "تم حذف المنتج للبائع بنجاح",
-      "seller_product_delete_failed": "فشل حذف المنتج للبائع. يرجى المحاولة مرة أخرى"
+      "seller_product_delete_failed": "فشل حذف المنتج للبائع. يرجى المحاولة مرة أخرى",
+      "seller_product_image_add_success": "تم رفع الصورة بنجاح",
+      "seller_product_image_add_failed": "فشل في رفع الصورة",
+      "seller_product_image_delete_success": "تم حذف الصورة بنجاح",
+      "seller_product_image_delete_failed": "فشل في حذف الصورة"
     }
   },
   "sidebar": {
