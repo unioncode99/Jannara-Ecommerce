@@ -99,5 +99,18 @@ namespace Jannara_Ecommerce.Controllers
             }
             return Ok(result.Data);
         }
+
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteProduct(int id)
+        {
+            var result = await _sellerProductService.DeleteAsync(id);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Message);
+            }
+            return StatusCode(result.ErrorCode, result.Message);
+        }
+
     }
 }

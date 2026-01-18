@@ -583,7 +583,11 @@
       "seller_product_image_add_success": "تم رفع الصورة بنجاح",
       "seller_product_image_add_failed": "فشل في رفع الصورة",
       "seller_product_image_delete_success": "تم حذف الصورة بنجاح",
-      "seller_product_image_delete_failed": "فشل في حذف الصورة"
+      "seller_product_image_delete_failed": "فشل في حذف الصورة",
+      "delete_confirm_title": "حذف المنتج",
+      "delete_confirm_message": "هل أنت متأكد أنك تريد حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.",
+      "delete_confirm_button": "حذف",
+      "delete_cancel_button": "إلغاء"
     }
   },
   "sidebar": {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { read } from "../../api/apiWrapper";
+import { read, remove } from "../../api/apiWrapper";
 import { useNavigate } from "react-router-dom";
 import { Package, Plus } from "lucide-react";
 import ViewSwitcher from "../../components/CustomerOrders/ViewSwitcher";
@@ -11,6 +11,8 @@ import Pagination from "../../components/ui/Pagination";
 import SpinnerLoader from "../../components/ui/SpinnerLoader";
 import "./SellerProducts.css";
 import { useLanguage } from "../../hooks/useLanguage";
+import ConfirmModal from "../../components/ui/ConfirmModal";
+import { toast } from "../../components/ui/Toast";
 
 const SellerProducts = () => {
   const [view, setView] = useState("card"); // 'table' or 'card'
@@ -32,7 +34,16 @@ const SellerProducts = () => {
 
   const { translations } = useLanguage();
 
-  const { title, add_product } = translations.general.pages.seller_products;
+  const {
+    title,
+    add_product,
+    delete_confirm_title,
+    delete_confirm_message,
+    delete_confirm_button,
+    delete_cancel_button,
+    seller_product_delete_success,
+    seller_product_delete_failed,
+  } = translations.general.pages.seller_products;
 
   const navigate = useNavigate();
 
@@ -139,6 +150,38 @@ const SellerProducts = () => {
     setSelectedProduct(null);
   }
 
+  async function DeleteSellerProduct() {
+    try {
+      const result = await remove(
+        `seller-products/${selectedProduct?.sellerProductId}`,
+      );
+
+      console.log("result -> ", result);
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success",
+        );
+      } else {
+        toast.show(seller_product_delete_success, "success");
+      }
+
+      closeModal();
+      await fetchProducts();
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error",
+        );
+      } else {
+        toast.show(seller_product_delete_failed, "error");
+      }
+    }
+  }
+
   return (
     <div className="seller-products-container">
       <header>
@@ -200,6 +243,15 @@ const SellerProducts = () => {
           )}
         </>
       )}
+
+      <ConfirmModal
+        show={isDeleteProductModalOpen}
+        onClose={() => closeModal()}
+        onConfirm={() => DeleteSellerProduct()}
+        title={delete_confirm_message}
+        cancelLabel={delete_cancel_button}
+        confirmLabel={delete_confirm_button}
+      />
     </div>
   );
 };

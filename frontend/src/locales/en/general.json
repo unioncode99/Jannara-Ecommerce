@@ -588,7 +588,11 @@
       "seller_product_image_add_success": "Image uploaded successfully",
       "seller_product_image_add_failed": "Failed to upload image",
       "seller_product_image_delete_success": "Image deleted successfully",
-      "seller_product_image_delete_failed": "Failed to delete image"
+      "seller_product_image_delete_failed": "Failed to delete image",
+      "delete_confirm_title": "Delete Product",
+      "delete_confirm_message": "Are you sure you want to delete this product? This action cannot be undone.",
+      "delete_confirm_button": "Delete",
+      "delete_cancel_button": "Cancel"
     }
   },
   "sidebar": {
