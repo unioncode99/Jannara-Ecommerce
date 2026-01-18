@@ -578,7 +578,13 @@
       "required": "This field is required",
       "invalid_price": "Please enter a valid price",
       "invalid_stock": "Please enter a valid stock quantity",
-      "select_sku": "Select SKU..."
+      "select_sku": "Select SKU...",
+      "seller_product_add_success": "Seller product has been added successfully",
+      "seller_product_add_failed": "Failed to add seller product. Please try again",
+      "seller_product_update_success": "Seller product has been updated successfully",
+      "seller_product_update_failed": "Failed to update seller product. Please try again",
+      "seller_product_delete_success": "Seller product has been deleted successfully",
+      "seller_product_delete_failed": "Failed to delete seller product. Please try again"
     }
   },
   "sidebar": {

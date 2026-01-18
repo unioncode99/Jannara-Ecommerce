@@ -387,11 +387,11 @@ const AddProductPage = () => {
         v.variationOptions.forEach((opt, oi) => {
           formData.append(
             `variations[${vi}].variationOptions[${oi}].valueEn`,
-            opt.valueEn
+            opt.valueEn,
           );
           formData.append(
             `variations[${vi}].variationOptions[${oi}].valueAr`,
-            opt.valueAr
+            opt.valueAr,
           );
         });
       });
@@ -404,11 +404,11 @@ const AddProductPage = () => {
         pi.variationOptions.forEach((opt, oi) => {
           formData.append(
             `productItems[${piIndex}].variationOptions[${oi}].valueEn`,
-            opt.valueEn
+            opt.valueEn,
           );
           formData.append(
             `productItems[${piIndex}].variationOptions[${oi}].valueAr`,
-            opt.valueAr
+            opt.valueAr,
           );
         });
 
@@ -417,12 +417,12 @@ const AddProductPage = () => {
           if (img.imageFile) {
             formData.append(
               `productItems[${piIndex}].productItemImages[${ii}].imageFile`,
-              img.imageFile
+              img.imageFile,
             );
           }
           formData.append(
             `productItems[${piIndex}].productItemImages[${ii}].isPrimary`,
-            img.isPrimary ? "true" : "false"
+            img.isPrimary ? "true" : "false",
           );
         });
       });
@@ -432,7 +432,7 @@ const AddProductPage = () => {
       if (translations.general.server_messages[result?.message?.message]) {
         toast.show(
           translations.general.server_messages[result?.message?.message],
-          "success"
+          "success",
         );
       } else {
         toast.show(product_add_success, "success");
@@ -490,7 +490,7 @@ const AddProductPage = () => {
       if (translations.general.server_messages[result?.message?.message]) {
         toast.show(
           translations.general.server_messages[result?.message?.message],
-          "success"
+          "success",
         );
       } else {
         toast.show(product_update_success, "success");
@@ -500,7 +500,7 @@ const AddProductPage = () => {
       if (translations.general.server_messages[error.message]) {
         toast.show(
           translations.general.server_messages[error.message],
-          "error"
+          "error",
         );
       } else {
         toast.show(product_update_failed, "error");

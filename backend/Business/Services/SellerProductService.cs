@@ -53,20 +53,23 @@ namespace Jannara_Ecommerce.Business.Services
 
                 List<SellerProductImageCreateDBDTO> ProductImages = new List<SellerProductImageCreateDBDTO>();
                 // Save Seller Product images
-                foreach (var image in productCreateDTO.SellerProductImages)
+                if (productCreateDTO.SellerProductImages != null)
                 {
-                    var imageSaveResult = await _imageService.SaveImageAsync(image, _imageSettings.Value.ProductFolder);
-                    if (!imageSaveResult.IsSuccess)
+                    foreach (var image in productCreateDTO?.SellerProductImages)
                     {
-                        return await RollbackAndFail(transaction, savedImages);
+                        var imageSaveResult = await _imageService.SaveImageAsync(image, _imageSettings.Value.ProductFolder);
+                        if (!imageSaveResult.IsSuccess)
+                        {
+                            return await RollbackAndFail(transaction, savedImages);
+                        }
+                        savedImages.Add(imageSaveResult.Data);
                     }
-                    savedImages.Add(imageSaveResult.Data);
                 }
 
                 // Product
                 var productDTO = new SellerProductCreateDBDTO
                 {
-                        SellerId = productCreateDTO.SellerId,
+                        UserId = productCreateDTO.UserId,
                         ProductItemId = productCreateDTO.ProductItemId,
                         Price = productCreateDTO.Price,
                         StockQuantity = productCreateDTO.StockQuantity,
@@ -80,16 +83,19 @@ namespace Jannara_Ecommerce.Business.Services
 
                 int SellerProductId = addProductResult.Data.Id;
 
-                foreach (var image in savedImages)
+                if (savedImages != null)
                 {
-
-                    var addSellerImageResult = await _sellerProductImageService.AddNewAsync(
-                        new SellerProductImageCreateDBDTO { ImageUrl = image, SellerProductId = SellerProductId }
-                        , connection, transaction);
-
-                    if (!addSellerImageResult.IsSuccess)
+                    foreach (var image in savedImages)
                     {
-                        return await RollbackAndFail(transaction, savedImages);
+
+                        var addSellerImageResult = await _sellerProductImageService.AddNewAsync(
+                            new SellerProductImageCreateDBDTO { ImageUrl = image, SellerProductId = SellerProductId }
+                            , connection, transaction);
+
+                        if (!addSellerImageResult.IsSuccess)
+                        {
+                            return await RollbackAndFail(transaction, savedImages);
+                        }
                     }
                 }
 

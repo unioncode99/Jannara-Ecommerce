@@ -22,7 +22,7 @@ const computeCombinations = (variations) => {
     v?.variationOptions?.map((o) => ({
       valueEn: o.valueEn,
       valueAr: o.valueAr,
-    }))
+    })),
   );
 
   return optionGroups.reduce((acc, group) => {
@@ -104,7 +104,7 @@ const ProductItems = ({
       //
       console.log(
         "productData.productItems[index].id -> ",
-        productData.productItems[index].id
+        productData.productItems[index].id,
       );
 
       console.log("itemId", itemId);
@@ -198,11 +198,11 @@ const ProductItems = ({
         ?.forEach((img, index) => {
           formData.append(
             `ProductItemImages[${index}].ImageFile`,
-            img.imageFile
+            img.imageFile,
           );
           formData.append(
             `ProductItemImages[${index}].IsPrimary`,
-            img.isPrimary
+            img.isPrimary,
           );
         });
 
@@ -228,7 +228,7 @@ const ProductItems = ({
       if (translations.general.server_messages[result?.message?.message]) {
         toast.show(
           translations.general.server_messages[result?.message?.message],
-          "success"
+          "success",
         );
       } else {
         toast.show(product_image_update_success, "success");
@@ -238,7 +238,7 @@ const ProductItems = ({
       if (translations.general.server_messages[error.message]) {
         toast.show(
           translations.general.server_messages[error.message],
-          "error"
+          "error",
         );
       } else {
         toast.show(product_image_update_failed, "error");
@@ -264,7 +264,7 @@ const ProductItems = ({
       if (translations.general.server_messages[result?.message?.message]) {
         toast.show(
           translations.general.server_messages[result?.message?.message],
-          "success"
+          "success",
         );
       } else {
         toast.show(product_image_delete_success, "success");
@@ -274,7 +274,7 @@ const ProductItems = ({
       if (translations.general.server_messages[error.message]) {
         toast.show(
           translations.general.server_messages[error.message],
-          "error"
+          "error",
         );
       } else {
         toast.show(product_image_delete_failed, "error");
@@ -285,7 +285,7 @@ const ProductItems = ({
   async function setPrimary(selectedImage) {
     try {
       const result = await update(
-        `product-item-images/set-primary/${selectedImage.id}`
+        `product-item-images/set-primary/${selectedImage.id}`,
       );
 
       console.log("result -> ", result);
@@ -306,7 +306,7 @@ const ProductItems = ({
       if (translations.general.server_messages[result?.message?.message]) {
         toast.show(
           translations.general.server_messages[result?.message?.message],
-          "success"
+          "success",
         );
       } else {
         toast.show(product_image_primary_success, "success");
@@ -316,7 +316,7 @@ const ProductItems = ({
       if (translations.general.server_messages[error.message]) {
         toast.show(
           translations.general.server_messages[error.message],
-          "error"
+          "error",
         );
       } else {
         toast.show(product_image_primary_failed, "error");

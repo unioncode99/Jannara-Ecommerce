@@ -177,6 +177,10 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;
         public async Task<Result<SellerProductDTO>> AddNewAsync(SellerProductCreateDBDTO product, SqlConnection connection, SqlTransaction transaction)
         {
             string query = @"
+DECLARE @SellerId INT;
+
+SET @SellerId = (SELECT TOP 1 id FROM Sellers WHERE user_id = @UserId);
+
 INSERT INTO [dbo].[SellerProducts]
 (
     [seller_id],
@@ -197,7 +201,7 @@ VALUES
 ";
 
             using var command = new SqlCommand(query, connection, transaction);
-            command.Parameters.AddWithValue("@SellerId", product.SellerId);
+            command.Parameters.AddWithValue("@UserId", product.UserId);
             command.Parameters.AddWithValue("@ProductItemId", product.ProductItemId);
             command.Parameters.AddWithValue("@Price", product.Price);
             command.Parameters.AddWithValue("@StockQuantity", product.StockQuantity);

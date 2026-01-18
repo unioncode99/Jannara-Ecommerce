@@ -573,7 +573,13 @@
       "cancel_text": "إلغاء",
       "save": "حفظ",
       "select_sku": "اختر رمز المنتج (SKU)",
-      "save_product": "حفظ المنتج"
+      "save_product": "حفظ المنتج",
+      "seller_product_add_success": "تمت إضافة المنتج للبائع بنجاح",
+      "seller_product_add_failed": "فشل إضافة المنتج للبائع. يرجى المحاولة مرة أخرى",
+      "seller_product_update_success": "تم تحديث المنتج للبائع بنجاح",
+      "seller_product_update_failed": "فشل تحديث المنتج للبائع. يرجى المحاولة مرة أخرى",
+      "seller_product_delete_success": "تم حذف المنتج للبائع بنجاح",
+      "seller_product_delete_failed": "فشل حذف المنتج للبائع. يرجى المحاولة مرة أخرى"
     }
   },
   "sidebar": {

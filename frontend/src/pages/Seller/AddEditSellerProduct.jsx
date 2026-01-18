@@ -3,11 +3,13 @@ import SearchableSelect from "../../components/ui/SearchableSelect";
 import "./AddEditSellerProduct.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useLanguage } from "../../hooks/useLanguage";
-import { ArrowLeft, ArrowRight, Save } from "lucide-react";
+import { ArrowLeft, ArrowRight, Save, Upload, X } from "lucide-react";
 import Button from "../../components/ui/Button";
 import { useDebounce } from "../../hooks/useDebounce";
-import { read } from "../../api/apiWrapper";
+import { create, read } from "../../api/apiWrapper";
 import Input from "../../components/ui/Input";
+import { isImageValid } from "../../utils/utils";
+import { toast } from "../../components/ui/Toast";
 
 const AddEditSellerProduct = () => {
   const [search, setSearch] = useState("");
@@ -22,6 +24,8 @@ const AddEditSellerProduct = () => {
 
   const [stock, setStock] = useState("");
   const [price, setPrice] = useState("");
+
+  const [images, setImages] = useState([]);
 
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingSkus, setLoadingSkus] = useState(false);
@@ -41,9 +45,13 @@ const AddEditSellerProduct = () => {
     invalid_price,
     invalid_stock,
     select_sku,
+    seller_product_add_success,
+    seller_product_add_failed,
   } = translations.general.pages.seller_products;
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
+
+  const { upload_images } = translations.general.pages.add_product;
 
   const { id } = useParams();
 
@@ -63,7 +71,7 @@ const AddEditSellerProduct = () => {
     try {
       setLoadingProducts(true);
       const result = await read(
-        `products/dropdown?SearchTerm=${debouncedSearch}`
+        `products/dropdown?SearchTerm=${debouncedSearch}`,
       );
       console.log("result -> ", result);
       setProducts(result?.data || []);
@@ -78,7 +86,7 @@ const AddEditSellerProduct = () => {
     try {
       setLoadingSkus(true);
       const result = await read(
-        `product-items/dropdown?productId=${productId}`
+        `product-items/dropdown?productId=${productId}`,
       );
       console.log("result -> ", result);
       setSkus(result?.data || []);
@@ -103,6 +111,7 @@ const AddEditSellerProduct = () => {
     setSelectedSku(null);
     setSkuSearch("");
     setSkus([]);
+    setImages([]);
 
     await fetchProductItems(product.id);
   }
@@ -110,26 +119,28 @@ const AddEditSellerProduct = () => {
   function hanldeProductItemSelect(productItem) {
     console.log("productItem -> ", productItem);
     setSelectedSku(productItem);
+    setImages([]);
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateFormData()) {
       return;
     }
 
-    const payload = {
-      productItemId: selectedSku.id,
-      stockQuantity: Number(stock),
-      price: Number(price),
-    };
+    const formData = new FormData();
 
-    // TODO:
-    // await createSellerProduct(payload)
-    // navigate("/seller-products");
+    formData.append("productItemId", selectedSku.id);
+    formData.append("stockQuantity", stock);
+    formData.append("price", price);
 
-    console.log("SEND TO API:", payload);
+    images.forEach((file) => {
+      formData.append(`SellerProductImages`, file);
+    });
+
+    console.log("SEND TO API:", formData);
+    await createSellerProduct(formData);
   };
 
   const validateFormData = () => {
@@ -158,6 +169,52 @@ const AddEditSellerProduct = () => {
     setPrice("");
     setErrors({});
   };
+
+  const addImages = (files) => {
+    const validFiles = Array.from(files).filter((file) => isImageValid(file));
+    setImages((prev) => [...prev, ...validFiles]);
+  };
+
+  const removeImage = (index) => {
+    const updated = [...images];
+    updated.splice(index, 1);
+    setImages(updated);
+  };
+
+  const getImagePrview = (img) => {
+    if (img instanceof File) {
+      return URL.createObjectURL(img);
+    }
+    return "";
+  };
+
+  async function createSellerProduct(payload) {
+    try {
+      const result = await create(`seller-products`, payload);
+
+      console.log("result -> ", result);
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success",
+        );
+      } else {
+        toast.show(seller_product_add_success, "success");
+      }
+      navigate("/seller-products");
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error",
+        );
+      } else {
+        toast.show(seller_product_add_failed, "error");
+      }
+    }
+  }
 
   return (
     <div className="add-edit-seller-product-container">
@@ -235,6 +292,35 @@ const AddEditSellerProduct = () => {
               onChange={(e) => setStock(e.target.value)}
               errorMessage={errors.stock}
             />
+
+            <>
+              <label className="upload-product-image-container">
+                <Upload className="upload-icon" />
+                <span>{upload_images}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={(e) => addImages(e.target.files)}
+                />
+              </label>
+
+              <div className="sku-images">
+                {images?.map((img, index) => (
+                  <div key={index} className={`product-preview-container`}>
+                    <img
+                      src={getImagePrview(img)}
+                      alt="Product Image"
+                      className="product-img"
+                    />
+                    <button onClick={() => removeImage(index)}>
+                      <X />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
           </>
         )}
 

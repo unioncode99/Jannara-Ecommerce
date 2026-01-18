@@ -57,6 +57,17 @@ namespace Jannara_Ecommerce.Controllers
                 return BadRequest(new { success = false, message = "Product data is required" });
             }
 
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+
+            productCreateDTO.UserId = userId;
+
             var result = await _sellerProductService.CreateAsync(productCreateDTO);
 
             if (!result.IsSuccess)
