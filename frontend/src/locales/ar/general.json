@@ -588,6 +588,10 @@
       "delete_confirm_message": "هل أنت متأكد أنك تريد حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.",
       "delete_confirm_button": "حذف",
       "delete_cancel_button": "إلغاء"
+    },
+    "auth": {
+      "login_success": "مرحباً بعودتك",
+      "login_failed": "فشل تسجيل الدخول"
     }
   },
   "sidebar": {

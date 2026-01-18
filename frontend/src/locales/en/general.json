@@ -593,6 +593,10 @@
       "delete_confirm_message": "Are you sure you want to delete this product? This action cannot be undone.",
       "delete_confirm_button": "Delete",
       "delete_cancel_button": "Cancel"
+    },
+    "auth": {
+      "login_success": "Welcome back",
+      "login_failed": "Login failed"
     }
   },
   "sidebar": {

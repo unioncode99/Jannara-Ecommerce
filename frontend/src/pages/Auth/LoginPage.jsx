@@ -17,6 +17,8 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const { login_success, login_failed } = translations.general.pages.auth;
+
   function navigateBasedOnRole(role) {
     switch (role) {
       case "customer":
@@ -41,14 +43,14 @@ const LoginPage = () => {
     setIsLoading(true);
     try {
       const result = await create("auth/login", { email, password });
-      toast.show("Welcome back", "success");
+      toast.show(login_success, "success");
       console.log(result);
       login(result.user, result.person, result.accessToken);
       setAuthToken(result.accessToken.token);
       navigateBasedOnRole(result?.user?.roles[0]?.nameEn.toLowerCase());
       console.log(result.accessToken);
     } catch (error) {
-      toast.show(error.message || "Login failed", "error");
+      toast.show(error.message || login_failed, "error");
     } finally {
       setIsLoading(false);
     }
