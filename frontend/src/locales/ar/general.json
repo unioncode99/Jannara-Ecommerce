@@ -651,6 +651,20 @@
     "anonymous": "مجهول",
     "star": "⭐",
     "reviewed_on": "تمت المراجعة في",
-    "customer_reviews": "تقييمات العملاء"
+    "customer_reviews": "تقييمات العملاء",
+    "write_review": "اكتب تقييمك",
+    "submit_review": "إرسال التقييم",
+    "review_placeholder": "أخبرنا عن تجربتك...",
+    "edit_review": "تعديل التقييم",
+    "delete_review": "حذف التقييم",
+    "no_reviews": "لا توجد تقييمات بعد",
+    "rating_required": "يرجى اختيار التقييم",
+    "review_title": "تقييم",
+    "review_add_success": "تمت إضافة التقييم بنجاح",
+    "review_add_failed": "فشل في إضافة التقييم",
+    "review_update_success": "تم تحديث التقييم بنجاح",
+    "review_update_failed": "فشل في تحديث التقييم",
+    "review_delete_success": "تم حذف التقييم بنجاح",
+    "review_delete_failed": "فشل في حذف التقييم"
   }
 }

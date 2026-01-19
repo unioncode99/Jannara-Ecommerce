@@ -5,7 +5,7 @@ import "./OrderInfoModal.css";
 import { formatMoney } from "../../utils/utils";
 import { useLanguage } from "../../hooks/useLanguage";
 
-const OrderInfoModal = ({ show, onClose, onConfirm, order }) => {
+const OrderInfoModal = ({ show, onClose, onConfirm, order, onReviewClick }) => {
   const { translations, language } = useLanguage();
   const { order_details, order_id, seller, cancel_order, cancel, items } =
     translations.general.pages.customer_orders;
@@ -79,6 +79,17 @@ const OrderInfoModal = ({ show, onClose, onConfirm, order }) => {
                           : sellerOrderItem.nameAr}{" "}
                         ({sellerOrderItem.quantity})
                       </span>
+                      {!sellerOrderItem.isReviewed && (
+                        <Button
+                          onClick={() => onReviewClick(sellerOrderItem)}
+                          className="btn btn-primary-outline"
+                        >
+                          {sellerOrderItem?.review
+                            ? "Edit Review"
+                            : "Write Review"}
+                        </Button>
+                      )}
+
                       <span>{formatMoney(sellerOrderItem.totalPrice)}</span>
                     </li>
                   ))}

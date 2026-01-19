@@ -1,0 +1,14 @@
+.review-stars {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.star {
+  cursor: pointer;
+  stroke: var(--grey-400);
+}
+
+.star.filled {
+  fill: var(--primary-500);
+  stroke: var(--primary-500);
+}

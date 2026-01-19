@@ -656,6 +656,20 @@
     "anonymous": "Anonymous",
     "star": "⭐",
     "reviewed_on": "Reviewed on",
-    "customer_reviews": "Customer Reviews"
+    "customer_reviews": "Customer Reviews",
+    "write_review": "Write a Review",
+    "submit_review": "Submit Review",
+    "review_placeholder": "Tell us about your experience...",
+    "edit_review": "Edit Review",
+    "delete_review": "Delete Review",
+    "no_reviews": "No reviews yet",
+    "rating_required": "Please select a rating",
+    "review_title": "Review",
+    "review_add_success": "Review added successfully",
+    "review_add_failed": "Failed to add review",
+    "review_update_success": "Review updated successfully",
+    "review_update_failed": "Failed to update review",
+    "review_delete_success": "Review deleted successfully",
+    "review_delete_failed": "Failed to delete review"
   }
 }

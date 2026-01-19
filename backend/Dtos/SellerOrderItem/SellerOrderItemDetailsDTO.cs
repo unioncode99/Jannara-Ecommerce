@@ -9,6 +9,8 @@
         public decimal UnitPrice { get; set; }
         public decimal TotalPrice { get; set; }
 
+        public int ProductId { get; set; }
+        public bool IsReviewed { get; set; }
         public string NameEn { get; set; }
         public string NameAr { get; set; }
         public string DefaultImageUrl { get; set; }

@@ -777,6 +777,8 @@ SELECT @json = (
                 oi.unit_price AS UnitPrice,
                 oi.total_price AS TotalPrice,
 
+                p.id as ProductId,
+                CAST(CASE WHEN pr.id IS NULL THEN 0 ELSE 1 END AS BIT) AS IsReviewed,
                 p.name_en AS NameEn,
                 p.name_ar AS NameAr,
                 p.default_image_url AS DefaultImageUrl,
@@ -791,6 +793,8 @@ SELECT @json = (
                 ON sp.product_item_id = pi.id
             LEFT JOIN Products p
                 ON pi.product_id = p.id
+            LEFT JOIN ProductRatings pr ON pr.product_id = p.id AND pr.customer_id = o.customer_id
+
             WHERE oi.order_id = o.id
             FOR JSON PATH
         ) AS OrderItems,
@@ -857,6 +861,8 @@ JSON_QUERY((
                         soi.unit_price AS UnitPrice,
                         soi.total_price AS TotalPrice,
 
+                        p.id as ProductId,
+                        CAST(CASE WHEN pr.id IS NULL THEN 0 ELSE 1 END AS BIT) AS IsReviewed,
                         p.name_en AS NameEn,
                         p.name_ar AS NameAr,
                         p.default_image_url AS DefaultImageUrl,
@@ -868,6 +874,7 @@ JSON_QUERY((
                     LEFT JOIN SellerProducts sp ON sp.id = soi.seller_product_id
                     LEFT JOIN ProductItems pi ON sp.product_item_id = pi.id
                     LEFT JOIN Products p ON pi.product_id = p.id
+                    LEFT JOIN ProductRatings pr ON pr.product_id = p.id AND pr.customer_id = o.customer_id
                     WHERE soi.seller_order_id = so.id
                     FOR JSON PATH
                 ) AS SellerOrderItems

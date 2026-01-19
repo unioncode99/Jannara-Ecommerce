@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import TableView from "../../components/CustomerOrders/TableView";
-import { patch, read, update } from "../../api/apiWrapper";
+import { create, patch, read, update } from "../../api/apiWrapper";
 import CardView from "../../components/CustomerOrders/CardView";
 import "./CustomerOrders.css";
 import ViewSwitcher from "../../components/CustomerOrders/ViewSwitcher";
@@ -13,16 +13,22 @@ import Input from "../../components/ui/Input";
 import FilterContainer from "../../components/CustomerOrders/FilterContainer";
 import Pagination from "../../components/ui/Pagination";
 import { useAuth } from "../../hooks/useAuth";
+import ReviewModal from "../../components/Review/ReviewModal";
 
 const CustomerOrders = () => {
   const [orders, setOrders] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [view, setView] = useState("table"); // 'table' or 'card'
+  const [view, setView] = useState("card"); // 'table' or 'card'
   const [isOrderInfoModalOpen, setIsOrderInfoModalOpen] = useState(false);
   const [isCancelOrderConfirmModalOpen, setIsCancelOrderConfirmModalOpen] =
     useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const [selectedOrderItem, setSelectedOrderItem] = useState(null);
+
   const { translations } = useLanguage();
 
   const [searchText, setSearchText] = useState("");
@@ -44,6 +50,9 @@ const CustomerOrders = () => {
     load_failed,
     order_cancelled_successfully,
   } = translations.general.pages.customer_orders;
+
+  const { review_add_success, review_add_failed } =
+    translations.general.reviews;
 
   const fetchCustomerOrders = async () => {
     try {
@@ -179,6 +188,57 @@ const CustomerOrders = () => {
     setCurrentPage(page);
   };
 
+  function handleReviewSubmit(payload) {
+    payload.productId = selectedProductId;
+    console.log("payload -> ", payload);
+    addReview(payload);
+  }
+
+  async function addReview(payload) {
+    try {
+      const result = await create(`product-ratings`, payload);
+
+      console.log("result -> ", result);
+
+      if (translations.general.server_messages[result?.message?.message]) {
+        toast.show(
+          translations.general.server_messages[result?.message?.message],
+          "success",
+        );
+      } else {
+        toast.show(review_add_success, "success");
+      }
+      closeModal();
+    } catch (error) {
+      console.error(error);
+      if (translations.general.server_messages[error.message]) {
+        toast.show(
+          translations.general.server_messages[error.message],
+          "error",
+        );
+      } else {
+        toast.show(review_add_failed, "error");
+      }
+    }
+  }
+
+  const openReviewModal = (item) => {
+    console.log("item -> ", item);
+
+    setSelectedProductId(item.productId);
+    setSelectedOrderItem(item);
+    setIsReviewModalOpen(true);
+  };
+
+  function closeModal() {
+    setIsCancelOrderConfirmModalOpen(false);
+    setIsOrderInfoModalOpen(false);
+    setIsReviewModalOpen(false);
+    setSelectedOrder(null);
+    setSelectedOrderItem(null);
+    setSelectedProductId(null);
+  }
+
   return (
     <div>
       <h1>{my_orders}</h1>
@@ -204,6 +264,7 @@ const CustomerOrders = () => {
         onClose={() => setIsOrderInfoModalOpen(false)}
         onConfirm={() => handleCancelOrder()}
         order={selectedOrder}
+        onReviewClick={openReviewModal}
       />
       <ConfirmModal
         show={isCancelOrderConfirmModalOpen}
@@ -212,6 +273,11 @@ const CustomerOrders = () => {
         title={confirm_modal_title}
         cancelLabel={cancel}
         confirmLabel={confirm}
+      />
+      <ReviewModal
+        show={isReviewModalOpen}
+        onClose={() => setIsReviewModalOpen(false)}
+        onSubmit={handleReviewSubmit}
       />
       {totalOrders && (
         <Pagination
