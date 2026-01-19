@@ -608,7 +608,10 @@
       "cancel": "Cancel",
       "items": "Items",
       "order_status_update_success": "Order status updated successfully",
-      "order_status_update_failed": "Failed to update order status"
+      "order_status_update_failed": "Failed to update order status",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone"
     }
   },
   "sidebar": {

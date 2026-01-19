@@ -1,7 +1,7 @@
 import { CircleCheckBig } from "lucide-react";
 import { useLanguage } from "../../hooks/useLanguage";
 import Modal from "../ui/Modal";
-import { formatMoney } from "../../utils/utils";
+import { formatMoney, formatSudanPhoneLocal } from "../../utils/utils";
 import Button from "../ui/Button";
 import "./OrderInfoModal.css";
 import { useEffect, useState } from "react";
@@ -27,8 +27,17 @@ const OrderInfoModal = ({ show, onClose, onConfirm, order }) => {
 
   const { translations, language } = useLanguage();
 
-  const { order_details, order_id, customer, update_order, cancel, items } =
-    translations.general.pages.seller_orders;
+  const {
+    order_details,
+    order_id,
+    customer,
+    update_order,
+    cancel,
+    items,
+    name,
+    email,
+    phone,
+  } = translations.general.pages.seller_orders;
 
   // const { pending, processing, shipped, delivered, cancelled } =
   //   translations.general.order_statuses;
@@ -116,14 +125,19 @@ const OrderInfoModal = ({ show, onClose, onConfirm, order }) => {
           <h4>{customer}:</h4>
           <p>
             <small>
+              {name}:{" "}
               {order?.customer?.firstName + " " + order?.customer?.lastName}
             </small>
           </p>
           <p>
-            <small>{order?.customer?.email}</small>
+            <small>
+              {email}: {order?.customer?.email}
+            </small>
           </p>
           <p>
-            <small>{order?.customer?.phone}</small>
+            <small>
+              {phone}: {formatSudanPhoneLocal(order?.customer?.phone)}
+            </small>
           </p>
         </div>
         {/* Order Items */}

@@ -603,7 +603,10 @@
       "cancel": "إلغاء",
       "items": "المنتجات",
       "order_status_update_success": "تم تحديث حالة الطلب بنجاح",
-      "order_status_update_failed": "فشل تحديث حالة الطلب"
+      "order_status_update_failed": "فشل تحديث حالة الطلب",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف"
     }
   },
   "sidebar": {

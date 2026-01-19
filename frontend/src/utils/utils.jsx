@@ -17,7 +17,7 @@ export function formatMoney(
     showSymbol = false,
     decimals = 2,
     locale = "en-SD",
-  } = {}
+  } = {},
 ) {
   if (typeof amount !== "number") return "";
 
@@ -52,7 +52,7 @@ export function formatDateTime(
       second: "2-digit",
       hour12: false,
     },
-  } = {}
+  } = {},
 ) {
   if (!date) return "";
   const dt = typeof date === "string" ? new Date(date) : date;
@@ -76,3 +76,32 @@ export function isImageValid(file) {
 
   return true;
 }
+
+/**
+ * Format Sudan local phone numbers as 10 digits without spaces
+ * Examples:
+ * 965000000      -> 0965000000
+ * 0965000000     -> 0965000000
+ * +249965000000  -> 0965000000
+ * @param {string} phone
+ * @returns {string} formatted phone or "-" if invalid
+ */
+export const formatSudanPhoneLocal = (phone) => {
+  if (!phone) return "-";
+
+  // Remove non-digit characters
+  let digits = phone.replace(/\D/g, "");
+
+  // Remove country code if present (249)
+  if (digits.startsWith("249")) {
+    digits = "0" + digits.slice(3);
+  }
+
+  // Add leading 0 if only 9 digits
+  if (digits.length === 9) digits = "0" + digits;
+
+  // Return only if 10 digits
+  if (digits.length !== 10) return phone;
+
+  return digits;
+};

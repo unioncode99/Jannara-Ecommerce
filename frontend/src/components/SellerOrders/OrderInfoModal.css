@@ -39,6 +39,7 @@
 
 .customer-info-container p {
   text-align: start;
+  color: var(--grey-500);
 }
 
 .sub-order-container {
