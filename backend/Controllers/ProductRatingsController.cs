@@ -19,7 +19,7 @@ namespace Jannara_Ecommerce.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResponseDTO<ProductRatingDTO>>> GetAll([FromQuery] ProductRatingFilterDTO filter)
+        public async Task<ActionResult<PagedResponseDTO<ProductRatingDetailsDTO>>> GetAll([FromQuery] ProductRatingFilterDTO filter)
         {
             var result = await _service.GetAllAsync(filter);
             if (result.IsSuccess)

@@ -1,0 +1,9 @@
+.product-reviews-container {
+  margin-bottom: 2rem;
+  margin-top: 1rem;
+}
+
+.product-reviews-list {
+  list-style: none;
+  padding: 0;
+}

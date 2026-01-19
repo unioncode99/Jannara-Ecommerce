@@ -68,7 +68,7 @@ OUTPUT inserted.*
                                     CustomerId = reader.GetInt32(reader.GetOrdinal("customer_id")),
                                     ProductId = reader.GetInt32(reader.GetOrdinal("product_id")),
                                     Rating = reader.GetByte(reader.GetOrdinal("rating")),
-                                    ReviewText = reader.GetString(reader.GetOrdinal("review_text")),
+                                    ReviewText = reader.IsDBNull(reader.GetOrdinal("review_text")) ? null : reader.GetString(reader.GetOrdinal("review_text")),
                                     CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at")),
                                 };
@@ -89,7 +89,7 @@ OUTPUT inserted.*
             }
         }
 
-        public async Task<Result<PagedResponseDTO<ProductRatingDTO>>> GetAllAsync(ProductRatingFilterDTO filter)
+        public async Task<Result<PagedResponseDTO<ProductRatingDetailsDTO>>> GetAllAsync(ProductRatingFilterDTO filter)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -99,9 +99,22 @@ select count(id) as total from ProductRatings
 where product_id = @ProductId;
 
 -- paged data
-SELECT *
-FROM ProductRatings
-where product_id = @ProductId
+SELECT 
+    pr.id,
+    pr.customer_id,
+    p.first_name + ' ' + p.last_name AS CustomerName,
+	p.image_url as ProfileImage,
+    pr.product_id,
+    pr.rating,
+    pr.review_text,
+    pr.created_at,
+    pr.updated_at
+
+FROM ProductRatings pr
+LEFT JOIN Customers c ON c.id = pr.customer_id
+LEFT JOIN Users u ON u.id = c.user_id
+LEFT JOIN People p ON p.id = u.person_id
+where pr.product_id = @ProductId
 ORDER BY id DESC
 OFFSET @offset ROWS
 FETCH NEXT @pageSize ROWS ONLY;
@@ -122,36 +135,38 @@ FETCH NEXT @pageSize ROWS ONLY;
                         {
                             if (!await reader.ReadAsync())
                             {
-                                return new Result<PagedResponseDTO<ProductRatingDTO>>(
+                                return new Result<PagedResponseDTO<ProductRatingDetailsDTO>>(
                                     false, "users_not_found", null, 404);
                             }
 
                             int total = reader.GetInt32(0);
                             await reader.NextResultAsync();
-                            var Ratings = new List<ProductRatingDTO>();
+                            var Ratings = new List<ProductRatingDetailsDTO>();
 
                             while (await reader.ReadAsync()) 
                             {
-                                Ratings.Add(new ProductRatingDTO
+                                Ratings.Add(new ProductRatingDetailsDTO
                                 {
                                     Id = reader.GetInt32(reader.GetOrdinal("id")),
                                     CustomerId = reader.GetInt32(reader.GetOrdinal("customer_id")),
+                                    CustomerName = reader.GetString(reader.GetOrdinal("CustomerName")),
+                                    ProfileImage = reader.GetString(reader.GetOrdinal("ProfileImage")),
                                     ProductId = reader.GetInt32(reader.GetOrdinal("product_id")),
                                     Rating = reader.GetByte(reader.GetOrdinal("rating")),
-                                    ReviewText = reader.GetString(reader.GetOrdinal("review_text")),
+                                    ReviewText = reader.IsDBNull(reader.GetOrdinal("review_text")) ? null : reader.GetString(reader.GetOrdinal("review_text")),
                                     CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at")),
                                 });
                             }
 
-                            var response = new PagedResponseDTO<ProductRatingDTO>(total, filter.PageNumber, filter.PageSize, Ratings);
-                            return new Result<PagedResponseDTO<ProductRatingDTO>>(true, "products_retrieved_successfully", response, 200);
+                            var response = new PagedResponseDTO<ProductRatingDetailsDTO>(total, filter.PageNumber, filter.PageSize, Ratings);
+                            return new Result<PagedResponseDTO<ProductRatingDetailsDTO>>(true, "products_retrieved_successfully", response, 200);
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "Failed to retrieve users for page {PageNumber} with page size {PageSize}", filter.PageNumber, filter.PageSize);
-                        return new Result<PagedResponseDTO<ProductRatingDTO>>(false, "internal_server_error", null, 500);
+                        return new Result<PagedResponseDTO<ProductRatingDetailsDTO>>(false, "internal_server_error", null, 500);
                     }
 
                 }
@@ -194,7 +209,7 @@ where id = @id
                                     CustomerId = reader.GetInt32(reader.GetOrdinal("customer_id")),
                                     ProductId = reader.GetInt32(reader.GetOrdinal("product_id")),
                                     Rating = reader.GetByte(reader.GetOrdinal("rating")),
-                                    ReviewText = reader.GetString(reader.GetOrdinal("review_text")),
+                                    ReviewText = reader.IsDBNull(reader.GetOrdinal("review_text")) ? null : reader.GetString(reader.GetOrdinal("review_text")),
                                     CreatedAt = reader.GetDateTime(reader.GetOrdinal("created_at")),
                                     UpdatedAt = reader.GetDateTime(reader.GetOrdinal("updated_at")),
                                 };

@@ -646,5 +646,11 @@
     "shipped": "تم الشحن",
     "delivered": "تم التوصيل",
     "cancelled": "ملغى"
+  },
+  "reviews": {
+    "anonymous": "مجهول",
+    "star": "⭐",
+    "reviewed_on": "تمت المراجعة في",
+    "customer_reviews": "تقييمات العملاء"
   }
 }

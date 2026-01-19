@@ -7,6 +7,7 @@ import { useLanguage } from "../hooks/useLanguage";
 import ProductGallery from "../components/ProductPage/ProductGallery";
 import ProductContent from "../components/ProductPage/ProductContent";
 import SpinnerLoader from "../components/ui/SpinnerLoader";
+import ProductReviews from "../components/Review/ProductReviews";
 
 const ProductPage = () => {
   const { publicId } = useParams();
@@ -25,7 +26,7 @@ const ProductPage = () => {
 
   // Find selected seller
   const selectedSeller = selectedItem?.sellerProducts?.find(
-    (s) => s.sellerProductId === selectedSellerProductId
+    (s) => s.sellerProductId === selectedSellerProductId,
   );
 
   useEffect(() => {
@@ -74,8 +75,8 @@ const ProductPage = () => {
     if (!product?.productItems) return;
     const item = product.productItems.find((item) =>
       item.productItemVariationOptions.every((opt) =>
-        Object.values(selectedOptions).includes(opt.variationOptionId)
-      )
+        Object.values(selectedOptions).includes(opt.variationOptionId),
+      ),
     );
     setSelectedSellerProductId(0);
     setSelectedItem(item || null);
@@ -127,25 +128,28 @@ const ProductPage = () => {
       ) : !product ? (
         <p>{product_not_found}</p>
       ) : (
-        <div className="product-page-container">
-          <ProductGallery
-            selectedItem={selectedItem}
-            selectedSellerProductId={selectedSellerProductId}
-          />
-          <ProductContent
-            product={product}
-            selectedItem={selectedItem}
-            selectedSellerProductId={selectedSellerProductId}
-            setSelectedSellerProductId={setSelectedSellerProductId}
-            selectedOptions={selectedOptions}
-            handleSelect={handleSelect}
-            quantity={quantity}
-            setQuantity={setQuantity}
-            selectedSeller={selectedSeller}
-            handleToggleFavorite={handleToggleFavorite}
-            minPrice={minPrice}
-          />
-        </div>
+        <>
+          <div className="product-page-container">
+            <ProductGallery
+              selectedItem={selectedItem}
+              selectedSellerProductId={selectedSellerProductId}
+            />
+            <ProductContent
+              product={product}
+              selectedItem={selectedItem}
+              selectedSellerProductId={selectedSellerProductId}
+              setSelectedSellerProductId={setSelectedSellerProductId}
+              selectedOptions={selectedOptions}
+              handleSelect={handleSelect}
+              quantity={quantity}
+              setQuantity={setQuantity}
+              selectedSeller={selectedSeller}
+              handleToggleFavorite={handleToggleFavorite}
+              minPrice={minPrice}
+            />
+          </div>
+          <ProductReviews productId={product?.productId} />
+        </>
       )}
     </>
   );

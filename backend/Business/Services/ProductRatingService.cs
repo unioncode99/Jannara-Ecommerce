@@ -25,7 +25,7 @@ namespace Jannara_Ecommerce.Business.Services
             return await _productRatingRepository.DeleteAsync(id);
         }
 
-        public async Task<Result<PagedResponseDTO<ProductRatingDTO>>> GetAllAsync(ProductRatingFilterDTO filter)
+        public async Task<Result<PagedResponseDTO<ProductRatingDetailsDTO>>> GetAllAsync(ProductRatingFilterDTO filter)
         {
             return await _productRatingRepository.GetAllAsync(filter);
         }

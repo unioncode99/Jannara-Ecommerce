@@ -177,11 +177,11 @@ const UserManagementPage = () => {
                 roles: u.roles.map((r) =>
                   r.id === updatedRole.id
                     ? { ...r, isActive: updatedRole.isActive }
-                    : r
+                    : r,
                 ),
               }
-            : u
-        )
+            : u,
+        ),
       );
       console.log("data", data);
     } catch (error) {

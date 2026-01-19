@@ -651,5 +651,11 @@
     "shipped": "Shipped",
     "delivered": "Delivered",
     "cancelled": "Cancelled"
+  },
+  "reviews": {
+    "anonymous": "Anonymous",
+    "star": "⭐",
+    "reviewed_on": "Reviewed on",
+    "customer_reviews": "Customer Reviews"
   }
 }
