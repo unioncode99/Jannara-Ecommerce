@@ -670,6 +670,8 @@
     "review_update_success": "Review updated successfully",
     "review_update_failed": "Failed to update review",
     "review_delete_success": "Review deleted successfully",
-    "review_delete_failed": "Failed to delete review"
+    "review_delete_failed": "Failed to delete review",
+    "review_write": "Write Review",
+    "review_edit": "Edit Review"
   }
 }

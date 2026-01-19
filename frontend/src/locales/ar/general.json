@@ -665,6 +665,8 @@
     "review_update_success": "تم تحديث التقييم بنجاح",
     "review_update_failed": "فشل في تحديث التقييم",
     "review_delete_success": "تم حذف التقييم بنجاح",
-    "review_delete_failed": "فشل في حذف التقييم"
+    "review_delete_failed": "فشل في حذف التقييم",
+    "review_write": "كتابة التقييم",
+    "review_edit": "تعديل التقييم"
   }
 }

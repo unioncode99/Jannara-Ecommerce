@@ -12,6 +12,9 @@ const OrderInfoModal = ({ show, onClose, onConfirm, order, onReviewClick }) => {
 
   const { pending, processing, shipped, delivered, cancelled } =
     translations.general.order_statuses;
+
+  const { review_write, review_edit } = translations.general.reviews;
+
   return (
     <div className="customer-order-info-modal">
       <Modal
@@ -84,9 +87,9 @@ const OrderInfoModal = ({ show, onClose, onConfirm, order, onReviewClick }) => {
                           onClick={() => onReviewClick(sellerOrderItem)}
                           className="btn btn-primary-outline"
                         >
-                          {sellerOrderItem?.review
-                            ? "Edit Review"
-                            : "Write Review"}
+                          {sellerOrderItem?.isReviewed
+                            ? review_edit
+                            : review_write}
                         </Button>
                       )}
 
