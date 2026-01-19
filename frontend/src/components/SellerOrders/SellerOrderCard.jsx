@@ -2,21 +2,29 @@ import { Eye } from "lucide-react";
 import { useLanguage } from "../../hooks/useLanguage";
 import { formatDateTime, formatMoney } from "../../utils/utils";
 import Button from "../ui/Button";
-import "./CustomerOrderCard.css";
+import "./SellerOrderCard.css";
 
-const CustomerOrderCard = ({ order, viewOrder }) => {
+const SellerOrderCard = ({ order, viewOrder }) => {
   const { language, translations } = useLanguage();
   const {
     order: order_label,
+    status,
     items,
     total,
     placed_at,
   } = translations.general.pages.customer_orders;
+
   return (
     <div className="customer-order-card">
       <p>
         <span>{order_label} #</span>
-        <span>{order.publicOrderId}</span>
+        <span>{order.publicId}</span>
+      </p>
+      <p>
+        <span>{status}:</span>
+        <span className="order-status">
+          {language == "en" ? order.statusNameEn : order.statusNameAr}
+        </span>
       </p>
       <p>
         <span>{total}:</span>
@@ -24,16 +32,16 @@ const CustomerOrderCard = ({ order, viewOrder }) => {
       </p>
       <p>
         <span>{placed_at}:</span>
-        <span>{formatDateTime(order.placedAt)}</span>
+        <span>{formatDateTime(order.createdAt)}</span>
       </p>
-      {order.orderItems && (
+      {order.sellerOrderItems && (
         <>
           <h4>{items}:</h4>
           <ul>
-            {order?.orderItems?.map((item) => (
+            {order?.sellerOrderItems?.map((item) => (
               <li key={item.Id}>
                 <span>
-                  {language == "en" ? item.nameEn : item.nameAr} (
+                  {language == "en" ? item.productNameEn : item.productNameAr} (
                   {item.quantity})
                 </span>
                 <span>{formatMoney(item.totalPrice)}</span>
@@ -48,4 +56,4 @@ const CustomerOrderCard = ({ order, viewOrder }) => {
     </div>
   );
 };
-export default CustomerOrderCard;
+export default SellerOrderCard;

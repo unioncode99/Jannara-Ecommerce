@@ -592,6 +592,18 @@
     "auth": {
       "login_success": "مرحباً بعودتك",
       "login_failed": "فشل تسجيل الدخول"
+    },
+    "seller_orders": {
+      "order_details": "تفاصيل الطلب",
+      "order_id": "رقم الطلب",
+      "customer": "العميل",
+      "update_order": "تحديث الطلب",
+      "update_confirm_message": "هل أنت متأكد أنك تريد تحديث حالة الطلب؟",
+      "confirm": "تأكيد",
+      "cancel": "إلغاء",
+      "items": "المنتجات",
+      "order_status_update_success": "تم تحديث حالة الطلب بنجاح",
+      "order_status_update_failed": "فشل تحديث حالة الطلب"
     }
   },
   "sidebar": {

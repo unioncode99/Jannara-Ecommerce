@@ -184,10 +184,11 @@ SELECT @json AS FullJson;
             {
                 string query = @"
 UPDATE SellerOrders
-                SET order_status = @NewStatus
-                WHERE (id = @orderId OR public_order_id = @publicId)
-                  AND order_status in (1, 2, 3, 4)
-AND @NewStatus > order_status;
+SET order_status = @NewStatus
+WHERE (id = @orderId OR public_order_id = @publicId)
+  AND order_status IN (1,2,3,4)    -- Only allow updating Pending, Processing, Shipped, Delivered
+  AND @NewStatus IN (1,2,3,4)      -- Prevent setting Cancelled (5)
+  AND @NewStatus > order_status;    -- Must progress forward
 ";
                 using (var command = new SqlCommand(query, connection))
                 {

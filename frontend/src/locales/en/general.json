@@ -597,6 +597,18 @@
     "auth": {
       "login_success": "Welcome back",
       "login_failed": "Login failed"
+    },
+    "seller_orders": {
+      "order_details": "Order Details",
+      "order_id": "Order ID",
+      "customer": "Customer",
+      "update_order": "Update Order",
+      "update_confirm_message": "Are you sure you want to update this order status?",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "items": "Items",
+      "order_status_update_success": "Order status updated successfully",
+      "order_status_update_failed": "Failed to update order status"
     }
   },
   "sidebar": {
