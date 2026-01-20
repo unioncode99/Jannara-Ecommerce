@@ -254,7 +254,9 @@
       "placed_at": "تاريخ الطلب",
       "items": "العناصر",
       "continue_shopping": "متابعة التسوق",
-      "no_order": "لم يتم العثور على الطلب."
+      "no_order": "لم يتم العثور على الطلب.",
+      "order_placed_success": "تم إنشاء الطلب بنجاح",
+      "order_placed_thank_you": "شكراً لطلبك. سيتم الدفع عند الاستلام."
     },
     "customer_orders": {
       "order": "الطلب",

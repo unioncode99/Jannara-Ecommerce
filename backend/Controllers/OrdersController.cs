@@ -74,5 +74,6 @@ namespace Jannara_Ecommerce.Controllers
             }
             return StatusCode(result.ErrorCode, result.Message);
         }
+    
     }
 }

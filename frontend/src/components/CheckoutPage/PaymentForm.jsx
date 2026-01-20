@@ -56,7 +56,6 @@ const PaymentFormInner = ({ onNext, onBack, checkoutData }) => {
 
     const orderDto = {
       cartId: cart?.id,
-      customerId: 1, // for test
       paymentMethodId: selectedPaymentMethodId,
       shippingAddressId: checkoutData?.shippingAddress?.id,
       shippingMethodId: checkoutData?.shippingMethod?.id,

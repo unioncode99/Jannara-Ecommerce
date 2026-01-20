@@ -26,24 +26,26 @@ const OrderSuccessPage = () => {
     continue_shopping,
     thank_you,
     no_order,
+    order_placed_success,
+    order_placed_thank_you,
   } = translations.general.pages.checkout;
 
+  const fetchOrder = async () => {
+    setLoading(true);
+    try {
+      const data = await read(`orders/${publicOrderId}`);
+      console.log("data -> ", data);
+
+      setOrder(data?.data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load order details.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchOrder = async () => {
-      setLoading(true);
-      try {
-        const data = await read(`orders/${publicOrderId}`);
-        console.log("data -> ", data);
-
-        setOrder(data?.data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load order details.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchOrder();
   }, [publicOrderId]);
 
@@ -72,8 +74,8 @@ const OrderSuccessPage = () => {
 
   return (
     <div className="order-success-page">
-      <h1>{payment_success}</h1>
-      <p>{thank_you}</p>
+      <h1>{order.paymentIntentId ? payment_success : order_placed_success}</h1>
+      <p>{order.paymentIntentId ? thank_you : order_placed_thank_you}</p>
 
       <div className="order-summary">
         <p>

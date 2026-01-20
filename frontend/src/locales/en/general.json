@@ -259,7 +259,9 @@
       "placed_at": "Placed At",
       "items": "Items",
       "continue_shopping": "Continue Shopping",
-      "no_order": "No order found."
+      "no_order": "No order found.",
+      "order_placed_success": "Order placed successfully",
+      "order_placed_thank_you": "Thank you for your order. You will pay upon delivery."
     },
     "customer_orders": {
       "order": "Order",
