@@ -38,10 +38,18 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
-        //[HttpPost("add-or-update")]
         [HttpPost]
         public async Task<ActionResult> AddToCart([FromBody] CartItemRequestDTO cartItemRequest)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+            cartItemRequest.CurrentUserId = userId;
             var result = await _cartItemService.AddOrUpdateAsync(cartItemRequest);
             if (result.IsSuccess)
             {

@@ -42,6 +42,13 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
                     try
                     {
                         string query = @"
+DECLARE @CustomerId INT;
+SET @CustomerId = (
+    SELECT id 
+    FROM Customers 
+    WHERE user_id = @UserId
+);
+
 DECLARE @CartId INT;
 DECLARE @InsertedCartItems TABLE
 (
@@ -123,7 +130,7 @@ FROM @InsertedCartItems;
 ";
                         using (var command = new SqlCommand(query, connection, transaction))
                         {
-                            command.Parameters.AddWithValue("@CustomerId", cartItemRequest.CustomerId);
+                            command.Parameters.AddWithValue("@UserId", cartItemRequest.CurrentUserId);
                             command.Parameters.AddWithValue("@SellerProductId", cartItemRequest.SellerProductId);
                             command.Parameters.AddWithValue("@Quantity", cartItemRequest.Quantity);
 
