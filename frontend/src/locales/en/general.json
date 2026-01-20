@@ -614,6 +614,11 @@
       "name": "Name",
       "email": "Email",
       "phone": "Phone"
+    },
+    "unauthorized": {
+      "title": "Access Denied",
+      "subtitle": "You do not have permission to view this page.",
+      "home_button": "Go to Home"
     }
   },
   "sidebar": {

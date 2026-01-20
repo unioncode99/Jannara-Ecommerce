@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export default function ProtectedRoute({ children, allowedRoles }) {
@@ -9,13 +9,14 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   // not logged in
   if (!user || !token) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
   // Role-based access control
   if (allowedRoles && !allowedRoles.includes(currentRole)) {
-    return <Navigate to="/" replace />; // redirect if role not allowed
+    return <Navigate to="/unauthorized" replace />; // redirect if role not allowed
   }
 
-  return children;
+  // return children;
+  return children ? children : <Outlet />;
 }

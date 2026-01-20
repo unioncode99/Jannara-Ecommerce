@@ -34,6 +34,7 @@ import BrandsPage from "./pages/Admin/BrandsPage";
 import SellerOrders from "./pages/Seller/SellerOrders";
 import SellerProducts from "./pages/Seller/SellerProducts";
 import AddEditSellerProduct from "./pages/Seller/AddEditSellerProduct";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
 
 function App() {
   const { language } = useLanguage();
@@ -45,11 +46,19 @@ function App() {
       <AppSettings isTopLeft={true} className="auth" />
       <BrowserRouter>
         <Routes>
+          {/* Layout wrapper */}
           <Route element={<MainLayout />}>
-            <Route path="/customer-dashboard" element={<CustomerDashboard />} />
-            <Route path="/customer-orders" element={<CustomerOrders />} />
-            <Route path="/seller-dashboard" element={<SellerDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/forget-password" element={<ForgetPasswordPage />} />
+            <Route path="/verify-code" element={<VerifyCodePage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route
+              path="/confirm-account"
+              element={<AccountConfirmationPage />}
+            />
             <Route
               path="/product/:publicId"
               element={
@@ -67,52 +76,75 @@ function App() {
                 </CartProvider>
               }
             />
-            <Route
-              path="/checkout"
-              element={
-                <CartProvider>
-                  <CheckoutPage />
-                </CartProvider>
-              }
-            />
-            <Route path="/" element={<Home />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/forget-password" element={<ForgetPasswordPage />} />
-            <Route path="/verify-code" element={<VerifyCodePage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route
-              path="/confirm-account"
-              element={<AccountConfirmationPage />}
-            />
+
             <Route
               path="order-success/:publicOrderId"
               element={<OrderSuccessPage />}
             />
-            <Route path="profile" element={<Profile />} />
-            <Route
-              path="product-categories"
-              element={<ProductCategoriesManagementPage />}
-            />
-            <Route path="users" element={<UserManagementPage />} />
-            <Route path="add-product" element={<AddProductPage />} />
-            <Route
-              path="edit-product/:productId"
-              element={<AddProductPage />}
-            />
-            <Route path="products" element={<ProductsPage />} />
-            <Route path="brands" element={<BrandsPage />} />
-            <Route path="seller-orders" element={<SellerOrders />} />
-            <Route path="seller-products" element={<SellerProducts />} />
-            <Route
-              path="add-seller-product"
-              element={<AddEditSellerProduct />}
-            />
-            <Route
-              path="edit-seller-product/:id"
-              element={<AddEditSellerProduct />}
-            />
 
+            {/* Unauthorized page */}
+            <Route path="unauthorized" element={<UnauthorizedPage />} />
+
+            {/* Protected routes */}
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute
+                  allowedRoles={["customer", "seller", "admin", "superadmin"]}
+                >
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+            {/* Customer-only routes */}
+            <Route element={<ProtectedRoute allowedRoles={["customer"]} />}>
+              <Route
+                path="/customer-dashboard"
+                element={<CustomerDashboard />}
+              />
+              <Route path="/customer-orders" element={<CustomerOrders />} />
+              <Route
+                path="/checkout"
+                element={
+                  <CartProvider>
+                    <CheckoutPage />
+                  </CartProvider>
+                }
+              />
+            </Route>
+
+            {/* Seller-only routes */}
+            <Route element={<ProtectedRoute allowedRoles={["seller"]} />}>
+              <Route path="/seller-dashboard" element={<SellerDashboard />} />
+              <Route path="seller-orders" element={<SellerOrders />} />
+              <Route path="seller-products" element={<SellerProducts />} />
+              <Route
+                path="add-seller-product"
+                element={<AddEditSellerProduct />}
+              />
+              <Route
+                path="edit-seller-product/:id"
+                element={<AddEditSellerProduct />}
+              />
+            </Route>
+
+            {/* Admin-only routes */}
+            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<UserManagementPage />} />
+              <Route
+                path="product-categories"
+                element={<ProductCategoriesManagementPage />}
+              />
+              <Route path="add-product" element={<AddProductPage />} />
+              <Route
+                path="edit-product/:productId"
+                element={<AddProductPage />}
+              />
+              <Route path="products" element={<ProductsPage />} />
+              <Route path="brands" element={<BrandsPage />} />
+            </Route>
+            {/* Catch-all 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

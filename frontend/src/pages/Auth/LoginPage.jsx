@@ -14,7 +14,7 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+  const { login, currentRole } = useAuth();
   const navigate = useNavigate();
 
   const { login_success, login_failed } = translations.general.pages.auth;
@@ -48,6 +48,7 @@ const LoginPage = () => {
       login(result.user, result.person, result.accessToken);
       setAuthToken(result.accessToken.token);
       navigateBasedOnRole(result?.user?.roles[0]?.nameEn.toLowerCase());
+
       console.log(result.accessToken);
     } catch (error) {
       toast.show(error.message || login_failed, "error");
