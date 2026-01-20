@@ -25,9 +25,18 @@ namespace Jannara_Ecommerce.Controllers
         }
 
         [HttpGet("details", Name = "GetProductByPublicId")]
-        public async Task<ActionResult<ProductDetailDTO>> GetProductByPublicId([FromQuery] Guid publicId, [FromQuery] int? customerId)
+        public async Task<ActionResult<ProductDetailDTO>> GetProductByPublicId([FromQuery] Guid publicId)
         {
-            var result = await _productService.FindAsync(publicId, customerId);
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+
+            var result = await _productService.FindAsync(publicId, userId);
             if (result.IsSuccess)
             {
                 return Ok(result);

@@ -10,7 +10,7 @@ namespace Jannara_Ecommerce.Business.Interfaces
     public interface IProductService
     {
         public Task<Result<PagedResponseDTO<ProductResponseDTO>>> GetAllAsync(FilterProductDTO filter);
-        public Task<Result<ProductDetailDTO>> FindAsync(Guid publicId, int? customerId);
+        public Task<Result<ProductDetailDTO>> FindAsync(Guid publicId, int? userId);
         Task<Result<bool>> CreateAsync(ProductCreateDTO productCreateDTO);
 
         Task<Result<ProductDTO>> AddNewAsync(ProductCreateDBDTO product, SqlConnection connection, SqlTransaction transaction);

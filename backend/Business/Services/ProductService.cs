@@ -59,9 +59,9 @@ namespace Jannara_Ecommerce.Business.Services
             _productItemVariationOptionService = productItemVariationOptionService;
         }
 
-        public async Task<Result<ProductDetailDTO>> FindAsync(Guid publicId, int? customerId)
+        public async Task<Result<ProductDetailDTO>> FindAsync(Guid publicId, int? userId)
         {
-            var ProductResult = await _productRepository.GetByPublicIdAsync(publicId, customerId);
+            var ProductResult = await _productRepository.GetByPublicIdAsync(publicId, userId);
             
             if (ProductResult.IsSuccess)
             {

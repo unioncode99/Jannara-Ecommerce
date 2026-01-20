@@ -213,12 +213,19 @@ SET @customerId = (
             }
         }
 
-        public async Task<Result<ProductDetailDTO>> GetByPublicIdAsync(Guid publicId, int? customerId)
+        public async Task<Result<ProductDetailDTO>> GetByPublicIdAsync(Guid publicId, int? userId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 DECLARE @json NVARCHAR(MAX);
+
+DECLARE @customerId INT;
+SET @customerId = (
+    SELECT id 
+    FROM Customers 
+    WHERE user_id = @UserId
+);
 
 SELECT @json = (
     SELECT
@@ -366,7 +373,7 @@ SELECT @json AS FullJson;
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@publicId", publicId);
-                    command.Parameters.AddWithValue("@customerId", customerId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@UserId", userId ?? (object)DBNull.Value);
                     try
                     {
                         await connection.OpenAsync();

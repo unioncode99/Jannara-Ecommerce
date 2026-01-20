@@ -19,7 +19,6 @@ const ProductPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedSellerProductId, setSelectedSellerProductId] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const customerId = 1;
 
   const { back_to_products, product_not_found } =
     translations.general.pages.product_details;
@@ -39,7 +38,6 @@ const ProductPage = () => {
       setIsLoading(true);
       const queryParams = new URLSearchParams();
       queryParams.append("publicId", publicId);
-      if (customerId) queryParams.append("customerId", customerId);
       const url = `products/details?${queryParams}`;
       const data = await read(url);
       setProduct(data.data);
@@ -95,12 +93,12 @@ const ProductPage = () => {
     try {
       if (!product.isFavorite) {
         await create("customer-wish-list", {
-          customerId,
+          // customerId,
           productId: product.productId,
         });
       } else {
         await remove("customer-wish-list", {
-          customerId,
+          // customerId,
           productId: product.productId,
         });
       }
