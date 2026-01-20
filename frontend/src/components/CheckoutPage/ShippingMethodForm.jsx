@@ -27,21 +27,21 @@ const ShippingMethodForm = ({ onNext, onBack, checkoutData }) => {
     onNext({
       shippingMethod: {
         ...shippingMethods.find(
-          (method) => method.id === selectedShippingMethodId
+          (method) => method.id === selectedShippingMethodId,
         ),
         shippingCost: calculateShippingCost(
           shippingMethods.find(
-            (method) => method.id === selectedShippingMethodId
+            (method) => method.id === selectedShippingMethodId,
           ),
-          checkoutData.extraFeeForShipping
+          checkoutData.extraFeeForShipping,
         ),
       },
       totalCost:
         calculateShippingCost(
           shippingMethods.find(
-            (method) => method.id === selectedShippingMethodId
+            (method) => method.id === selectedShippingMethodId,
           ),
-          checkoutData.extraFeeForShipping
+          checkoutData.extraFeeForShipping,
         ) +
         cart.subTotal +
         cart.taxPrice,
@@ -115,10 +115,10 @@ const ShippingMethodForm = ({ onNext, onBack, checkoutData }) => {
       {selectedShippingMethodId && (
         <SelectedShippingSummary
           method={shippingMethods.find(
-            (m) => m.id === selectedShippingMethodId
+            (m) => m.id === selectedShippingMethodId,
           )}
           cost={calculateShippingCost(
-            shippingMethods.find((m) => m.id === selectedShippingMethodId)
+            shippingMethods.find((m) => m.id === selectedShippingMethodId),
           )}
         />
       )}

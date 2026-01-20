@@ -20,6 +20,15 @@ namespace Jannara_Ecommerce.Controllers
         [HttpPost("place")]
         public async Task<IActionResult> PlaceOrder(OrderCreateDTO orderCreateRequest)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+            orderCreateRequest.CurrentUserId = userId;
             var result = await _service.PlaceOrderAsync(orderCreateRequest);
             if (result.IsSuccess)
             {

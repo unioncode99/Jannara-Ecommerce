@@ -8,6 +8,7 @@ import "./AddressForm.css";
 import { useLanguage } from "../../hooks/useLanguage";
 import { toast } from "../ui/Toast";
 import CheckoutNavigationButtons from "./CheckoutNavigationButtons";
+import { useAuth } from "../../hooks/useAuth";
 
 const AddressForm = ({ onNext }) => {
   const [addresses, setAddresses] = useState([]);
@@ -15,17 +16,17 @@ const AddressForm = ({ onNext }) => {
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const { translations, language } = useLanguage();
+  const { person } = useAuth();
+
   const [form, setForm] = useState({
-    personId: 1, // for test
-    stateId: states[0]?.id || undefined, // for test
+    personId: person?.id,
+    stateId: states[0]?.id || undefined,
     city: "",
     locality: "",
     street: "",
     buildingNumber: "",
     phone: "",
   });
-  // const personId = 1; // for test
-  const [personId, setPersonId] = useState(1);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
   const [errors, setErrors] = useState({});
   const { next, shipping_address_title, add_new_address } =
@@ -46,20 +47,20 @@ const AddressForm = ({ onNext }) => {
   }
 
   useEffect(() => {
-    if (!personId) {
+    if (!person) {
       return;
     }
-    fetchPersonAddress(personId);
-  }, [personId]);
+    fetchPersonAddress(person?.id);
+  }, [person]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const selectedAddress = addresses.find(
-      (addr) => addr.id === selectedAddressId
+      (addr) => addr.id === selectedAddressId,
     );
     const selectedState = states.find(
-      (state) => state.id === selectedAddress.stateId
+      (state) => state.id === selectedAddress.stateId,
     );
 
     // onNext(form);
@@ -88,12 +89,12 @@ const AddressForm = ({ onNext }) => {
       console.log("New address created:", address);
     }
     // setAddresses((prev) => [...prev, address]);
-    await fetchPersonAddress(personId);
+    await fetchPersonAddress(person?.id);
     setSelectedAddressId(address?.id);
     setShowForm(false);
     setIsUpdateMode(false);
     setForm({
-      personId: 1, // for test
+      personId: person?.id,
       stateId: states[0]?.id || undefined,
       city: "",
       locality: "",
@@ -113,8 +114,8 @@ const AddressForm = ({ onNext }) => {
     setIsUpdateMode(false);
     setShowForm(true);
     setForm({
-      personId: 1, // for test
-      stateId: states[0]?.id || undefined, // for test
+      personId: person?.id,
+      stateId: states[0]?.id || undefined,
       city: "",
       locality: "",
       street: "",
@@ -156,8 +157,8 @@ const AddressForm = ({ onNext }) => {
     setIsUpdateMode(false);
     setShowForm(false);
     setForm({
-      personId: 1, // for test
-      stateId: states[0]?.id || undefined, // for test
+      personId: person?.id,
+      stateId: states[0]?.id || undefined,
       city: "",
       locality: "",
       street: "",

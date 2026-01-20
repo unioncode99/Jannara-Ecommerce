@@ -52,6 +52,13 @@ DECLARE @stateFee DECIMAL(18,2) = 0;
 DECLARE @sellerId INT;
 DECLARE @sellerOrderId INT;
 
+DECLARE @customerId INT;
+SET @customerId = (
+    SELECT id 
+    FROM Customers 
+    WHERE user_id = @UserId
+);
+
 
 -- BEGIN TRANSACTION
 BEGIN TRANSACTION;
@@ -317,7 +324,7 @@ END CATCH
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@cartId", orderCreateRequest.CartId);
-                    command.Parameters.AddWithValue("@customerId", orderCreateRequest.CustomerId);
+                    command.Parameters.AddWithValue("@UserId", orderCreateRequest.CurrentUserId);
                     command.Parameters.AddWithValue("@paymentMethodId", orderCreateRequest.PaymentMethodId);
                     command.Parameters.AddWithValue("@shippingAddressId", orderCreateRequest.ShippingAddressId);
                     command.Parameters.AddWithValue("@shippingMethodId", orderCreateRequest.ShippingMethodId);

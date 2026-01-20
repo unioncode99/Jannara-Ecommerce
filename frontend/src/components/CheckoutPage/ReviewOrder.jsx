@@ -99,7 +99,7 @@ const ReviewOrder = ({ checkoutData, onBack, onNext, handleEditStep }) => {
             {formatMoney(
               (cart?.subTotal || 0) +
                 (cart?.taxPrice || 0) +
-                (shippingMethod?.shippingCost || 0)
+                (shippingMethod?.shippingCost || 0),
             )}
           </strong>
         </div>
