@@ -30,9 +30,9 @@ namespace Jannara_Ecommerce.Business.Services
             return adminDashboardResult;
         }
 
-        public async Task<Result<CustomerDashboardResponseDTO>> GetCustomerDashboardDataAsync(int customerId)
+        public async Task<Result<CustomerDashboardResponseDTO>> GetCustomerDashboardDataAsync(int userId)
         {
-            return await _dashboardRepository.GetCustomerDashboardDataAsync(customerId);
+            return await _dashboardRepository.GetCustomerDashboardDataAsync(userId);
         }
 
         public async Task<Result<SellerDashboardResponseDTO>> GetSellerDashboardDataAsync(int userId)

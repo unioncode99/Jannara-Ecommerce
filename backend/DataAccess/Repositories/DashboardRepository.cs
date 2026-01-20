@@ -20,12 +20,14 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
             _logger = logger;
         }
 
-        public async Task<Result<CustomerDashboardResponseDTO>> GetCustomerDashboardDataAsync(int customerId)
+        public async Task<Result<CustomerDashboardResponseDTO>> GetCustomerDashboardDataAsync(int userId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 DECLARE @json NVARCHAR(MAX);
+declare @customerId int;
+set @customerId = (select id from Customers where user_id = @UserId);
 
 SELECT @json = (
     SELECT
@@ -84,7 +86,7 @@ SELECT @json AS FullJson;
 
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@customerId", customerId);
+                    command.Parameters.AddWithValue("@UserId", userId);
                     try
                     {
                         await connection.OpenAsync();

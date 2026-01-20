@@ -17,10 +17,19 @@ namespace Jannara_Ecommerce.Controllers
             _service = service;
         }
 
-        [HttpGet("customer/{customerId:int}")]
-        public async Task<ActionResult> GetCustomerDashboardData(int customerId)
+        [HttpGet("customer")]
+        public async Task<ActionResult> GetCustomerDashboardData()
         {
-            var result = await _service.GetCustomerDashboardDataAsync(customerId);
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+
+            var result = await _service.GetCustomerDashboardDataAsync(userId);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);

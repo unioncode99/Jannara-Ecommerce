@@ -5,7 +5,7 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
 {
     public interface IDashboardRepository
     {
-        Task<Result<CustomerDashboardResponseDTO>> GetCustomerDashboardDataAsync(int customerId);
+        Task<Result<CustomerDashboardResponseDTO>> GetCustomerDashboardDataAsync(int userId);
         Task<Result<AdminDashboardResponseDTO>> GetAdminDashboardDataAsync();
         Task<Result<SellerDashboardResponseDTO>> GetSellerDashboardDataAsync(int userId);
     }

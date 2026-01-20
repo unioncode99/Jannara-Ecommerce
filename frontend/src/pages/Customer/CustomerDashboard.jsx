@@ -21,7 +21,7 @@ const CustomerDashboard = () => {
   const fetchCustomerDashboardData = async () => {
     try {
       setLoading(true);
-      const data = await read(`dashboard/customer/${customerId}`);
+      const data = await read(`dashboard/customer`);
       console.log("data -> ", data);
       setDashboardData(data);
     } catch (err) {
