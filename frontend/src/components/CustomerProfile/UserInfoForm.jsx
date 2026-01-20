@@ -87,7 +87,7 @@ const UserInfoForm = () => {
       } else {
         toast.show(
           translations.general.form.messages.general_success,
-          "success"
+          "success",
         );
       }
     } catch (err) {

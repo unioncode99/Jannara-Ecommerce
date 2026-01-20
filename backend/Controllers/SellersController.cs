@@ -34,6 +34,31 @@ namespace Jannara_Ecommerce.Controllers
             return result.ErrorCode == 400 ? BadRequest(result.Message) : NotFound(result.Message);
         }
 
+        [HttpGet("me", Name = "GetSellerByID")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<SellerDTO>> GetCurrentSellerInfo(int id)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+
+            var result = await _service.GeCurrentSellerInfoAsync(userId);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            return result.ErrorCode == 400 ? BadRequest(result.Message) : NotFound(result.Message);
+        }
+
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -56,7 +81,16 @@ namespace Jannara_Ecommerce.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<SellerDTO>> UpdateSeller(int id, [FromBody] SellerUpdateDTO updatedSellerDTO)
         {
-            
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+            updatedSellerDTO.CurrentUserId = userId;
+
             var  result = await _service.UpdateAsync(id, updatedSellerDTO);
             if (result.IsSuccess)
             {

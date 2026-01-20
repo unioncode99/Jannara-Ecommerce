@@ -15,5 +15,6 @@ namespace Jannara_Ecommerce.Business.Interfaces
         public Task<Result<SellerDTO>> CreateAsync(SellerCreateRequestDTO sellerCreateRequestDTO);
         public Task<Result<PagedResponseDTO<SellerDTO>>> GetAllAsync(int pageNumber, int pageSize);
         public Task<Result<RoleDTO>> BecomeACustomer(int userId);
+        Task<Result<SellerDTO>> GeCurrentSellerInfoAsync(int userId)
     }
 }

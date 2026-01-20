@@ -198,11 +198,69 @@ Select * from Sellers where id = @id;
             }
         }
 
+        public async Task<Result<SellerDTO>> GeCurrentSellerInfoAsync(int userId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                string query = @"
+DECLARE @id INT;
+SET @id = (
+    SELECT id 
+    FROM Sellers 
+    WHERE user_id = @UserId
+);
+
+Select * from Sellers where id = @id;
+";
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", userId);
+
+                    try
+                    {
+                        await connection.OpenAsync();
+                        using (var reader = await command.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                var customer = new SellerDTO
+                                (
+                                    reader.GetInt32(reader.GetOrdinal("Id")),
+                                    reader.GetInt32(reader.GetOrdinal("user_id")),
+                                    reader.GetString(reader.GetOrdinal("business_name")),
+                                    reader.IsDBNull(reader.GetOrdinal("website_url")) ? null : reader.GetString(reader.GetOrdinal("website_url")),
+                                    reader.GetDateTime(reader.GetOrdinal("created_at")),
+                                    reader.GetDateTime(reader.GetOrdinal("updated_at"))
+                               );
+                                return new Result<SellerDTO>(true, "seller_retrieved_successfully", customer);
+                            }
+                            return new Result<SellerDTO>(false, "seller_not_found", null, 404);
+
+                        }
+
+
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to retrieve seller with SellerId {SellerId}", userId);
+                        return new Result<SellerDTO>(false, "internal_server_error", null, 500);
+                    }
+
+                }
+            }
+        }
+
         public async Task<Result<bool>> UpdateAsync(int id, SellerUpdateDTO updatedSeller)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
+DECLARE @id INT;
+SET @id = (
+    SELECT id 
+    FROM Sellers 
+    WHERE user_id = @UserId
+);
 
 UPDATE Sellers
    SET business_name = @business_name
@@ -211,7 +269,7 @@ UPDATE Sellers
 select @@ROWCOUNT";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@UserId", updatedSeller.CurrentUserId);
                     command.Parameters.AddWithValue("@business_name", updatedSeller.BusinessName);
                     command.Parameters.AddWithValue("@website_url", updatedSeller.WebsiteUrl ?? (object) DBNull.Value);
 

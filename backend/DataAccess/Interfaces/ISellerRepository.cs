@@ -14,5 +14,6 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
         public Task<Result<bool>> UpdateAsync(int id, SellerUpdateDTO updatedSeller);
         public Task<Result<bool>> DeleteAsync(int id);
         public Task<Result<RoleDTO>> BecomeACustomer(int userId);
+        Task<Result<SellerDTO>> GeCurrentSellerInfoAsync(int userId);
     }
 }

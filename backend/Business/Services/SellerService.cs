@@ -181,5 +181,10 @@ namespace Jannara_Ecommerce.Business.Services
         {
             return await _repo.BecomeACustomer(userId);
         }
+
+        public async Task<Result<SellerDTO>> GeCurrentSellerInfoAsync(int userId)
+        {
+            return await _repo.GeCurrentSellerInfoAsync(userId);
+        }
     }
 }
