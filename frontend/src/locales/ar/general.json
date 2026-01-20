@@ -304,7 +304,8 @@
       "password_changed": "تم تغيير كلمة المرور بنجاح",
       "save": "حفظ",
       "personal_info": "المعلومات الشخصية",
-      "user_info": "معلومات المستخدم"
+      "user_info": "معلومات المستخدم",
+      "seller_info": "معلومات البائع"
     },
     "product_categories_management": {
       "add_category": "إضافة تصنيف",

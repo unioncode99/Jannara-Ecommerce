@@ -309,7 +309,8 @@
       "password_changed": "Password changed successfully",
       "save": "Save",
       "personal_info": "Personal Info",
-      "user_info": "User Info"
+      "user_info": "User Info",
+      "seller_info": "Seller Info"
     },
     "product_categories_management": {
       "add_category": "Add Category",

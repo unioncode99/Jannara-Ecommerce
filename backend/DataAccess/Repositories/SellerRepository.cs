@@ -250,7 +250,7 @@ Select * from Sellers where id = @id;
             }
         }
 
-        public async Task<Result<bool>> UpdateAsync(int id, SellerUpdateDTO updatedSeller)
+        public async Task<Result<bool>> UpdateAsync(SellerUpdateDTO updatedSeller)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -285,7 +285,7 @@ select @@ROWCOUNT";
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to update seller with SellerId {SellerId}", id);
+                        _logger.LogError(ex, "Failed to update seller with SellerId");
                         return new Result<bool>(false, "internal_server_error", false, 500);
                     }
 

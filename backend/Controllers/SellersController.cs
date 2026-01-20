@@ -34,12 +34,12 @@ namespace Jannara_Ecommerce.Controllers
             return result.ErrorCode == 400 ? BadRequest(result.Message) : NotFound(result.Message);
         }
 
-        [HttpGet("me", Name = "GetSellerByID")]
+        [HttpGet("me", Name = "GetCurrentSellerInfo")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<SellerDTO>> GetCurrentSellerInfo(int id)
+        public async Task<ActionResult<SellerDTO>> GetCurrentSellerInfo()
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
 
@@ -74,12 +74,12 @@ namespace Jannara_Ecommerce.Controllers
             return StatusCode(result.ErrorCode, result.Message);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<SellerDTO>> UpdateSeller(int id, [FromBody] SellerUpdateDTO updatedSellerDTO)
+        public async Task<ActionResult<SellerDTO>> UpdateSeller([FromBody] SellerUpdateDTO updatedSellerDTO)
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
 
@@ -91,7 +91,7 @@ namespace Jannara_Ecommerce.Controllers
             int.TryParse(userIdClaim.Value, out int userId);
             updatedSellerDTO.CurrentUserId = userId;
 
-            var  result = await _service.UpdateAsync(id, updatedSellerDTO);
+            var  result = await _service.UpdateAsync(updatedSellerDTO);
             if (result.IsSuccess)
             {
                 return Ok(updatedSellerDTO);
