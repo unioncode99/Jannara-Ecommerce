@@ -25,7 +25,7 @@ import { CartProvider } from "./contexts/CartContext";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
 import CustomerOrders from "./pages/Customer/CustomerOrders";
-import CustomerProfile from "./pages/Customer/CustomerProfile";
+import Profile from "./pages/Customer/Profile";
 import ProductCategoriesManagementPage from "./pages/Admin/ProductCategoriesManagementPage";
 import UserManagementPage from "./pages/Admin/UserManagementPage";
 import AddProductPage from "./pages/Admin/AddProductPage";
@@ -89,7 +89,7 @@ function App() {
               path="order-success/:publicOrderId"
               element={<OrderSuccessPage />}
             />
-            <Route path="customer-profile" element={<CustomerProfile />} />
+            <Route path="profile" element={<Profile />} />
             <Route
               path="product-categories"
               element={<ProductCategoriesManagementPage />}

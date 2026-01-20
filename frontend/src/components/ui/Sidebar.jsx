@@ -72,16 +72,8 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
     setIsBecomeCustomerConfirmModalOpen,
   ] = useState(false);
   const { translations, language } = useLanguage();
-  const { user, logout, person, setUser } = useAuth();
+  const { user, logout, person, setUser, currentRole, changeRole } = useAuth();
   const navigate = useNavigate();
-
-  const [currentRole, setCurrentRole] = useState(
-    user?.roles?.[0]?.nameEn.toLowerCase() || "unknown_user"
-  );
-
-  useEffect(() => {
-    setCurrentRole(user?.roles?.[0]?.nameEn.toLowerCase() || "unknown_user");
-  }, [user]);
 
   const {
     become_seller,
@@ -97,7 +89,7 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
   console.log("person", person);
   console.log(
     "user?.roles?.[0]?.nameEn.toLowerCase()",
-    user?.roles?.[0]?.nameEn.toLowerCase()
+    user?.roles?.[0]?.nameEn.toLowerCase(),
   );
 
   const roleOptions = user?.roles?.map((role) => ({
@@ -126,12 +118,12 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
   };
 
   function handleProfile() {
-    navigate("/customer-profile");
+    navigate("/profile");
   }
 
   function handleRoleChange(e) {
     let newRole = e.target.value;
-    setCurrentRole(newRole);
+    changeRole(newRole);
     console.log("role", newRole);
 
     const firstLink = menus[newRole]?.[0] || menus.unknown_user[0];
@@ -156,7 +148,7 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
       if (translations.general.server_messages[result?.message?.message]) {
         toast.show(
           translations.general.server_messages[result?.message?.message],
-          "success"
+          "success",
         );
       } else {
         toast.show(become_customer_success, "success");
@@ -166,7 +158,7 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
       if (translations.general.server_messages[error.message]) {
         toast.show(
           translations.general.server_messages[error.message],
-          "error"
+          "error",
         );
       } else {
         toast.show(become_customer_error, "error");

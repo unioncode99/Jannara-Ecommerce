@@ -3,11 +3,11 @@ import SettingsTabs from "../../components/CustomerProfile/SettingsTabs";
 import ProfileTab from "../../components/CustomerProfile/ProfileTab";
 import SecurityTab from "../../components/CustomerProfile/SecurityTab";
 import NotificationsTab from "../../components/CustomerProfile/NotificationsTab";
-import "./CustomerProfile.css";
+import "./Profile.css";
 import { Bell, Shield, User } from "lucide-react";
 import { useLanguage } from "../../hooks/useLanguage";
 
-const CustomerProfile = () => {
+const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const { translations } = useLanguage();
   const { settings_title, profile, security, notifications } =
@@ -37,4 +37,4 @@ const CustomerProfile = () => {
     </div>
   );
 };
-export default CustomerProfile;
+export default Profile;
