@@ -3,6 +3,7 @@ using Jannara_Ecommerce.DTOs.General;
 using Jannara_Ecommerce.DTOs.Person;
 using Jannara_Ecommerce.DTOs.Product;
 using Jannara_Ecommerce.DTOs.Seller;
+using Jannara_Ecommerce.DTOs.User;
 using Jannara_Ecommerce.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +60,16 @@ GetAllGeneralProducts([FromQuery] GeneralProductFilterDTO filter)
         [HttpGet]
         public async Task<ActionResult<PagedResponseDTO<ProductResponseDTO>>> GetAllProducts([FromQuery] FilterProductDTO filter)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+            filter.CurrentUserId = userId;
+
             if (filter.PageNumber <= 0 || filter.PageSize <= 0)
             {
                 return BadRequest(new ResponseMessage("invalid_pagination_parameters"));

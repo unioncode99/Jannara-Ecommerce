@@ -13,7 +13,6 @@ const CustomerDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(false);
   const { translations } = useLanguage();
-  const customerId = 1; // for test
 
   const { total_orders, total_spent, total_pending } =
     translations.general.pages.customer_dashboard;
@@ -33,7 +32,7 @@ const CustomerDashboard = () => {
 
   useEffect(() => {
     fetchCustomerDashboardData();
-  }, [customerId]);
+  }, []);
 
   const stats = dashboardData
     ? [

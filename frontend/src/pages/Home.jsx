@@ -22,8 +22,6 @@ const Home = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // Items per page
-  // for test
-  const customerId = 1;
 
   const handleSearchInputChange = (e) => {
     console.log("search -> ", e.target.value);
@@ -58,10 +56,7 @@ const Home = () => {
         if (sortingTerm && sortingTerm.trim() !== "") {
           queryParams.append("SortBy", sortingTerm.trim());
         }
-        // Optional customerId (if needed)
-        if (customerId) {
-          queryParams.append("customerId", customerId);
-        }
+
         // queryParams.append("isFavoritesOnly", false);
         // Final URL
         const url = `products?${queryParams.toString()}`;
@@ -83,7 +78,6 @@ const Home = () => {
   }, [
     debouncedSearch,
     selectProductCategoryId,
-    customerId,
     sortingTerm,
     currentPage,
     pageSize,
@@ -107,17 +101,17 @@ const Home = () => {
   const handleToggleFavorite = async (productId, isFavorite) => {
     console.log("Favorite changed:", productId, isFavorite);
     setProducts((prev) =>
-      prev.map((p) => (p.id === productId ? { ...p, isFavorite } : p))
+      prev.map((p) => (p.id === productId ? { ...p, isFavorite } : p)),
     );
     try {
       if (isFavorite) {
         await create("customer-wish-list", {
-          customerId: customerId, // for test
+          // customerId: customerId, // for test
           productId: productId,
         });
       } else {
         await remove("customer-wish-list", {
-          customerId: customerId, // for test
+          // customerId: customerId, // for test
           productId: productId,
         });
       }
@@ -125,8 +119,8 @@ const Home = () => {
       console.error("Favorite error:", error);
       setProducts((prev) =>
         prev.map((p) =>
-          p.id === productId ? { ...p, isFavorite: !isFavorite } : p
-        )
+          p.id === productId ? { ...p, isFavorite: !isFavorite } : p,
+        ),
       );
     }
   };

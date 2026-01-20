@@ -104,7 +104,10 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
         : "LEFT JOIN CustomerWishlist cw ON cw.product_id = p.id AND cw.customer_id = @customerId";
 
                 string countQuery = filter.IsFavoritesOnly == true
-    ? @"SELECT COUNT(DISTINCT p.id) as total
+    ? @"
+
+
+SELECT COUNT(DISTINCT p.id) as total
         FROM Products p
         INNER JOIN CustomerWishlist cw ON cw.product_id = p.id AND cw.customer_id = @customerId
         WHERE (@CategoryId IS NULL OR p.category_id = @CategoryId)
@@ -125,7 +128,17 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
 
                 query = query.Replace("{WISHLIST_JOIN}", wishlistJoin);
 
-                query = countQuery + query;
+                string customerDeclare = @"
+DECLARE @customerId INT;
+SET @customerId = (
+    SELECT id 
+    FROM Customers 
+    WHERE user_id = @UserId
+);
+";
+
+
+                query = customerDeclare + countQuery + query;
 
 
                 using (var command = new SqlCommand(query, connection))
@@ -133,7 +146,7 @@ OFFSET @offset ROWS FETCH NEXT @pageSize ROWS ONLY;";
                     int offset = (filter.PageNumber - 1) * filter.PageSize;
                     command.Parameters.AddWithValue("@offset", offset);
                     command.Parameters.AddWithValue("@pageSize", filter.PageSize);
-                    command.Parameters.AddWithValue("@customerId", filter.CustomerId ?? (object)DBNull.Value);
+                    command.Parameters.AddWithValue("@UserId", filter.CurrentUserId ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@SortBy", filter.SortBy ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@CategoryId", filter.CategoryId ?? (object)DBNull.Value);
                     command.Parameters.AddWithValue("@SearchTerm", filter.SearchTerm ?? (object)DBNull.Value);
