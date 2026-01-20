@@ -18,9 +18,9 @@ namespace Jannara_Ecommerce.Business.Services
             return await _cartRepository.ClearCartAsync(cartId);
         }
 
-        public async Task<Result<CartResponseDTO>> GetActiveCartAsync(int customerId)
+        public async Task<Result<CartResponseDTO>> GetActiveCartAsync(int cartId)
         {
-            return await _cartRepository.GetActiveCartAsync(customerId);
+            return await _cartRepository.GetActiveCartAsync(cartId);
         }
     }
 }

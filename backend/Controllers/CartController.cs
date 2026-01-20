@@ -19,10 +19,18 @@ namespace Jannara_Ecommerce.Controllers
             _cartService = cartService;
         }
 
-        [HttpGet()]
-        public async Task<ActionResult> GetActiveCart(int customerId)
+        [HttpGet]
+        public async Task<ActionResult> GetActiveCart()
         {
-            var result = await _cartService.GetActiveCartAsync(customerId);
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+            var result = await _cartService.GetActiveCartAsync(userId);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);

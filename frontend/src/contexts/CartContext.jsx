@@ -3,7 +3,7 @@ import { create, read, remove } from "../api/apiWrapper";
 
 const CartContext = createContext(null);
 
-export const CartProvider = ({ customerId, children }) => {
+export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(false);
   const [itemLoading, setItemLoading] = useState({}); // per-item loading
@@ -12,7 +12,7 @@ export const CartProvider = ({ customerId, children }) => {
   const fetchCart = async () => {
     try {
       setLoading(true);
-      const data = await read(`cart?customerId=${customerId}`);
+      const data = await read(`cart`);
       console.log("data -> ", data);
       setCart(data);
     } catch (err) {
@@ -64,7 +64,7 @@ export const CartProvider = ({ customerId, children }) => {
   const isInCart = (sellerProductId) => {
     if (!cart?.cartItems) return false;
     return cart.cartItems.some(
-      (item) => item.sellerProductId === sellerProductId
+      (item) => item.sellerProductId === sellerProductId,
     );
   };
 
@@ -72,10 +72,8 @@ export const CartProvider = ({ customerId, children }) => {
      Initial Load
   ========================== */
   useEffect(() => {
-    if (customerId) {
-      fetchCart();
-    }
-  }, [customerId]);
+    fetchCart();
+  }, []);
   //   useEffect(() => {
   //     fetchCart();
   //   }, []);

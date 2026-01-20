@@ -51,12 +51,19 @@ Delete from CartItems Where cart_id = @cartId
             }
         }
 
-        public async Task<Result<CartResponseDTO>> GetActiveCartAsync(int customerId)
+        public async Task<Result<CartResponseDTO>> GetActiveCartAsync(int userId)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 string query = @"
 DECLARE @json NVARCHAR(MAX);
+
+DECLARE @customerId INT;
+SET @customerId = (
+    SELECT id 
+    FROM Customers 
+    WHERE user_id = @UserId
+);
 
 SELECT @json = (
     SELECT
@@ -174,7 +181,7 @@ SELECT @json AS FullJson;
                         taxRate = tax;
                     }
 
-                    command.Parameters.AddWithValue("@customerId", customerId);
+                    command.Parameters.AddWithValue("@UserId", userId);
                     command.Parameters.AddWithValue("@taxRate", (object)taxRate ?? (object)DBNull.Value);
                     try
                     {

@@ -53,7 +53,7 @@ function App() {
             <Route
               path="/product/:publicId"
               element={
-                <CartProvider customerId={1}>
+                <CartProvider>
                   <ProductPage />
                 </CartProvider>
               }
@@ -62,7 +62,7 @@ function App() {
             <Route
               path="/cart"
               element={
-                <CartProvider customerId={1}>
+                <CartProvider>
                   <CartPage />
                 </CartProvider>
               }
@@ -70,7 +70,7 @@ function App() {
             <Route
               path="/checkout"
               element={
-                <CartProvider customerId={1}>
+                <CartProvider>
                   <CheckoutPage />
                 </CartProvider>
               }

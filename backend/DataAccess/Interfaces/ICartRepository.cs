@@ -7,7 +7,7 @@ namespace Jannara_Ecommerce.DataAccess.Interfaces
 {
     public interface ICartRepository
     {
-        Task<Result<CartResponseDTO>> GetActiveCartAsync(int customerId);
+        Task<Result<CartResponseDTO>> GetActiveCartAsync(int userId);
         Task<Result<bool>> ClearCartAsync(int cartId);
     }
 }

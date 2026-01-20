@@ -12,7 +12,6 @@ const FavoritesPage = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // Items per page
-  const customerId = 1; // for test
   const { translations } = useLanguage();
 
   const getFavoritesProducts = async () => {
@@ -23,10 +22,6 @@ const FavoritesPage = () => {
       queryParams.append("pageNumber", currentPage);
       queryParams.append("pageSize", pageSize);
       queryParams.append("isFavoritesOnly", true);
-      // Optional customerId (if needed)
-      if (customerId) {
-        queryParams.append("customerId", customerId);
-      }
       // queryParams.append("isFavoritesOnly", false);
       // Final URL
       const url = `products?${queryParams.toString()}`;
@@ -52,7 +47,7 @@ const FavoritesPage = () => {
 
   useEffect(() => {
     getFavoritesProducts();
-  }, [customerId, currentPage, pageSize]);
+  }, [currentPage, pageSize]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -67,7 +62,6 @@ const FavoritesPage = () => {
     }
     try {
       await remove("customer-wish-list", {
-        customerId: 5, // for test
         productId: productId,
       });
     } catch (error) {
