@@ -19,6 +19,15 @@ namespace Jannara_Ecommerce.Controllers
         [HttpPost]
         public async Task<ActionResult<CustomerWishlistDTO>> AddCustomerWishlist(CustomerWishlistCreateDTO customerWishlist)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+            customerWishlist.CurrentUserId = userId;
             var result = await _customerWishlistService.AddNewAsync(customerWishlist); 
             if (result.IsSuccess)
             {
@@ -30,6 +39,15 @@ namespace Jannara_Ecommerce.Controllers
         [HttpDelete]
         public async Task<ActionResult<bool>> DeleteCustomerWishlist(CustomerWishlistCreateDTO customerWishlist)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+
+            if (userIdClaim == null)
+            {
+                return Unauthorized("User not authenticated.");
+            }
+
+            int.TryParse(userIdClaim.Value, out int userId);
+            customerWishlist.CurrentUserId = userId;
             var result = await _customerWishlistService.DeleteAsync(customerWishlist);
             if (result.IsSuccess)
             {

@@ -106,12 +106,10 @@ const Home = () => {
     try {
       if (isFavorite) {
         await create("customer-wish-list", {
-          // customerId: customerId, // for test
           productId: productId,
         });
       } else {
         await remove("customer-wish-list", {
-          // customerId: customerId, // for test
           productId: productId,
         });
       }

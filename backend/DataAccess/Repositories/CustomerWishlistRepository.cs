@@ -20,11 +20,17 @@ namespace Jannara_Ecommerce.DataAccess.Repositories
 
         public async Task<Result<CustomerWishlistDTO>> AddNewAsync(CustomerWishlistCreateDTO customerWishlist)
         {
-            Console.WriteLine(customerWishlist.CustomerId);
-            Console.WriteLine(customerWishlist.ProductId);
             using (var connection = new SqlConnection(_connectionString))
             {
-                var query = @"INSERT INTO CustomerWishlist
+                var query = @"
+DECLARE @customerId INT;
+SET @customerId = (
+    SELECT id 
+    FROM Customers 
+    WHERE user_id = @UserId
+);
+
+INSERT INTO CustomerWishlist
            (customer_id,
 		   product_id)
 OUTPUT inserted.*
@@ -33,7 +39,7 @@ OUTPUT inserted.*
             @productId);";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@customerId", customerWishlist.CustomerId);
+                    command.Parameters.AddWithValue("@UserId", customerWishlist.CurrentUserId);
                     command.Parameters.AddWithValue("@productId", customerWishlist.ProductId);
                     try
                     {
@@ -95,10 +101,20 @@ OUTPUT inserted.*
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                var query = @"DELETE FROM CustomerWishlist WHERE customer_id = @customerId AND product_id = @productId";
+
+
+                var query = @"
+DECLARE @customerId INT;
+SET @customerId = (
+    SELECT id 
+    FROM Customers 
+    WHERE user_id = @UserId
+);
+
+DELETE FROM CustomerWishlist WHERE customer_id = @customerId AND product_id = @productId";
                 using (var command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@customerId", customerWishlist.CustomerId);
+                    command.Parameters.AddWithValue("@UserId", customerWishlist.CurrentUserId);
                     command.Parameters.AddWithValue("@productId", customerWishlist.ProductId);
                     try
                     {
@@ -112,7 +128,7 @@ OUTPUT inserted.*
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to delete customer Wishlist with customerId {customerId} and productId", customerWishlist.CustomerId, customerWishlist.ProductId);
+                        _logger.LogError(ex, "Failed to delete customer Wishlist with customerId {customerId} and productId", customerWishlist.CurrentUserId, customerWishlist.ProductId);
                         return new Result<bool>(false, "internal_server_error", false, 500);
                     }
                 }

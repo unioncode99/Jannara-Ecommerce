@@ -93,12 +93,10 @@ const ProductPage = () => {
     try {
       if (!product.isFavorite) {
         await create("customer-wish-list", {
-          // customerId,
           productId: product.productId,
         });
       } else {
         await remove("customer-wish-list", {
-          // customerId,
           productId: product.productId,
         });
       }
