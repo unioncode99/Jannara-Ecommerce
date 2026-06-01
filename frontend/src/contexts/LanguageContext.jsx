@@ -13,7 +13,7 @@ export const LanguageProvider = ({ children }) => {
     localStorage.setItem("jannara-language", language);
     document.documentElement.setAttribute(
       "dir",
-      language === "ar" ? "rtl" : "ltr"
+      language === "ar" ? "rtl" : "ltr",
     );
   }, [language]);
 

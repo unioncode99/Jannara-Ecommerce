@@ -11,13 +11,25 @@ export const AuthProvider = ({ children }) => {
     return savedRole || "unknown_user";
   });
 
+  // useEffect(() => {
+  //   if (user?.roles?.length) {
+  //     const defaultRole = user.roles[0].nameEn.toLowerCase();
+  //     setCurrentRole(defaultRole);
+  //     localStorage.setItem("currentRole", defaultRole);
+  //   }
+  // }, [user]);
+
   useEffect(() => {
-    if (user?.roles?.length) {
+    // Only set a default if we have a user, but NO currentRole is set
+    if (
+      user?.roles?.length &&
+      (currentRole === "unknown_user" || !currentRole)
+    ) {
       const defaultRole = user.roles[0].nameEn.toLowerCase();
       setCurrentRole(defaultRole);
       localStorage.setItem("currentRole", defaultRole);
     }
-  }, [user]);
+  }, [user]); // Only run when the user logs in/out, not on every role change
 
   const changeRole = (role) => {
     setCurrentRole(role);

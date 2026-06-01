@@ -61,7 +61,7 @@ const menus = {
       icon: <LayoutDashboard />,
     },
     { key: "users", path: "/users", icon: <User /> },
-    { key: "categories", path: "/categories", icon: <Layers /> },
+    { key: "categories", path: "/product-categories", icon: <Layers /> },
   ],
 };
 
@@ -121,15 +121,38 @@ const Sidebar = ({ isSibebarOpen, onClose }) => {
     navigate("/profile");
   }
 
-  function handleRoleChange(e) {
-    let newRole = e.target.value;
-    changeRole(newRole);
-    console.log("role", newRole);
+  // function handleRoleChange(e) {
+  //   let newRole = e.target.value;
+  //   changeRole(newRole);
+  //   console.log("role", newRole);
+  //   console.log("user", user);
+  //   console.log("role", newRole);
 
+  //   const firstLink = menus[newRole]?.[0] || menus.unknown_user[0];
+  //   if (firstLink) {
+  //     navigate(firstLink.path); // navigate to first link
+  //     onClose(); // optional: close sidebar
+  //   }
+  // }
+
+  function handleRoleChange(e) {
+    const newRole = e.target.value;
+
+    // 1. Update the state for the rest of the app
+    changeRole(newRole);
+
+    // 2. IMPORTANT: Use the 'newRole' variable for navigation,
+    // NOT the 'currentRole' state variable, because state is stale right now.
     const firstLink = menus[newRole]?.[0] || menus.unknown_user[0];
+
     if (firstLink) {
-      navigate(firstLink.path); // navigate to first link
-      onClose(); // optional: close sidebar
+      // We use a 0ms timeout to push the navigation to the end of the
+      // execution queue. This gives the AuthProvider just enough time
+      // to update the Context before the new page mounts.
+      setTimeout(() => {
+        navigate(firstLink.path);
+        onClose();
+      }, 0);
     }
   }
 

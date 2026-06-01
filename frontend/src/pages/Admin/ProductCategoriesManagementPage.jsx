@@ -86,7 +86,7 @@ const ProductCategoriesManagementPage = () => {
       if (selectedProductCategory) {
         result = await update(
           `product-categories/${selectedProductCategory.id}`,
-          payload
+          payload,
         );
         toast.show(edit_success, "success");
       } else {
@@ -117,7 +117,7 @@ const ProductCategoriesManagementPage = () => {
       await remove(`product-categories/${selectedProductCategory.id}`);
       toast.show(delete_success, "success");
       setProductCategories((prev) =>
-        prev.filter((cat) => cat.id != selectedProductCategory.id)
+        prev.filter((cat) => cat.id != selectedProductCategory.id),
       );
     } catch (error) {
       console.log("error -> ", error);

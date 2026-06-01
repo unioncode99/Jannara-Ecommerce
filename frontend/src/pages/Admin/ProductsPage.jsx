@@ -153,13 +153,13 @@ const ProductsPage = () => {
       console.log("result -> ", result);
 
       setProducts((prev) =>
-        prev.filter((product) => product.id !== selectedProduct.id)
+        prev.filter((product) => product.id !== selectedProduct.id),
       );
 
       if (translations.general.server_messages[result?.message?.message]) {
         toast.show(
           translations.general.server_messages[result?.message?.message],
-          "success"
+          "success",
         );
       } else {
         toast.show(product_delete_success, "success");
@@ -171,7 +171,7 @@ const ProductsPage = () => {
       if (translations.general.server_messages[error.message]) {
         toast.show(
           translations.general.server_messages[error.message],
-          "error"
+          "error",
         );
       } else {
         toast.show(product_delete_failed, "error");

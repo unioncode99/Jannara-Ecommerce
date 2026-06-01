@@ -71,13 +71,16 @@ GetAllGeneralProducts([FromQuery] GeneralProductFilterDTO filter)
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
 
-            if (userIdClaim == null)
-            {
-                return Unauthorized("User not authenticated.");
-            }
+            //if (userIdClaim == null)
+            //{
+            //    return Unauthorized("User not authenticated.");
+            //}
 
-            int.TryParse(userIdClaim.Value, out int userId);
-            filter.CurrentUserId = userId;
+            if (userIdClaim != null)
+            {
+                int.TryParse(userIdClaim.Value, out int userId);
+                filter.CurrentUserId = userId;
+            }
 
             if (filter.PageNumber <= 0 || filter.PageSize <= 0)
             {

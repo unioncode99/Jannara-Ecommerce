@@ -18,7 +18,7 @@ const ProductInfo = ({
   updateProductLoading,
 }) => {
   const [productImagePreview, setProductImagePreview] = useState(
-    productData?.defaultImageUrl || null
+    productData?.defaultImageUrl || null,
   );
   const { translations } = useLanguage();
   const {
